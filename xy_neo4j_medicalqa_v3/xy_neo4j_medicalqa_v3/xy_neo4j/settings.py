@@ -152,14 +152,14 @@ LOGIN_URL = '/accounts/login'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_URL = '/accounts/logout'
 
-from .question_classifier import *
-from .question_parser import *
-from .answer_search import *
-from .get_zhipu_response import *
-from .dialogue_manager import *
+from .question_classifier import QuestionClassifier
+from .question_parser import QuestionPaser
+from .answer_search import AnswerSearcher
 from .get_zhipu_response import GetZhipuResponse
+from .dialogue_manager import DialogueManager
 
+# 初始化各个组件（确保顺序正确）
 CLASSIFIER = QuestionClassifier()
 PARSER = QuestionPaser()
 SEACHER = AnswerSearcher()
-ZHIPU = GetZhipuResponse()
+ZHIPU = GetZhipuResponse()  # 确保只初始化一次，不要重复初始化

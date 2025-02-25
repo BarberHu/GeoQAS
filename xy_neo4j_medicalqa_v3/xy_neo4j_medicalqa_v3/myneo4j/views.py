@@ -12,7 +12,7 @@ from .models import MyNode, MyWenda
 from django.conf import settings
 # Create your views here.
 from django.conf import settings
-from .dialogue_manager import DialogueManager
+from xy_neo4j.dialogue_manager import DialogueManager
 
 
 @login_required
@@ -44,6 +44,10 @@ def index(request):
 @login_required
 def wenda(request):
     try:
+        # 确保 ZHIPU 已初始化
+        if not hasattr(settings, 'ZHIPU'):
+            raise Exception("ZHIPU not initialized in settings")
+            
         user = request.user
         dialogue_manager = DialogueManager()
 
@@ -66,20 +70,35 @@ def wenda(request):
                 print("生成回答:", answer)
                 
                 # 4. 保存对话历史
-                wenda = MyWenda()
-                wenda.user = user
-                wenda.question = key
-                wenda.sub_questions = sub_questions
-                wenda.answer = answer
-                wenda.kg_context = kg_context
-                wenda.save()
+                wenda = MyWenda.objects.create(
+                    user=user,
+                    question=key,
+                    sub_questions=sub_questions,
+                    answer=answer,
+                    kg_context=kg_context
+                )
+                
+                # 获取性能数据
+                performance_data = {
+                    'query_count': len(dialogue_manager.query_stats),
+                    'avg_time': sum(s['time'] for s in dialogue_manager.query_stats)/len(dialogue_manager.query_stats) if dialogue_manager.query_stats else 0,
+                    'avg_nodes': sum(s['nodes'] for s in dialogue_manager.query_stats)/len(dialogue_manager.query_stats) if dialogue_manager.query_stats else 0,
+                    'token_save_rate': (1 - avg_nodes/230)*100 if dialogue_manager.query_stats else 0
+                }
+                
+                all_wendas = MyWenda.objects.filter(user=user).order_by("-id")[:10]
+                return render(request, "wenda.html", {
+                    'all_wendas': all_wendas,
+                    'performance_data': performance_data,
+                    'answer': answer
+                })
                 
             except Exception as e:
                 print("处理问题失败:", e)
                 answer = "抱歉，处理您的问题时出现错误，请稍后再试。"
             
             all_wendas = MyWenda.objects.filter(user=user).order_by("-id")[:10]
-            return render(request, "wenda.html", locals())
+            return render(request, "wenda.html", {"error": str(e)})
             
     except Exception as e:
         print("视图函数异常:", e)

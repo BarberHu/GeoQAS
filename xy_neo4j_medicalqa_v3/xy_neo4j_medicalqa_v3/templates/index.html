@@ -128,12 +128,15 @@
 <!-- 在所有 script 标签之前添加数据初始化 -->
 <script type="text/javascript">
     // 初始化图谱数据
-    window.GRAPH_DATA = {
-        legendData: {{ legend_data|safe }},
-        categories: {{ categories|safe }},
-        nodes: {{ datas|safe }},
-        links: {{ links|safe }}
+    var graphData = {
+        legendData: JSON.parse('{{ legend_data|escapejs }}' || '[]'),
+        categories: JSON.parse('{{ categories|escapejs }}' || '[]'),
+        nodes: JSON.parse('{{ datas|escapejs }}' || '[]'),
+        links: JSON.parse('{{ links|escapejs }}' || '[]')
     };
+
+    // 将数据挂载到 window 对象
+    window.GRAPH_DATA = graphData;
 </script>
 
 <script>
