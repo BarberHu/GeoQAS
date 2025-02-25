@@ -156,6 +156,8 @@ from .question_classifier import *
 from .question_parser import *
 from .answer_search import *
 from .get_zhipu_response import *
+from .dialogue_manager import *
+from .get_zhipu_response import GetZhipuResponse
 
 CLASSIFIER = QuestionClassifier()
 PARSER = QuestionPaser()

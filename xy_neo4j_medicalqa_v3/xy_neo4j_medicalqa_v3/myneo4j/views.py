@@ -12,6 +12,7 @@ from .models import MyNode, MyWenda
 from django.conf import settings
 # Create your views here.
 from django.conf import settings
+from .dialogue_manager import DialogueManager
 
 
 @login_required
@@ -44,44 +45,43 @@ def index(request):
 def wenda(request):
     try:
         user = request.user
+        dialogue_manager = DialogueManager()
 
         if request.method == "GET":
             key = request.GET.get("key", "")
-            clean = request.GET.get("clean", "")
-            if clean:
-                all_wendas111 = MyWenda.objects.filter(user=user).order_by("id")
-                print(all_wendas111)
-                for js in all_wendas111:
-                    js.delete()
-            daan = ''
-            if key.lower() in {'你好', '您好', 'hello', '你好！'}:
-                daan = '你 好 👋 ！ 我 是 您 的 地 理 建 模 小 助 手 ！ 很 高 兴 见 到 你 ， 欢 迎 问 我 任 何 有 关 地 理 建 模 的 问 题 。'
-            elif key:
-                res_classify = settings.CLASSIFIER.classify(key)
-                final_answers = []
+            if not key:
+                return render(request, "wenda.html", locals())
 
-                if res_classify:
-                    res_sql = settings.PARSER.parser_main(res_classify)
-                    final_answers = settings.SEACHER.search_main(res_sql)
-
-                daan = '\n'.join(
-                    final_answers if final_answers
-                    else settings.ZHIPU.get_chatglm_response(key)
-                )
-
-            if daan:
-                wenda = MyWenda.objects.filter(user=user, question=key, anster=daan)
-                if len(wenda) > 0:
-                    for w in wenda:
-                        w.delete()
+            try:
+                # 1. 问题分解
+                sub_questions = dialogue_manager.decompose_question(key)
+                print("问题分解:", sub_questions)
+                
+                # 2. 获取知识图谱上下文
+                kg_context = dialogue_manager.get_kg_context(key)
+                print("知识图谱上下文:", kg_context)
+                
+                # 3. 生成回答
+                answer = dialogue_manager.generate_response(key, kg_context)
+                print("生成回答:", answer)
+                
+                # 4. 保存对话历史
                 wenda = MyWenda()
                 wenda.user = user
                 wenda.question = key
-                wenda.anster = daan
+                wenda.sub_questions = sub_questions
+                wenda.answer = answer
+                wenda.kg_context = kg_context
                 wenda.save()
-            all_wendas = MyWenda.objects.filter(user=user).order_by("id")[:10]
+                
+            except Exception as e:
+                print("处理问题失败:", e)
+                answer = "抱歉，处理您的问题时出现错误，请稍后再试。"
+            
+            all_wendas = MyWenda.objects.filter(user=user).order_by("-id")[:10]
             return render(request, "wenda.html", locals())
+            
     except Exception as e:
-        print(e)
-        return render(request, "wenda.html", locals())
+        print("视图函数异常:", e)
+        return render(request, "wenda.html", {"error": str(e)})
 

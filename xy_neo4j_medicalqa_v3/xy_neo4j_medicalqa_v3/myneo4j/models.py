@@ -18,13 +18,16 @@ class MyNode(models.Model):
 
 class MyWenda(models.Model):
     user = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
-    question = models.CharField(verbose_name='问题', blank=True, null=True, default='', max_length=1000)
-    anster = models.CharField(verbose_name='答案', blank=True, null=True, default='', max_length=1000)
+    question = models.TextField(verbose_name='问题')
+    sub_questions = models.TextField(verbose_name='子问题', null=True, blank=True)
+    answer = models.TextField(verbose_name='答案')
+    kg_context = models.TextField(verbose_name='知识图谱上下文', null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return str(self.question)
 
     class Meta:
-        ordering = ['-id']
+        ordering = ['-created_at']
         verbose_name = '问答信息'
         verbose_name_plural = verbose_name

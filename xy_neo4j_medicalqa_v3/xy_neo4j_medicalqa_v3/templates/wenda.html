@@ -65,40 +65,29 @@
                 <div class="col-lg-12">
                     <div class="card shadow-sm">
                         <div class="card-body chat-container" style="max-height: 60vh; overflow-y: auto;">
-                            {% for wen in all_wendas %}
-                                <div class="chat-message mb-4">
-                                    <div class="question-bubble">
-                                        <div class="d-flex align-items-center mb-2">
-                                            <i class="fas fa-user-circle fa-2x text-secondary me-2"></i>
-                                            <div>
-                                                <small class="text-muted">{{ wen.create_time|date:"Y-m-d H:i" }}</small>
-                                                <div class="fw-bold">用户提问：</div>
-                                            </div>
-                                        </div>
-                                        <div class="ps-4 ms-2 border-start border-3 border-primary">
-                                            {{ wen.question }}
-                                        </div>
+                            <div class="chat-container">
+                                {% for qa in all_wendas %}
+                                <div class="chat-item">
+                                    <div class="question">
+                                        <strong>问题：</strong> {{ qa.question }}
                                     </div>
-
-                                    <div class="answer-bubble mt-3">
-                                        <div class="d-flex align-items-center mb-2">
-                                            <i class="fas fa-robot fa-2x text-primary me-2"></i>
-                                            <div>
-                                                <small class="text-muted">{{ wen.update_time|date:"Y-m-d H:i" }}</small>
-                                                <div class="fw-bold">AI助手回复：</div>
-                                            </div>
-                                        </div>
-                                        <div class="ps-4 ms-2 border-start border-3 border-success">
-                                            {{ wen.anster|safe }}
-                                        </div>
+                                    {% if qa.sub_questions %}
+                                    <div class="sub-questions">
+                                        <strong>问题分解：</strong>
+                                        {{ qa.sub_questions|linebreaks }}
+                                    </div>
+                                    {% endif %}
+                                    <div class="answer">
+                                        <strong>回答：</strong> {{ qa.answer|linebreaks }}
                                     </div>
                                 </div>
-                            {% empty %}
+                                {% empty %}
                                 <div class="text-center text-muted py-4">
                                     <i class="fas fa-comments fa-3x mb-3"></i>
                                     <p>暂无对话记录，开始提问吧！</p>
                                 </div>
-                            {% endfor %}
+                                {% endfor %}
+                            </div>
                         </div>
                     </div>
                 </div>
