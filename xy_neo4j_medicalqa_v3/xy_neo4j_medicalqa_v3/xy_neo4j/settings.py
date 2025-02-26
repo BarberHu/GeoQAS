@@ -155,11 +155,14 @@ LOGOUT_URL = '/accounts/logout'
 from .question_classifier import QuestionClassifier
 from .question_parser import QuestionPaser
 from .answer_search import AnswerSearcher
-from .get_zhipu_response import GetZhipuResponse
+from .get_zhipu_response import GetDeepseekResponse
 from .dialogue_manager import DialogueManager
 
 # 初始化各个组件（确保顺序正确）
 CLASSIFIER = QuestionClassifier()
 PARSER = QuestionPaser()
 SEACHER = AnswerSearcher()
-ZHIPU = GetZhipuResponse()  # 确保只初始化一次，不要重复初始化
+ZHIPU = GetDeepseekResponse()  # 使用新的类名初始化
+
+# 初始化Deepseek客户端
+DEEPSEEK = GetDeepseekResponse()

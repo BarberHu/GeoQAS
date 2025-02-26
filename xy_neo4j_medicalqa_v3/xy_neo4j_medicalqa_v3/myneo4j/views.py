@@ -44,32 +44,30 @@ def index(request):
 @login_required
 def wenda(request):
     try:
-        # 确保 ZHIPU 已初始化
-        if not hasattr(settings, 'ZHIPU'):
-            raise Exception("ZHIPU not initialized in settings")
-            
         user = request.user
         dialogue_manager = DialogueManager()
-
+        
         if request.method == "GET":
             key = request.GET.get("key", "")
+            
+            # 恢复清除历史记录功能
+            if request.GET.get("clean") == "1":
+                MyWenda.objects.filter(user=user).delete()
+                return render(request, "wenda.html", {"all_wendas": []})
+            
+            # 获取历史记录
+            all_wendas = MyWenda.objects.filter(user=user).order_by("-created_at")[:10]
+            
             if not key:
-                return render(request, "wenda.html", locals())
-
+                return render(request, "wenda.html", {"all_wendas": all_wendas})
+                
             try:
-                # 1. 问题分解
+                # 处理问答逻辑
                 sub_questions = dialogue_manager.decompose_question(key)
-                print("问题分解:", sub_questions)
-                
-                # 2. 获取知识图谱上下文
                 kg_context = dialogue_manager.get_kg_context(key)
-                print("知识图谱上下文:", kg_context)
-                
-                # 3. 生成回答
                 answer = dialogue_manager.generate_response(key, kg_context)
-                print("生成回答:", answer)
                 
-                # 4. 保存对话历史
+                # 保存对话历史
                 wenda = MyWenda.objects.create(
                     user=user,
                     question=key,
@@ -78,28 +76,16 @@ def wenda(request):
                     kg_context=kg_context
                 )
                 
-                # 获取性能数据
-                performance_data = {
-                    'query_count': len(dialogue_manager.query_stats),
-                    'avg_time': sum(s['time'] for s in dialogue_manager.query_stats)/len(dialogue_manager.query_stats) if dialogue_manager.query_stats else 0,
-                    'avg_nodes': sum(s['nodes'] for s in dialogue_manager.query_stats)/len(dialogue_manager.query_stats) if dialogue_manager.query_stats else 0,
-                    'token_save_rate': (1 - avg_nodes/230)*100 if dialogue_manager.query_stats else 0
-                }
+                # 重新获取最新的历史记录
+                all_wendas = MyWenda.objects.filter(user=user).order_by("-created_at")[:10]
+                return render(request, "wenda.html", locals())
                 
-                all_wendas = MyWenda.objects.filter(user=user).order_by("-id")[:10]
+            except ConnectionError:
                 return render(request, "wenda.html", {
-                    'all_wendas': all_wendas,
-                    'performance_data': performance_data,
-                    'answer': answer
+                    "error": "连接中断，请重试",
+                    "all_wendas": all_wendas  # 使用已获取的历史记录
                 })
                 
-            except Exception as e:
-                print("处理问题失败:", e)
-                answer = "抱歉，处理您的问题时出现错误，请稍后再试。"
-            
-            all_wendas = MyWenda.objects.filter(user=user).order_by("-id")[:10]
-            return render(request, "wenda.html", {"error": str(e)})
-            
     except Exception as e:
         print("视图函数异常:", e)
         return render(request, "wenda.html", {"error": str(e)})
