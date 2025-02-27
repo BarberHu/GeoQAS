@@ -25,5 +25,5 @@ class UserProfileAdmin(admin.ModelAdmin):
 
 admin.site.register(UserProfile, UserProfileAdmin)
 
-admin.site.site_title = "医疗问答管理端"
-admin.site.site_header = "医疗问答管理端"
+admin.site.site_title = "地理建模问答管理端"
+admin.site.site_header = "地理建模问答管理端"
