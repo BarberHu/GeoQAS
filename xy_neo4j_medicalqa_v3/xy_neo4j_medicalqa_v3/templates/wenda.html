@@ -60,42 +60,61 @@
                 </div>
             </div>
 
-            <div class="row">
+            <div class="chat-history">
                 <!-- 对话记录区域 -->
-                <div class="col-lg-12">
-                    <div class="card shadow-sm">
-                        <div class="card-body chat-container" style="max-height: 60vh; overflow-y: auto;">
-                            <div class="chat-container">
-                                {% if all_wendas %}
-                                    {% for qa in all_wendas %}
-                                    <div class="chat-item mb-4">
-                                        <div class="question bg-light p-3 rounded">
-                                            <strong class="text-primary">问题：</strong> {{ qa.question }}
+                {% if all_wendas %}
+                    {% for qa in all_wendas %}
+                    <div class="chat-sequence mb-4">
+                        <!-- 问题卡片 -->
+                        <div class="chat-question">
+                            <div class="card shadow-sm bg-light">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-start mb-2">
+                                        <div class="user-avatar me-2">
+                                            <i class="fas fa-user-circle fa-2x text-primary"></i>
                                         </div>
-                                        {% if qa.sub_questions %}
-                                        <div class="sub-questions mt-2 ps-3">
-                                            <strong class="text-success">问题分解：</strong>
-                                            {{ qa.sub_questions|linebreaks }}
-                                        </div>
-                                        {% endif %}
-                                        <div class="answer mt-2 ps-3 border-start border-primary">
-                                            <strong class="text-info">回答：</strong> 
-                                            {{ qa.answer|linebreaks }}
+                                        <div class="question-content w-100">
+                                            <strong class="text-primary">我的问题：</strong>
+                                            <div class="mt-2">{{ qa.question }}</div>
+                                            
+                                            {% if qa.sub_questions %}
+                                            <div class="question-analysis mt-3">
+                                                <strong class="text-muted">问题分解：</strong>
+                                                {{ qa.sub_questions|linebreaks }}
+                                            </div>
+                                            {% endif %}
                                         </div>
                                     </div>
-                                    {% endfor %}
-                                {% else %}
-                                    <div class="text-center text-muted py-4">
-                                        <i class="fas fa-comments fa-3x mb-3"></i>
-                                        <p>暂无对话记录，开始提问吧！</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 回答卡片 -->
+                        <div class="chat-answer ms-4 mt-3">
+                            <div class="card shadow-sm">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-start">
+                                        <div class="assistant-avatar me-2">
+                                            <i class="fas fa-robot fa-2x text-info"></i>
+                                        </div>
+                                        <div class="answer-content w-100">
+                                            <strong class="text-info">AI助手回答：</strong>
+                                            <div class="answer-text mt-2">
+                                                {{ qa.answer|linebreaks }}
+                                            </div>
+                                        </div>
                                     </div>
-                                {% endif %}
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-
-
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center text-muted py-4">
+                        <i class="fas fa-comments fa-3x mb-3"></i>
+                        <p>暂无对话记录，开始提问吧！</p>
+                    </div>
+                {% endif %}
             </div>
 
         </div>
@@ -103,55 +122,86 @@
     </main>
 
     <style>
-        .chat-container {
-            background: #f8f9fa;
-            border-radius: 8px;
+        /* 聊天界面样式 */
+        .chat-history {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
         }
-        .question-bubble {
-            background: white;
-            padding: 1rem;
+
+        .chat-sequence {
+            margin-bottom: 30px;
+        }
+
+        /* 问题卡片样式 */
+        .chat-question .card {
             border-radius: 15px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            background-color: #f8f9fa;
+            border: none;
         }
-        .answer-bubble {
-            background: #e3f2fd;
-            padding: 1rem;
+
+        /* 回答卡片样式 */
+        .chat-answer .card {
             border-radius: 15px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            background-color: #ffffff;
+            border: 1px solid #e9ecef;
         }
-        .border-success {
-            border-color: #28a745!important;
-        }
-        /* 添加问题分解部分的样式 */
+
+        /* 问题分解样式 */
         .question-analysis {
-            color: #666;  /* 淡灰色 */
-            font-size: 0.9em;  /* 缩小字号 */
+            font-size: 0.95em;
+            color: #666;
+            background-color: rgba(0,0,0,0.03);
+            padding: 15px;
+            border-radius: 8px;
             margin: 10px 0;
-            padding: 10px;
-            background-color: #f9f9f9;
-            border-left: 3px solid #ddd;
+            border-left: 3px solid #dee2e6;
         }
 
-        /* 移除标题中的特殊字符 */
-        .answer-title {
-            font-weight: bold;
-            margin: 15px 0 10px 0;
-            color: #333;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 5px;
-        }
-
-        /* 正文样式 */
-        .answer-content {
+        .answer-text {
             line-height: 1.6;
             color: #333;
+        }
+
+        .user-avatar, .assistant-avatar {
+            width: 40px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        /* 卡片悬浮效果 */
+        .card {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        /* 滚动条样式 */
+        .chat-history::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .chat-history::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        .chat-history::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+
+        .chat-history::-webkit-scrollbar-thumb:hover {
+            background: #555;
         }
     </style>
 
     <script>
         // 自动滚动到底部
         window.onload = function() {
-            const container = document.querySelector('.chat-container');
+            const container = document.querySelector('.chat-history');
             if (container) {
                 container.scrollTop = container.scrollHeight;
             }
