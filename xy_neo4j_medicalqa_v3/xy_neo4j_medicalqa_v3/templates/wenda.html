@@ -99,7 +99,7 @@
                                         </div>
                                         <div class="answer-content w-100">
                                             <strong class="text-info">AI助手回答：</strong>
-                                            <div class="answer-text mt-2">
+                                            <div class="answer-text mt-2 {% if '知识图谱+大模型补充' in qa.kg_context %}bg-kg-lm{% else %}bg-lm{% endif %}">
                                                 {{ qa.answer|linebreaks }}
                                             </div>
                                         </div>
@@ -196,20 +196,41 @@
         .chat-history::-webkit-scrollbar-thumb:hover {
             background: #555;
         }
+
+        /* 知识图谱+大模型补充的背景色 */
+        .bg-kg-lm {
+            background-color: rgba(144, 238, 144, 0.1);  /* 淡绿色 */
+            padding: 15px;
+            border-radius: 8px;
+        }
+        
+        /* 纯大模型的背景色 */
+        .bg-lm {
+            background-color: rgba(255, 255, 224, 0.2);  /* 淡黄色 */
+            padding: 15px;
+            border-radius: 8px;
+        }
     </style>
 
     <script>
-        // 自动滚动到底部
         window.onload = function() {
-            const container = document.querySelector('.chat-history');
-            if (container) {
-                container.scrollTop = container.scrollHeight;
-            }
-
             // 自动聚焦到输入框
             const input = document.getElementById('questionInput');
             if (input) {
                 input.focus();
+            }
+            
+            // 滚动到最新消息
+            const container = document.querySelector('.chat-history');
+            if (container) {
+                // 获取所有对话序列
+                const chatSequences = document.querySelectorAll('.chat-sequence');
+                if (chatSequences.length > 0) {
+                    // 获取最新的对话序列
+                    const latestChat = chatSequences[0];  // 因为数据是倒序的，第一个就是最新的
+                    // 平滑滚动到最新消息
+                    latestChat.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
             }
         }
     </script>

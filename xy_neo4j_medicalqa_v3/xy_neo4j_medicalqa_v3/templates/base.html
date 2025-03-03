@@ -172,27 +172,26 @@
 <script type="text/javascript" src="/static/js/Chart.js"></script>
 
 <script>
-// 自动滚动功能
+// 修改自动滚动功能
 function initAutoScroll() {
-    // 优先选择聊天容器，其次使用布局容器
     const container = document.querySelector('.chat-container') ||
                      document.querySelector('.lyear-layout-container');
 
     if (!container) return;
 
-    // 滚动到底部
-    const scrollToBottom = () => {
+    // 滚动到顶部而不是底部
+    const scrollToTop = () => {
         container.scrollTo({
-            top: container.scrollHeight,
+            top: 0,
             behavior: 'smooth'
         });
     };
 
     // 初始滚动
-    scrollToBottom();
+    scrollToTop();
 
     // 监听内容变化
-    const observer = new MutationObserver(scrollToBottom);
+    const observer = new MutationObserver(scrollToTop);
     observer.observe(container, {
         childList: true,
         subtree: true,
@@ -200,7 +199,7 @@ function initAutoScroll() {
     });
 
     // 窗口尺寸变化时重新滚动
-    window.addEventListener('resize', scrollToBottom);
+    window.addEventListener('resize', scrollToTop);
 }
 
 // 多重触发保障

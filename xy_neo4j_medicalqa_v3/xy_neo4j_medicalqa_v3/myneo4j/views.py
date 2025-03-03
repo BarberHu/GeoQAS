@@ -23,7 +23,11 @@ def index(request):
         end = request.GET.get("end", "")
         all_datas = get_all_relation(start, relation, end)
         
-        # 确保数据不为空
+        # 确保节点数据包含 source_article 属性
+        for node in all_datas.get("datas", []):
+            if "source_article" not in node:
+                node["source_article"] = ""  # 设置默认值
+        
         links = json.dumps(all_datas.get("links", []))
         datas = json.dumps(all_datas.get("datas", []))
         categories = json.dumps(all_datas.get("categories", []))

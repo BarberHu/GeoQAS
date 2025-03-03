@@ -158,6 +158,13 @@ def get_all_relation(start, relation, end):
                 }
             )
             cache.append(cache_relation)
+
+        # 添加参考文献
+        if "source_article" in start:
+            datas[-1]["source_article"] = start["source_article"]
+        if "source_article" in end:
+            datas[-1]["target_article"] = end["source_article"]
+
     print("=====")
     print(datas)
     print(links)

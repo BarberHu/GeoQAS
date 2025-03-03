@@ -160,7 +160,8 @@
                     if (params.dataType === 'node') {
                         return `<strong>${params.data.name}</strong><br/>
                                 类型：${params.data.category}<br/>
-                                描述：${params.data.attr.desc}`;
+                                描述：${params.data.attr.desc}<br/>
+                                参考文献：${params.data.source_article}`;
                     }
                     return params.data.name;
                 }
