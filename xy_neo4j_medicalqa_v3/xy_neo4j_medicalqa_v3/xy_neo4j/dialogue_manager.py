@@ -1,6 +1,6 @@
 import json
 from django.conf import settings
-from .get_zhipu_response import GetDeepseekResponse
+from xy_neo4j.get_zhipu_response import GetDeepseekResponse
 from myneo4j.pyneo_utils import get_all_relation
 # 在 DialogueManager 中添加性能监控
 import time
@@ -12,6 +12,8 @@ import hashlib
 from datetime import datetime, timedelta
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import threading
+from cachetools import LRUCache
+from xy_neo4j.entity_extract_train.Entity_Mention.integrated_qa_system import IntegratedQASystem
 
 class LRUCache(OrderedDict):
     def __init__(self, maxsize=100):
@@ -37,25 +39,81 @@ class DialogueManager:
     def __init__(self):
         self.query_stats = deque(maxlen=100)  # 保留最近100次查询数据
         try:
-            from django.conf import settings
-            self.conversation_history = []
-            self.current_focus = None  # 当前对话焦点
+            # 初始化集成问答系统
+            NEO4J_CONFIG = {
+                "uri": "bolt://localhost:7687",
+                "user": "neo4j", 
+                "password": "wswy0129"
+            }
+            
+            try:
+                # 初始化问答系统
+                self.qa_system = IntegratedQASystem(
+                    neo4j_config=NEO4J_CONFIG,
+                    llm_api_key="sk-benW8QASpqo6tXfDsE9Eu6vYxJDhTtHeeeKGSh11wBOqW8SA"
+                )
+            except ImportError as e:
+                print(f"问答系统初始化失败: {e}")
+                # 使用备选方案
+                self.qa_system = None
+            
+            # 初始化其他组件
             if not hasattr(settings, 'ZHIPU'):
                 raise Exception("ZHIPU not found in settings")
             self.zhipu = settings.ZHIPU
-            
-            # 初始化jieba分词
-            jieba.initialize()  # 确保jieba已初始化
-            
-            # 使用 get_all_relation 替代直接连接
+            jieba.initialize()
             self.execute_cypher = self.execute_query_with_fallback
             self.cache = LRUCache(maxsize=100)
             print("DialogueManager 初始化成功")
+            
         except Exception as e:
             print("DialogueManager 初始化失败:", e)
             raise
-        
-        
+
+    def get_response(self, question: str) -> dict:
+        """处理用户问题并返回回答"""
+        start_time = time.time()
+        try:
+            if self.qa_system is None:
+                # 如果集成问答系统初始化失败，使用备选方案
+                answer = self.get_llm_response(question)
+            else:
+                # 使用集成问答系统
+                answer = self.qa_system.answer_question(
+                    question=question,
+                    use_decomposition=True  # 默认启用问题分解
+                )
+            
+            # 2. 获取问题分解结果
+            sub_questions = None
+            if self.qa_system and self.qa_system.question_decomposer:
+                sub_questions = self.qa_system.question_decomposer.decompose_question(question)
+            
+            # 3. 计算思考时间
+            thinking_time = time.time() - start_time
+            
+            # 4. 格式化最终答案
+            formatted_answer = f"""
+{answer}
+
+-----------------------------------
+思考时间：{thinking_time:.2f}秒 | 查询层级：知识图谱+大模型协同
+"""
+            
+            return {
+                "answer": formatted_answer,
+                "sub_questions": sub_questions,
+                "kg_context": "使用知识图谱+大模型协同回答"  # 用于前端展示
+            }
+            
+        except Exception as e:
+            print(f"处理问题失败: {str(e)}")
+            return {
+                "answer": "抱歉，系统处理您的问题时遇到了错误，请稍后重试。",
+                "sub_questions": None,
+                "kg_context": None
+            }
+
     def decompose_question(self, question):
         """结构化问题分解器（支持多轮对话流程）"""
         try:
@@ -414,3 +472,12 @@ class DialogueManager:
         注意：图谱中不存在与"{question}"直接相关的信息，以下内容来自大模型的专业知识：
         {context}
         """ 
+
+class DialogueManagerFactory:
+    _instance = None
+
+    @classmethod
+    def get_instance(cls):
+        if cls._instance is None:
+            cls._instance = DialogueManager()
+        return cls._instance 

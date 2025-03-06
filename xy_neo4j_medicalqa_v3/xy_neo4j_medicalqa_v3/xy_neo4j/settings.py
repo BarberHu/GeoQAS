@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'myneo4j',
-    'accounts'
+    'xy_neo4j',
+    'accounts',
 ]
 
 MIDDLEWARE = [
