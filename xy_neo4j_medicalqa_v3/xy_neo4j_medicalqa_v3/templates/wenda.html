@@ -33,6 +33,9 @@
                             </div>
                         </form>
 
+                        <!-- 修改数据容器 -->
+                        <div id="kg-nodes-data" style="display: none;">{{ kg_nodes|json_script:"kg-nodes-json" }}</div>
+
                         {% if answer %}
                         <div class="result-card mt-4">
                             <!-- 思考过程展示 (折叠式) - 修改默认为展开 -->
@@ -129,9 +132,26 @@
                                                     {% endif %}
                                                     
                                                     <!-- 知识图谱可视化 -->
-                                                    <div class="knowledge-graph-container mt-3">
-                                                        <div id="knowledgeGraphPreview" style="height: 300px; background: #f4f7fa; border-radius: 8px;"></div>
+                                                    <div class="card mt-4">
+                                                        <div class="card-header">
+                                                            <h5 class="mb-0">
+                                                                <i class="fas fa-project-diagram"></i> 知识图谱可视化
+                                                            </h5>
+                                                        </div>
+                                                        <div class="card-body">
+                                                            <!-- 添加容器元素 -->
+                                                            <div id="knowledgeGraphPreview" style="width: 100%; height: 600px;"></div>
+                                                        </div>
                                                     </div>
+                                                    
+                                                    <!-- 添加流程图展示区域 -->
+                                                    <div class="flowchart-container mt-3">
+                                                        <h6 class="mb-2"><i class="fas fa-project-diagram me-2"></i>模型流程图</h6>
+                                                        <div id="processFlowchart" style="height: 250px; background: #f4f7fa; border-radius: 8px;"></div>
+                                                    </div>
+
+
+
                                                 {% else %}
                                                     <p>{{ step.content }}</p>
                                                 {% endif %}
@@ -589,6 +609,8 @@
             margin-bottom: 15px;
         }
 
+
+
         /* 响应式调整 */
         @media (max-width: 768px) {
             .chat-answer {
@@ -600,171 +622,329 @@
                 gap: 5px;
             }
         }
+
+                /* 添加到style标签中 */
+        .kg-tooltip-node {
+            max-width: 350px;
+            overflow-wrap: break-word;
+        }
+
+        .kg-tooltip-node h4 {
+            color: #0056b3;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+
+        .kg-tooltip-node hr {
+            margin: 8px 0;
+            border-color: #eee;
+        }
+
+        .kg-tooltip-node p {
+            margin-bottom: 6px;
+            font-size: 13px;
+        }
+
+        .kg-tooltip-edge {
+            padding: 5px;
+        }
+
+        .flowchart-container {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
     </style>
 
     <!-- 添加ECharts脚本 -->
     <script src="/static/echarts.min.js"></script>
     <script>
-      window.onload = function() {
-            // 自动聚焦到输入框
-            const input = document.getElementById('questionInput');
-            if (input) {
-                input.focus();
-            }
-            
-            // 折叠功能 - 调整为默认显示
-            const thinkingCollapse = document.getElementById('thinkingCollapse');
-            if (thinkingCollapse) {
-                // 初始化知识图谱可视化
-                setTimeout(() => {
-                    initKnowledgeGraph();
-                }, 300);
-            }
-            
-            // 折叠功能事件
-            document.querySelectorAll('.thinking-header').forEach(header => {
-                header.addEventListener('click', function() {
-                    const collapseElement = this.nextElementSibling;
-                    const icon = this.querySelector('.fa-chevron-down');
-                    
-                    if (collapseElement.classList.contains('show')) {
-                        collapseElement.classList.remove('show');
-                        icon.style.transform = 'rotate(0deg)';
-                    } else {
-                        collapseElement.classList.add('show');
-                        icon.style.transform = 'rotate(180deg)';
-                        
-                        // 初始化知识图谱可视化
-                        initKnowledgeGraph();
-                    }
-                });
-            });
-            
-            // 滚动到最新消息
-            const container = document.querySelector('.chat-history');
-            if (container) {
-                // 获取所有对话序列
-                const chatSequences = document.querySelectorAll('.chat-sequence');
-                if (chatSequences.length > 0) {
-                    // 获取最新的对话序列
-                    const latestChat = chatSequences[0];
-                    // 平滑滚动到最新消息
-                    latestChat.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
-            }
-            
-            // 折叠按钮点击效果
-            document.querySelectorAll('.collapse-toggle').forEach(toggle => {
-                toggle.addEventListener('click', function() {
-                    const icon = this.querySelector('.fa-angle-down');
-                    if (icon) {
-                        if (icon.style.transform === 'rotate(180deg)') {
-                            icon.style.transform = 'rotate(0deg)';
-                        } else {
-                            icon.style.transform = 'rotate(180deg)';
-                        }
-                    }
-                });
-            });
+    // 确保DOM加载完成后再初始化
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log("[Frontend] DOM加载完成，准备初始化...");
+        
+        // 检查容器是否存在
+        const graphContainer = document.getElementById('knowledgeGraphPreview');
+        if (!graphContainer) {
+            console.error("[Frontend] 错误：找不到知识图谱容器元素 #knowledgeGraphPreview");
+            return;
         }
         
+        // 初始化知识图谱
+        initKnowledgeGraph();
+    });
+
+    function initKnowledgeGraph() {
+        console.log("[Frontend] 开始初始化知识图谱...");
+        const graphContainer = document.getElementById('knowledgeGraphPreview');
+        if (!graphContainer) {
+            console.error("[Frontend] 错误：找不到知识图谱容器元素 #knowledgeGraphPreview");
+            return;
+        }
         
-        // 初始化知识图谱可视化
-        function initKnowledgeGraph() {
-            const graphContainer = document.getElementById('knowledgeGraphPreview');
-            if (!graphContainer) return;
-            
-            // 这里可以根据当前问题相关的节点来生成小型知识图谱
-            // 以下是示例数据，实际使用时需要从后端获取
-            const graphData = {
-                nodes: [
-                    { name: 'SWAT模型', category: '模型', value: 30 },
-                    { name: '径流模拟', category: '应用', value: 25 },
-                    { name: 'DEM数据', category: '数据', value: 20 },
-                    { name: '气象数据', category: '数据', value: 20 },
-                    { name: '土壤数据', category: '数据', value: 20 },
-                    { name: '子流域划分', category: '方法', value: 15 },
-                    { name: '参数率定', category: '方法', value: 15 }
-                ],
-                links: [
-                    { source: 'SWAT模型', target: '径流模拟', name: '用于' },
-                    { source: 'DEM数据', target: 'SWAT模型', name: '输入' },
-                    { source: '气象数据', target: 'SWAT模型', name: '输入' },
-                    { source: '土壤数据', target: 'SWAT模型', name: '输入' },
-                    { source: 'SWAT模型', target: '子流域划分', name: '包含步骤' },
-                    { source: 'SWAT模型', target: '参数率定', name: '包含步骤' }
-                ],
-                categories: [
-                    { name: '模型' },
-                    { name: '应用' },
-                    { name: '数据' },
-                    { name: '方法' }
-                ]
-            };
-            
-            const myChart = echarts.init(graphContainer);
-            
-            const option = {
-                tooltip: {
-                    trigger: 'item',
-                    formatter: function(params) {
-                        if (params.dataType === 'edge') {
-                            return `${params.data.source} <span style="color:#999">→</span> ${params.data.target}`;
-                        }
-                        return params.data.name;
+        // 初始化默认数据
+        let graphData = {
+            nodes: [],
+            links: [],
+            categories: []
+        };
+        
+        try {
+            console.log("[Frontend] 尝试获取知识图谱数据...");
+            const kgNodesScript = document.getElementById('kg-nodes-json');
+            if (kgNodesScript) {
+                const kgNodes = JSON.parse(kgNodesScript.textContent);
+                console.log("[Frontend] 解析到的原始数据:", kgNodes);
+                
+                if (kgNodes && typeof kgNodes === 'object') {
+                    if (kgNodes.nodes && kgNodes.links) {
+                        graphData = kgNodes;
+                        console.log("[Frontend] 成功加载知识图谱数据，节点数:", kgNodes.nodes.length);
+                    } else {
+                        console.log("[Frontend] 数据格式不完整，使用默认数据");
                     }
-                },
-                legend: {
+                }
+            } else {
+                console.log("[Frontend] 未找到知识图谱数据，使用默认数据");
+            }
+        } catch (error) {
+            console.error('[Frontend] 解析知识图谱数据失败:', error);
+            console.log('[Frontend] 原始数据:', document.getElementById('kg-nodes-json')?.textContent);
+        }
+        
+        // 确保 ECharts 已加载
+        if (typeof echarts === 'undefined') {
+            console.error('[Frontend] 错误：ECharts 未加载');
+            return;
+        }
+        
+        console.log("[Frontend] 开始渲染知识图谱...");
+        const myChart = echarts.init(graphContainer);
+        
+        const option = {
+            tooltip: {
+                show: true,
+                formatter: function(params) {
+                    if (params.dataType === 'node') {
+                        return `
+                            <div class="kg-tooltip-node">
+                                <h4>${params.data.name}</h4>
+                                ${params.data.desc ? `<p>${params.data.desc}</p>` : ''}
+                            </div>
+                        `;
+                    } else {
+                        return `${params.data.source} ${params.data.name} ${params.data.target}`;
+                    }
+                }
+            },
+            legend: {
+                data: graphData.categories.map(a => a.name)
+            },
+            series: [{
+                type: 'graph',
+                layout: 'force',
+                data: graphData.nodes,
+                links: graphData.links,
+                categories: graphData.categories,
+                roam: true,
+                label: {
                     show: true,
-                    data: graphData.categories.map(a => a.name),
-                    textStyle: {
-                        color: '#333'
-                    },
-                    bottom: 0
+                    position: 'right'
                 },
-                series: [{
+                force: {
+                    repulsion: 100,
+                    edgeLength: [50, 100]
+                },
+                edgeSymbol: ['none', 'arrow'],
+                edgeLabel: {
+                    show: true,
+                    formatter: '{c}'
+                }
+            }]
+        };
+        
+        myChart.setOption(option);
+        console.log("[Frontend] 知识图谱初始化完成");
+        
+        // 窗口大小变化时调整图表
+        window.addEventListener('resize', function() {
+            myChart.resize();
+        });
+    }
+
+    // 添加到scripts部分中
+    function initProcessFlowchart() {
+        const flowchartContainer = document.getElementById('processFlowchart');
+        if (!flowchartContainer) return;
+        
+        const flowChart = echarts.init(flowchartContainer);
+        
+        // SWAT模型流程图数据
+        const flowchartOption = {
+            tooltip: {
+                trigger: 'item',
+                formatter: '{b}'
+            },
+            animationDurationUpdate: 1500,
+            animationEasingUpdate: 'quinticInOut',
+            series: [
+                {
                     type: 'graph',
-                    layout: 'force',
-                    data: graphData.nodes,
-                    links: graphData.links,
-                    categories: graphData.categories,
+                    layout: 'none',
+                    symbolSize: 50,
                     roam: true,
                     label: {
-                        show: true,
-                        position: 'inside',
-                        fontSize: 12,
-                        backgroundColor: 'rgba(255, 255, 255, 0.8)',
-                        padding: [4, 6],
-                        borderRadius: 3
+                        show: true
                     },
-                    force: {
-                        repulsion: 150,
-                        edgeLength: [50, 100]
-                    },
-                    edgeSymbol: ['none', 'arrow'],
+                    edgeSymbol: ['circle', 'arrow'],
+                    edgeSymbolSize: [4, 10],
                     edgeLabel: {
-                        show: true,
-                        formatter: '{c}',
-                        fontSize: 10
+                        fontSize: 12
                     },
+                    data: [
+                        {
+                            name: '数据收集',
+                            x: 100,
+                            y: 100,
+                            itemStyle: {
+                                color: '#37A2DA'
+                            }
+                        },
+                        {
+                            name: '数据预处理',
+                            x: 200,
+                            y: 100,
+                            itemStyle: {
+                                color: '#37A2DA'
+                            }
+                        },
+                        {
+                            name: '子流域划分',
+                            x: 300,
+                            y: 100,
+                            itemStyle: {
+                                color: '#37A2DA'
+                            }
+                        },
+                        {
+                            name: 'HRU划分',
+                            x: 400,
+                            y: 100,
+                            itemStyle: {
+                                color: '#37A2DA'
+                            }
+                        },
+                        {
+                            name: '设置参数',
+                            x: 400,
+                            y: 200,
+                            itemStyle: {
+                                color: '#67E0E3'
+                            }
+                        },
+                        {
+                            name: '模型运行',
+                            x: 300,
+                            y: 200,
+                            itemStyle: {
+                                color: '#67E0E3'
+                            }
+                        },
+                        {
+                            name: '敏感性分析',
+                            x: 200,
+                            y: 200,
+                            itemStyle: {
+                                color: '#67E0E3'
+                            }
+                        },
+                        {
+                            name: '参数率定',
+                            x: 100,
+                            y: 200,
+                            itemStyle: {
+                                color: '#67E0E3'
+                            }
+                        },
+                        {
+                            name: '模型验证',
+                            x: 100,
+                            y: 300,
+                            itemStyle: {
+                                color: '#FFDB5C'
+                            }
+                        },
+                        {
+                            name: '结果分析',
+                            x: 200,
+                            y: 300,
+                            itemStyle: {
+                                color: '#FFDB5C'
+                            }
+                        }
+                    ],
+                    links: [
+                        {
+                            source: '数据收集',
+                            target: '数据预处理'
+                        },
+                        {
+                            source: '数据预处理',
+                            target: '子流域划分'
+                        },
+                        {
+                            source: '子流域划分',
+                            target: 'HRU划分'
+                        },
+                        {
+                            source: 'HRU划分',
+                            target: '设置参数'
+                        },
+                        {
+                            source: '设置参数',
+                            target: '模型运行'
+                        },
+                        {
+                            source: '模型运行',
+                            target: '敏感性分析'
+                        },
+                        {
+                            source: '敏感性分析',
+                            target: '参数率定'
+                        },
+                        {
+                            source: '参数率定',
+                            target: '模型验证'
+                        },
+                        {
+                            source: '模型验证',
+                            target: '结果分析'
+                        },
+                        {
+                            source: '模型验证',
+                            target: '参数率定',
+                            lineStyle: {
+                                type: 'dotted',
+                                color: '#999'
+                            }
+                        }
+                    ],
                     lineStyle: {
-                        opacity: 0.8,
-                        width: 1.5,
-                        curveness: 0.2,
-                        color: '#999'
+                        opacity: 0.9,
+                        width: 2,
+                        curveness: 0
                     }
-                }]
-            };
-            
-            myChart.setOption(option);
-            
-            // 窗口大小变化时调整图表
-            window.addEventListener('resize', function() {
-                myChart.resize();
-            });
-            
-            // 修复图表初始化问题
-            setTimeout(() => myChart.resize(), 100);
-        }
+                }
+            ]
+        };
+        
+        flowChart.setOption(flowchartOption);
+        
+        // 窗口大小变化时调整图表
+        window.addEventListener('resize', function() {
+            flowChart.resize();
+        });
+    }
+
     </script>
 {% endblock %}

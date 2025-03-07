@@ -158,47 +158,47 @@ class EntityLinker:
             
     def _rank_single_entity(self, query: str, mention: str, top_k: int = 5) -> List[Dict]:
         """为单个mention排序候选实体"""
-        # 获取候选
-        candidates = self._get_candidates(mention)
-        if not candidates:
+        print(f"\n[Entity Linking] 处理实体: {mention}")
+        try:
+            # 获取候选实体
+            candidates = self._get_candidates(mention, top_k=top_k*2)
+            if not candidates:
+                print(f"[Entity Linking] 未找到 '{mention}' 的候选实体")
+                return []
+            
+            # 构建 Cypher 查询
+            query = f"""
+            MATCH (n)
+            WHERE n.name IN {json.dumps(candidates)}
+            RETURN n.name as entity, n.description as desc, n.category as category
+            """
+            print(f"[Entity Linking] 执行查询: {query}")
+            
+            with self.driver.session() as session:
+                result = session.run(query)
+                entities = []
+                for record in result:
+                    entity = {
+                        'entity': record['entity'],
+                        'desc': record['desc'],
+                        'category': record['category'],
+                        'score': self._calculate_similarity(mention, record['entity'])
+                    }
+                    entities.append(entity)
+                
+                # 按相似度排序
+                entities.sort(key=lambda x: x['score'], reverse=True)
+                entities = entities[:top_k]
+                
+                print(f"[Entity Linking] 找到匹配实体数量: {len(entities)}")
+                for e in entities[:3]:  # 只显示前3个匹配
+                    print(f"  - {e['entity']} (得分: {e['score']:.2f})")
+                
+                return entities
+            
+        except Exception as e:
+            print(f"[Entity Linking] 实体 '{mention}' 处理失败: {e}")
             return []
-
-        # 特征处理
-        inputs = [self._build_features(query, cand) for cand in candidates]
-        encoded = self.tokenizer(
-            inputs, padding=True, truncation=True, max_length=128, return_tensors="pt"
-        )
-        
-        # 如果有GPU，使用GPU
-        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        for k, v in encoded.items():
-            encoded[k] = v.to(device)
-            
-        self.ranking_model = self.ranking_model.to(device)
-        
-        # 模型预测
-        with torch.no_grad():
-            scores = self.ranking_model(**encoded).squeeze().cpu().tolist()
-            
-        # 确保scores是列表，即使只有一个元素
-        if not isinstance(scores, list):
-            scores = [scores]
-        
-        # 组合结果
-        results = []
-        for cand, score in zip(candidates, scores):
-            results.append({
-                "entity": cand,
-                "score": score,
-                "desc": self.cache["entity_desc"].get(cand, "")
-            })
-        
-        # 后处理：优先选择包含mention的实体
-        return sorted(
-            results,
-            key=lambda x: (x["score"], mention in x["entity"]),
-            reverse=True
-        )[:top_k]
     
     def rank_entities_batch(self, query: str, mentions: List[str], top_k: int = 5) -> Dict[str, List[Dict]]:
         """并行执行多个实体排序
@@ -301,6 +301,47 @@ class EntityLinker:
                 key=lambda x: (x["score"], mention in x["entity"]),
                 reverse=True
             )[:top_k]
+        
+        return results
+
+    def link_entities(self, mentions: List[str]) -> Dict[str, List[Dict]]:
+        """链接实体到知识库"""
+        print(f"\n[Entity Linking] 开始实体链接: {mentions}")
+        results = {}
+        
+        try:
+            for mention in mentions:
+                print(f"\n[Entity Linking] 处理实体: {mention}")
+                # 构建 Cypher 查询
+                query = f"""
+                MATCH (n)
+                WHERE n.name =~ '(?i).*{mention}.*' OR n.aliases =~ '(?i).*{mention}.*'
+                RETURN n.name as entity, n.description as desc, n.category as category
+                """
+                print(f"[Entity Linking] 执行查询: {query}")
+                
+                with self.driver.session() as session:
+                    result = session.run(query)
+                    entities = []
+                    for record in result:
+                        entity = {
+                            'entity': record['entity'],
+                            'desc': record['desc'],
+                            'category': record['category'],
+                            'score': self._calculate_similarity(mention, record['entity'])
+                        }
+                        entities.append(entity)
+                    
+                    # 按相似度排序
+                    entities.sort(key=lambda x: x['score'], reverse=True)
+                    results[mention] = entities
+                    
+                    print(f"[Entity Linking] 找到匹配实体数量: {len(entities)}")
+                    for e in entities[:3]:  # 只显示前3个匹配
+                        print(f"  - {e['entity']} (得分: {e['score']:.2f})")
+                    
+        except Exception as e:
+            print(f"[Entity Linking] 实体链接失败: {e}")
         
         return results
 

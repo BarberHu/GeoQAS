@@ -236,19 +236,29 @@ class IntegratedQASystem:
             return f"生成查询语句失败: {str(e)}"
     
     def execute_query(self, query: str) -> List[Dict]:
-        """执行Cypher查询
-        
-        Args:
-            query: Cypher查询语句
-            
-        Returns:
-            查询结果
-        """
+        """执行Cypher查询"""
+        print(f"\n[Knowledge Graph] 执行查询: {query}")
         try:
             with self.entity_linker.driver.session() as session:
                 result = session.run(query)
-                return [dict(record) for record in result]
+                records = [dict(record) for record in result]
+                print(f"[Knowledge Graph] 查询返回 {len(records)} 条记录")
+                return records
                 
         except Exception as e:
-            print(f"执行查询时出错: {e}")
+            print(f"[Knowledge Graph] 查询失败: {e}")
+            return []
+    
+    def query_knowledge_graph(self, query: str) -> List[Dict]:
+        """执行知识图谱查询"""
+        print(f"\n[Knowledge Graph] 执行查询: {query}")
+        try:
+            with self.entity_linker.driver.session() as session:
+                result = session.run(query)
+                records = [dict(record) for record in result]
+                print(f"[Knowledge Graph] 查询返回 {len(records)} 条记录")
+                return records
+                
+        except Exception as e:
+            print(f"[Knowledge Graph] 查询失败: {e}")
             return []

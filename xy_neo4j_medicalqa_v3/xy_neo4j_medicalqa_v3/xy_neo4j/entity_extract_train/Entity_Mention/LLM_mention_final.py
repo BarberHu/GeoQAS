@@ -13,8 +13,11 @@ class DirectMentionRecognizer:
         self.cache = {}
     
     def recognize(self, text: str) -> List[str]:
+        """识别单个文本中的实体"""
+        print(f"\n[Mention Recognition] 开始识别文本中的实体: {text}")
         # 检查缓存
         if text in self.cache:
+            print(f"[Mention Recognition] 使用缓存结果: {self.cache[text]}")
             return self.cache[text]
             
         prompt = f'''作为水文专家，请从以下文本中直接提取地理相关实体名称，要求：
@@ -48,10 +51,11 @@ class DirectMentionRecognizer:
             
             # 保存到缓存
             self.cache[text] = result
+            print(f"[Mention Recognition] 识别到的实体: {result}")
             return result
             
         except Exception as e:
-            print(f"ERROR: {str(e)}")
+            print(f"[Mention Recognition] 实体识别失败: {e}")
             return []
     
     # 新增批量处理方法

@@ -47,40 +47,54 @@ class DialogueManager:
     def get_response(self, question: str) -> dict:
         """完整处理用户问题并返回包含思考过程的回答"""
         overall_start_time = time.time()
+        print(f"\n[DialogueManager] 开始处理问题: {question}")
         
         try:
             # 1. 问题分解阶段 - 强制禁用缓存
             decomp_start_time = time.time()
-            print(f"开始问题分解: {decomp_start_time}")
+            print("[DialogueManager] 开始问题分解...")
             
             # 强制禁用缓存，确保每次都执行分解
             if hasattr(self, 'qa_system') and self.qa_system and hasattr(self.qa_system, 'question_decomposer'):
                 self.qa_system.question_decomposer.question_cache = {}
             
             sub_questions = self.decompose_question(question)
-            
-            decomp_end_time = time.time()
-            decomp_time = decomp_end_time - decomp_start_time
-            print(f"问题分解完成: {decomp_end_time}, 耗时: {decomp_time:.2f}秒")
+            decomp_time = time.time() - decomp_start_time
+            print(f"[DialogueManager] 问题分解完成，耗时: {decomp_time:.2f}秒")
+            if sub_questions:
+                print("[DialogueManager] 子问题列表:")
+                for i, q in enumerate(sub_questions, 1):
+                    print(f"  {i}. {q}")
             
             # 2. 知识图谱查询阶段
+            print("\n[DialogueManager] 开始知识图谱查询...")
             kg_start_time = time.time()
             kg_context = self.get_kg_context(question)
             kg_time = time.time() - kg_start_time
+            print(f"[DialogueManager] 知识图谱查询完成，耗时: {kg_time:.2f}秒")
             
-            # 3. 子问题回答阶段
+            # 3. 提取知识图谱节点
+            print("[DialogueManager] 开始提取知识图谱节点...")
+            kg_nodes = self._extract_kg_nodes_for_vis(kg_context)
+            print(f"[DialogueManager] 知识图谱节点统计:")
+            print(f"  - 节点数量: {len(kg_nodes.get('nodes', []))}")
+            print(f"  - 关系数量: {len(kg_nodes.get('links', []))}")
+            
+            # 4. 子问题回答阶段
+            print("\n[DialogueManager] 开始处理子问题回答...")
             sub_answers = {}
             if sub_questions and isinstance(sub_questions, list) and len(sub_questions) > 0:
-                for sub_q in sub_questions:
+                for i, sub_q in enumerate(sub_questions, 1):
                     try:
-                        # 对每个子问题生成简短回答
+                        print(f"[DialogueManager] 处理子问题 {i}/{len(sub_questions)}: {sub_q}")
                         sub_ans = self._generate_sub_answer(sub_q)
                         sub_answers[sub_q] = sub_ans
                     except Exception as e:
-                        print(f"生成子问题回答失败: {e}")
+                        print(f"[DialogueManager] 子问题 {i} 处理失败: {e}")
                         sub_answers[sub_q] = "处理此部分时出错"
             
-            # 4. 最终回答生成阶段
+            # 5. 最终回答生成阶段
+            print("\n[DialogueManager] 开始生成最终回答...")
             gen_start_time = time.time()
             final_answer = self.generate_response(question, kg_context)
             gen_time = time.time() - gen_start_time
@@ -96,19 +110,21 @@ class DialogueManager:
                 "总思考时间": f"{overall_time:.2f}秒"
             }
             
+            print(f"[DialogueManager] 处理完成，总耗时: {overall_time:.2f}秒")
+            
             # 组装最终结果
             return {
                 "answer": final_answer,
                 "sub_questions": sub_questions,
                 "sub_answers": sub_answers,
                 "kg_context": kg_context,
-                "kg_nodes": self._extract_kg_nodes_for_vis(kg_context),
+                "kg_nodes": kg_nodes,
                 "time_analysis": time_analysis,
                 "thinking_process": self._format_thinking_process(sub_questions, kg_context, sub_answers)
             }
             
         except Exception as e:
-            print(f"处理问题失败: {str(e)}")
+            print(f"[DialogueManager] 错误: {str(e)}")
             return {
                 "answer": f"抱歉，系统处理您的问题时遇到了错误: {str(e)}",
                 "sub_questions": None,
@@ -118,6 +134,7 @@ class DialogueManager:
                 "time_analysis": {"总思考时间": f"{time.time() - overall_start_time:.2f}秒"},
                 "thinking_process": None
             }
+
     def _generate_sub_answer(self, sub_question: str) -> str:
         """生成子问题的简短回答"""
         try:
@@ -150,13 +167,13 @@ class DialogueManager:
     def _extract_kg_nodes_for_vis(self, kg_context: str) -> dict:
         """从知识图谱上下文中提取节点用于可视化"""
         try:
-            # 如果是JSON字符串，尝试解析
+            nodes = []
+            links = []
+            categories = []
+            category_map = {}
+            
             if isinstance(kg_context, str) and kg_context.startswith('['):
                 kg_data = json.loads(kg_context)
-                
-                # 提取节点和关系
-                nodes = set()
-                links = []
                 
                 for item in kg_data:
                     if 'path' in item:
@@ -167,29 +184,63 @@ class DialogueManager:
                             relation = parts[1].strip()
                             target = parts[2].strip()
                             
-                            nodes.add(source)
-                            nodes.add(target)
+                            # 添加节点
+                            for node in [source, target]:
+                                if not any(n['name'] == node for n in nodes):
+                                    # 为节点分配类别
+                                    if '模型' in node:
+                                        category = '模型'
+                                    elif '数据' in node:
+                                        category = '数据'
+                                    elif '方法' in node:
+                                        category = '方法'
+                                    else:
+                                        category = '概念'
+                                    
+                                    # 确保类别存在
+                                    if category not in category_map:
+                                        category_map[category] = len(categories)
+                                        categories.append({'name': category})
+                                    
+                                    nodes.append({
+                                        'name': node,
+                                        'category': category_map[category],
+                                        'value': 20,
+                                        'symbolSize': 50,
+                                        'draggable': True
+                                    })
                             
+                            # 添加关系
                             links.append({
                                 'source': source,
                                 'target': target,
-                                'name': relation
+                                'name': relation,
+                                'value': relation
                             })
-                
-                # 构建可视化数据
-                vis_data = {
-                    'nodes': [{'name': node, 'category': '概念', 'value': 20} for node in nodes],
-                    'links': links,
-                    'categories': [{'name': '概念'}]
-                }
-                
-                return vis_data
-                
-            return {}
+                            
+                            # 如果有摘要，添加到节点属性中
+                            if 'summary' in item:
+                                for node in nodes:
+                                    if node['name'] == source or node['name'] == target:
+                                        node['desc'] = item['summary']
             
+            # 确保返回有效的数据结构
+            result = {
+                'nodes': nodes if nodes else [],
+                'links': links if links else [],
+                'categories': categories if categories else []
+            }
+            print(f"[DialogueManager] 提取的知识图谱数据: {json.dumps(result, ensure_ascii=False)[:200]}...")
+            return result
+                
         except Exception as e:
-            print(f"提取知识图谱节点失败: {e}")
-            return {}
+            print(f"[DialogueManager] 提取知识图谱节点失败: {e}")
+            # 返回有效的空数据结构
+            return {
+                'nodes': [],
+                'links': [],
+                'categories': []
+            }
         
     def _format_thinking_process(self, sub_questions, kg_context, sub_answers=None):
         """格式化思考过程以便前端展示"""
