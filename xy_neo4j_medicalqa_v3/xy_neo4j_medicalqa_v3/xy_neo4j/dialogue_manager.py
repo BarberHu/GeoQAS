@@ -49,17 +49,26 @@ class DialogueManager:
         overall_start_time = time.time()
         
         try:
-            # 1. 问题分解阶段
+            # 1. 问题分解阶段 - 强制禁用缓存
             decomp_start_time = time.time()
+            print(f"开始问题分解: {decomp_start_time}")
+            
+            # 强制禁用缓存，确保每次都执行分解
+            if hasattr(self, 'qa_system') and self.qa_system and hasattr(self.qa_system, 'question_decomposer'):
+                self.qa_system.question_decomposer.question_cache = {}
+            
             sub_questions = self.decompose_question(question)
-            decomp_time = time.time() - decomp_start_time
+            
+            decomp_end_time = time.time()
+            decomp_time = decomp_end_time - decomp_start_time
+            print(f"问题分解完成: {decomp_end_time}, 耗时: {decomp_time:.2f}秒")
             
             # 2. 知识图谱查询阶段
             kg_start_time = time.time()
             kg_context = self.get_kg_context(question)
             kg_time = time.time() - kg_start_time
             
-            # 3. 子问题回答阶段（新增）
+            # 3. 子问题回答阶段
             sub_answers = {}
             if sub_questions and isinstance(sub_questions, list) and len(sub_questions) > 0:
                 for sub_q in sub_questions:
@@ -87,18 +96,15 @@ class DialogueManager:
                 "总思考时间": f"{overall_time:.2f}秒"
             }
             
-            # 提取知识图谱节点用于可视化（新增）
-            kg_nodes = self._extract_kg_nodes_for_vis(kg_context)
-            
             # 组装最终结果
             return {
                 "answer": final_answer,
-                "sub_questions": sub_questions,  # 分解的子问题
-                "sub_answers": sub_answers,      # 子问题对应的答案（新增）
-                "kg_context": kg_context,        # 知识图谱上下文
-                "kg_nodes": kg_nodes,            # 知识图谱节点（新增）
-                "time_analysis": time_analysis,  # 时间统计
-                "thinking_process": self._format_thinking_process(sub_questions, kg_context, sub_answers)  # 更新思考过程
+                "sub_questions": sub_questions,
+                "sub_answers": sub_answers,
+                "kg_context": kg_context,
+                "kg_nodes": self._extract_kg_nodes_for_vis(kg_context),
+                "time_analysis": time_analysis,
+                "thinking_process": self._format_thinking_process(sub_questions, kg_context, sub_answers)
             }
             
         except Exception as e:
@@ -112,7 +118,6 @@ class DialogueManager:
                 "time_analysis": {"总思考时间": f"{time.time() - overall_start_time:.2f}秒"},
                 "thinking_process": None
             }
-
     def _generate_sub_answer(self, sub_question: str) -> str:
         """生成子问题的简短回答"""
         try:

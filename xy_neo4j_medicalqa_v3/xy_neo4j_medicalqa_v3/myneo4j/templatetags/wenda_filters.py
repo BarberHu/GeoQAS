@@ -1,3 +1,5 @@
+# 文件路径: myneo4j/templatetags/wenda_filters.py
+
 from django import template
 import json
 import random
@@ -23,10 +25,8 @@ def get_total_time(time_analysis_str):
 
 @register.filter
 def get_subanswer(question):
-    """生成子问题的简短回答（示例）
-    实际使用时，这里应该是从数据库或API获取真实回答"""
-    
-    # 构建模拟回答库（实际应用中应从API获取）
+    """生成子问题的简短回答"""
+    # 构建模拟回答库
     answers = {
         "SWAT模型径流模拟需要哪些基础数据和前处理步骤?": 
             "SWAT模型需要DEM、土地利用、土壤类型、气象数据等基础数据，前处理包括填洼、流向确定和子流域划分。",
@@ -59,4 +59,27 @@ def get_subanswer(question):
         "从径流模拟角度看，需要关注降水-径流转换过程和水文响应单元的划分方法。"
     ]
     
-    return random.choice(default_answers) 
+    return random.choice(default_answers)
+
+@register.filter
+def parse_json(value):
+    """解析JSON字符串为Python对象"""
+    try:
+        if isinstance(value, str):
+            return json.loads(value)
+        return value
+    except:
+        return None
+
+@register.filter
+def get_question_answer(answers_dict, question):
+    """从子问题答案字典中获取指定问题的答案"""
+    try:
+        if isinstance(answers_dict, str):
+            answers_dict = json.loads(answers_dict)
+        
+        if question in answers_dict:
+            return answers_dict[question]
+        return get_subanswer(question)
+    except:
+        return get_subanswer(question)

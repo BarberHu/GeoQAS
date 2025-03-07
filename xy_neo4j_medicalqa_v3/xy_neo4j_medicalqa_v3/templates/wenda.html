@@ -35,16 +35,16 @@
 
                         {% if answer %}
                         <div class="result-card mt-4">
-                            <!-- 思考过程展示 (折叠式) -->
+                            <!-- 思考过程展示 (折叠式) - 修改默认为展开 -->
                             {% if thinking_process %}
                             <div class="thinking-process-container mb-3">
-                                <div class="thinking-header" data-bs-toggle="collapse" href="#thinkingCollapse" role="button" aria-expanded="false" aria-controls="thinkingCollapse">
+                                <div class="thinking-header" data-bs-toggle="collapse" href="#thinkingCollapse" role="button" aria-expanded="true" aria-controls="thinkingCollapse">
                                     <i class="fas fa-brain me-2"></i> 
                                     <span>系统思考过程</span>
-                                    <i class="fas fa-chevron-down ms-2"></i>
+                                    <i class="fas fa-chevron-down ms-2" style="transform: rotate(180deg);"></i>
                                 </div>
                                 
-                                <div class="collapse" id="thinkingCollapse">
+                                <div class="collapse show" id="thinkingCollapse">
                                     <div class="thinking-content">
                                         {% for step in thinking_process %}
                                         <div class="thinking-step">
@@ -56,20 +56,45 @@
                                             <div class="step-content">
                                                 <!-- 问题分解和子问题回答 -->
                                                 <div class="subquestions-container">
-                                                    {% for question in step.content %}
-                                                    <div class="subquestion-item">
-                                                        <div class="subquestion">
-                                                            <span class="question-number">{{ forloop.counter }}</span>
-                                                            <span class="question-text">{{ question }}</span>
+                                                    {% if step.content|parse_json %}
+                                                        {% for question in step.content|parse_json %}
+                                                        <div class="subquestion-item">
+                                                            <div class="subquestion">
+                                                                <span class="question-number">{{ forloop.counter }}</span>
+                                                                <span class="question-text">{{ question }}</span>
+                                                            </div>
+                                                            <div class="subanswer">
+                                                                <i class="fas fa-angle-right text-muted me-2"></i>
+                                                                <span class="answer-text">
+                                                                    {% if step.answers and question in step.answers %}
+                                                                        {{ step.answers|get_question_answer:question }}
+                                                                    {% else %}
+                                                                        {{ question|get_subanswer }}
+                                                                    {% endif %}
+                                                                </span>
+                                                            </div>
                                                         </div>
-                                                        <div class="subanswer">
-                                                            <i class="fas fa-angle-right text-muted me-2"></i>
-                                                            <span class="answer-text">
-                                                                {{ question|get_subanswer }}
-                                                            </span>
+                                                        {% endfor %}
+                                                    {% else %}
+                                                        {% for question in step.content %}
+                                                        <div class="subquestion-item">
+                                                            <div class="subquestion">
+                                                                <span class="question-number">{{ forloop.counter }}</span>
+                                                                <span class="question-text">{{ question }}</span>
+                                                            </div>
+                                                            <div class="subanswer">
+                                                                <i class="fas fa-angle-right text-muted me-2"></i>
+                                                                <span class="answer-text">
+                                                                    {% if step.answers and question in step.answers %}
+                                                                        {{ step.answers|get_question_answer:question }}
+                                                                    {% else %}
+                                                                        {{ question|get_subanswer }}
+                                                                    {% endif %}
+                                                                </span>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                    {% endfor %}
+                                                        {% endfor %}
+                                                    {% endif %}
                                                 </div>
                                             </div>
                                             {% elif step.title == "知识图谱检索" %}
@@ -79,22 +104,36 @@
                                             
                                             <div class="step-content">
                                                 {% if step.content|length > 0 %}
-                                                <ul class="knowledge-list">
-                                                {% for item in step.content %}
-                                                    <li>
-                                                        <span class="path">{{ item.path }}</span>
-                                                        {% if item.summary %}
-                                                        <div class="summary">{{ item.summary }}</div>
-                                                        {% endif %}
-                                                    </li>
-                                                {% endfor %}
-                                                </ul>
-                                                <!-- 知识图谱可视化 -->
-                                                <div class="knowledge-graph-container mt-3">
-                                                    <div id="knowledgeGraphPreview" style="height: 300px; background: #f4f7fa; border-radius: 8px;"></div>
-                                                </div>
+                                                    {% if step.content|parse_json %}
+                                                        <ul class="knowledge-list">
+                                                        {% for item in step.content|parse_json %}
+                                                            <li>
+                                                                <span class="path">{{ item.path }}</span>
+                                                                {% if item.summary %}
+                                                                <div class="summary">{{ item.summary }}</div>
+                                                                {% endif %}
+                                                            </li>
+                                                        {% endfor %}
+                                                        </ul>
+                                                    {% else %}
+                                                        <ul class="knowledge-list">
+                                                        {% for item in step.content %}
+                                                            <li>
+                                                                <span class="path">{{ item.path }}</span>
+                                                                {% if item.summary %}
+                                                                <div class="summary">{{ item.summary }}</div>
+                                                                {% endif %}
+                                                            </li>
+                                                        {% endfor %}
+                                                        </ul>
+                                                    {% endif %}
+                                                    
+                                                    <!-- 知识图谱可视化 -->
+                                                    <div class="knowledge-graph-container mt-3">
+                                                        <div id="knowledgeGraphPreview" style="height: 300px; background: #f4f7fa; border-radius: 8px;"></div>
+                                                    </div>
                                                 {% else %}
-                                                <p>{{ step.content }}</p>
+                                                    <p>{{ step.content }}</p>
                                                 {% endif %}
                                             </div>
                                             {% else %}
@@ -197,7 +236,17 @@
                                                         <div class="question-analysis">
                                                             <small class="text-muted fw-bold">问题分解：</small>
                                                             <div class="analysis-content">
-                                                                {{ qa.sub_questions|linebreaks }}
+                                                                {% with subq=qa.sub_questions|parse_json %}
+                                                                    {% if subq %}
+                                                                        <ul>
+                                                                        {% for q in subq %}
+                                                                            <li>{{ q }}</li>
+                                                                        {% endfor %}
+                                                                        </ul>
+                                                                    {% else %}
+                                                                        {{ qa.sub_questions|linebreaks }}
+                                                                    {% endif %}
+                                                                {% endwith %}
                                                             </div>
                                                         </div>
                                                         {% endif %}
@@ -206,7 +255,17 @@
                                                         <div class="time-stats mt-2">
                                                             <small class="text-muted fw-bold">处理时间：</small>
                                                             <div class="time-content">
-                                                                {{ qa.time_analysis }}
+                                                                {% with time_data=qa.time_analysis|parse_json %}
+                                                                    {% if time_data %}
+                                                                        <ul>
+                                                                        {% for key, value in time_data.items %}
+                                                                            <li>{{ key }}: {{ value }}</li>
+                                                                        {% endfor %}
+                                                                        </ul>
+                                                                    {% else %}
+                                                                        {{ qa.time_analysis }}
+                                                                    {% endif %}
+                                                                {% endwith %}
                                                             </div>
                                                         </div>
                                                         {% endif %}
@@ -546,14 +605,23 @@
     <!-- 添加ECharts脚本 -->
     <script src="/static/echarts.min.js"></script>
     <script>
-        window.onload = function() {
+      window.onload = function() {
             // 自动聚焦到输入框
             const input = document.getElementById('questionInput');
             if (input) {
                 input.focus();
             }
             
-            // 折叠功能
+            // 折叠功能 - 调整为默认显示
+            const thinkingCollapse = document.getElementById('thinkingCollapse');
+            if (thinkingCollapse) {
+                // 初始化知识图谱可视化
+                setTimeout(() => {
+                    initKnowledgeGraph();
+                }, 300);
+            }
+            
+            // 折叠功能事件
             document.querySelectorAll('.thinking-header').forEach(header => {
                 header.addEventListener('click', function() {
                     const collapseElement = this.nextElementSibling;
@@ -579,7 +647,7 @@
                 const chatSequences = document.querySelectorAll('.chat-sequence');
                 if (chatSequences.length > 0) {
                     // 获取最新的对话序列
-                    const latestChat = chatSequences[0];  // 因为数据是倒序的，第一个就是最新的
+                    const latestChat = chatSequences[0];
                     // 平滑滚动到最新消息
                     latestChat.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }
@@ -599,6 +667,7 @@
                 });
             });
         }
+        
         
         // 初始化知识图谱可视化
         function initKnowledgeGraph() {
