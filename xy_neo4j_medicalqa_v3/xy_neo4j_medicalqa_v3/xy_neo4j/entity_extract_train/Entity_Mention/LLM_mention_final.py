@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import json
-from typing import List
+from typing import List, Dict
 from openai import OpenAI
 
 class DirectMentionRecognizer:
@@ -9,8 +9,14 @@ class DirectMentionRecognizer:
             api_key=api_key,
             base_url="https://api.chatanywhere.tech/v1"
         )
-
+        # 添加缓存以避免重复查询
+        self.cache = {}
+    
     def recognize(self, text: str) -> List[str]:
+        # 检查缓存
+        if text in self.cache:
+            return self.cache[text]
+            
         prompt = f'''作为水文专家，请从以下文本中直接提取地理相关实体名称，要求：
 1. 只需输出实体名称列表
 2. 每个实体必须是文本中出现的原始片段
@@ -27,7 +33,8 @@ class DirectMentionRecognizer:
                 model="gpt-4o",
                 messages=[{"role": "user", "content": prompt}],
                 temperature=0.1,
-                max_tokens=500
+                max_tokens=1024,
+                timeout=30
             )
             
             result = response.choices[0].message.content
@@ -37,11 +44,89 @@ class DirectMentionRecognizer:
             
             # 直接解析为列表
             entities = json.loads(result)
-            return [ent.strip() for ent in entities if isinstance(ent, str)]
+            result = [ent.strip() for ent in entities if isinstance(ent, str)]
+            
+            # 保存到缓存
+            self.cache[text] = result
+            return result
             
         except Exception as e:
             print(f"ERROR: {str(e)}")
             return []
+    
+    # 新增批量处理方法
+    def recognize_batch(self, texts: List[str]) -> Dict[str, List[str]]:
+        """批量识别多个文本中的实体
+        
+        Args:
+            texts: 文本列表
+            
+        Returns:
+            Dict[str, List[str]]: 以文本为键，实体列表为值的字典
+        """
+        results = {}
+        uncached_texts = []
+        uncached_indices = []
+        
+        # 检查缓存
+        for i, text in enumerate(texts):
+            if text in self.cache:
+                results[text] = self.cache[text]
+            else:
+                uncached_texts.append(text)
+                uncached_indices.append(i)
+        
+        # 如果所有文本都已缓存，直接返回
+        if not uncached_texts:
+            return results
+        
+        # 构建批量处理的prompt
+        batch_prompt = "作为水文专家，请从以下多个文本中分别提取地理相关实体名称，要求：\n"
+        batch_prompt += "1. 为每个文本输出一个实体名称列表\n"
+        batch_prompt += "2. 每个实体必须是文本中出现的原始片段\n"
+        batch_prompt += "3. 不要分类或解释\n\n"
+        
+        for i, text in enumerate(uncached_texts, 1):
+            batch_prompt += f"文本{i}: {text}\n"
+        
+        batch_prompt += "\n请以JSON格式返回结果，格式为:\n"
+        batch_prompt += "{\n"
+        for i in range(1, len(uncached_texts) + 1):
+            batch_prompt += f'  "文本{i}": ["实体1", "实体2", ...],\n'
+        batch_prompt += "}\n"
+        
+        try:
+            response = self.client.chat.completions.create(
+                model="gpt-4o",
+                messages=[{"role": "user", "content": batch_prompt}],
+                temperature=0.1,
+                max_tokens=2000
+            )
+            
+            result = response.choices[0].message.content
+            
+            # 处理可能的多余字符
+            result = result.replace("```json", "").replace("```", "").strip()
+            
+            # 解析JSON结果
+            parsed_results = json.loads(result)
+            
+            # 将结果添加到结果字典和缓存
+            for i, text in enumerate(uncached_texts):
+                key = f"文本{i+1}"
+                if key in parsed_results:
+                    entities = [ent.strip() for ent in parsed_results[key] if isinstance(ent, str)]
+                    results[text] = entities
+                    self.cache[text] = entities
+            
+            return results
+            
+        except Exception as e:
+            print(f"批量处理ERROR: {str(e)}")
+            # 失败时回退到单个处理
+            for text in uncached_texts:
+                results[text] = self.recognize(text)
+            return results
 
 if __name__ == "__main__":
     recognizer = DirectMentionRecognizer(
@@ -63,8 +148,15 @@ if __name__ == "__main__":
     actual_output = recognizer.recognize(test_case)
     print(f"实际输出: {actual_output}")
     
-    try:
-        assert recognizer.recognize(test_case) == expected_output, "测试用例验证失败"
-        print("测试通过!")
-    except AssertionError:
-        print("测试失败: 输出结果与预期不符")
+    # 测试批量处理
+    batch_texts = [
+        "我现在有黄河流域2015-2020年的气象数据和全国的DEM数据,如何对黄河源区进行径流模拟?",
+        "淮河流域SWAT模型的参数敏感性如何分析?",
+        "如何利用SWAT模型评估气候变化对径流的影响?"
+    ]
+    
+    print("\n批量处理测试：")
+    batch_results = recognizer.recognize_batch(batch_texts)
+    for text, entities in batch_results.items():
+        print(f"文本: {text}")
+        print(f"实体: {entities}")

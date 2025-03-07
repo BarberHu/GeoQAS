@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'myneo4j',
+    'myneo4j.apps.Myneo4jConfig',
     'xy_neo4j',
     'accounts',
 ]

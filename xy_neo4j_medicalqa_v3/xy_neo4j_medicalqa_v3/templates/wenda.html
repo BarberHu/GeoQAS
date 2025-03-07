@@ -1,128 +1,278 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load wenda_filters %}
 {% block content %}
     <main class="lyear-layout-content">
 
         <div class="container-fluid">
             <div class="card-header bg-primary text-white">
-                <h4 class="mb-0"><i class="fas fa-comment-medical"></i>地理建模问答小助手</h4>
+                <h4 class="mb-0"><i class="fas fa-comment-medical"></i> 地理建模智能问答系统</h4>
             </div>
+            
             <!-- 输入和结果区域 -->
-                <div class="col-md-12 mt-4">
-                    <div class="card shadow-sm">
-                        <div class="card-body">
-                            <form action="/wenda" method="get" id="qa-form">
-                                {% csrf_token %}
-                                <div class="form-floating mb-3">
-                                    <textarea
-                                        class="form-control"
-                                        name="key"
-                                        placeholder="请输入地理建模相关问题"
-                                        style="height: 100px"
-                                        id="questionInput"
-                                        onkeydown="if(event.keyCode === 13 && !event.shiftKey) { document.getElementById('qa-form').submit(); return false; }"
-                                    ></textarea>
-                                </div>
-
-                                <div class="d-grid gap-2">
-                                    <button class="btn btn-primary btn-lg" type="submit">
-                                        <i class="fas fa-search me-2"></i> 获取专业解答
-                                    </button>
-                                </div>
-                            </form>
-
-
-                            {% if daan %}
-                            <div class="result-card mt-4 p-3 bg-light rounded">
-                                <h5 class="text-success mb-3">
-                                    <i class="fas fa-lightbulb me-2"></i>解答结果：
-                                </h5>
-                                <div class="answer-content ps-3 border-start border-3 border-success">
-                                    {{ daan|safe }}
-                                </div>
-                                {% if sql %}
-                                <div class="mt-3 text-muted small">
-                                    <i class="fas fa-code me-2"></i>查询语句：<code>{{ sql }}</code>
-                                </div>
-                                {% endif %}
+            <div class="col-md-12 mt-4">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <form action="/wenda" method="get" id="qa-form">
+                            {% csrf_token %}
+                            <div class="form-floating mb-3">
+                                <textarea
+                                    class="form-control"
+                                    name="key"
+                                    placeholder="请输入地理建模相关问题"
+                                    style="height: 100px"
+                                    id="questionInput"
+                                    onkeydown="if(event.keyCode === 13 && !event.shiftKey) { document.getElementById('qa-form').submit(); return false; }"
+                                >{{ key|default:'' }}</textarea>
                             </div>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
 
-            <!-- 清除历史按钮移到顶部 -->
-            <div class="row mb-3">
-                <div class="col-12 text-end">
-                    <a href="/wenda?clean=1" class="btn btn-danger btn-sm">
-                        <i class="fas fa-trash-alt"></i> 清除历史记录
-                    </a>
-                </div>
-            </div>
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-primary btn-lg" type="submit">
+                                    <i class="fas fa-search me-2"></i> 获取专业解答
+                                </button>
+                            </div>
+                        </form>
 
-            <div class="chat-history">
-                <!-- 对话记录区域 -->
-                {% if all_wendas %}
-                    {% for qa in all_wendas %}
-                    <div class="chat-sequence mb-4">
-                        <!-- 问题卡片 -->
-                        <div class="chat-question">
-                            <div class="card shadow-sm bg-light">
-                                <div class="card-body">
-                                    <div class="d-flex align-items-start mb-2">
-                                        <div class="user-avatar me-2">
-                                            <i class="fas fa-user-circle fa-2x text-primary"></i>
-                                        </div>
-                                        <div class="question-content w-100">
-                                            <strong class="text-primary">我的问题：</strong>
-                                            <div class="mt-2">{{ qa.question }}</div>
+                        {% if answer %}
+                        <div class="result-card mt-4">
+                            <!-- 思考过程展示 (折叠式) -->
+                            {% if thinking_process %}
+                            <div class="thinking-process-container mb-3">
+                                <div class="thinking-header" data-bs-toggle="collapse" href="#thinkingCollapse" role="button" aria-expanded="false" aria-controls="thinkingCollapse">
+                                    <i class="fas fa-brain me-2"></i> 
+                                    <span>系统思考过程</span>
+                                    <i class="fas fa-chevron-down ms-2"></i>
+                                </div>
+                                
+                                <div class="collapse" id="thinkingCollapse">
+                                    <div class="thinking-content">
+                                        {% for step in thinking_process %}
+                                        <div class="thinking-step">
+                                            {% if step.title == "问题分解" %}
+                                            <h6 class="step-title">
+                                                <i class="fas fa-sitemap me-2"></i> {{ step.title }}
+                                            </h6>
                                             
-                                            {% if qa.sub_questions %}
-                                            <div class="question-analysis mt-3">
-                                                <strong class="text-muted">问题分解：</strong>
-                                                {{ qa.sub_questions|linebreaks }}
+                                            <div class="step-content">
+                                                <!-- 问题分解和子问题回答 -->
+                                                <div class="subquestions-container">
+                                                    {% for question in step.content %}
+                                                    <div class="subquestion-item">
+                                                        <div class="subquestion">
+                                                            <span class="question-number">{{ forloop.counter }}</span>
+                                                            <span class="question-text">{{ question }}</span>
+                                                        </div>
+                                                        <div class="subanswer">
+                                                            <i class="fas fa-angle-right text-muted me-2"></i>
+                                                            <span class="answer-text">
+                                                                {{ question|get_subanswer }}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                            {% elif step.title == "知识图谱检索" %}
+                                            <h6 class="step-title">
+                                                <i class="fas fa-project-diagram me-2"></i> {{ step.title }}
+                                            </h6>
+                                            
+                                            <div class="step-content">
+                                                {% if step.content|length > 0 %}
+                                                <ul class="knowledge-list">
+                                                {% for item in step.content %}
+                                                    <li>
+                                                        <span class="path">{{ item.path }}</span>
+                                                        {% if item.summary %}
+                                                        <div class="summary">{{ item.summary }}</div>
+                                                        {% endif %}
+                                                    </li>
+                                                {% endfor %}
+                                                </ul>
+                                                <!-- 知识图谱可视化 -->
+                                                <div class="knowledge-graph-container mt-3">
+                                                    <div id="knowledgeGraphPreview" style="height: 300px; background: #f4f7fa; border-radius: 8px;"></div>
+                                                </div>
+                                                {% else %}
+                                                <p>{{ step.content }}</p>
+                                                {% endif %}
+                                            </div>
+                                            {% else %}
+                                            <h6 class="step-title">
+                                                <i class="fas fa-cog me-2"></i> {{ step.title }}
+                                            </h6>
+                                            <div class="step-content">
+                                                <p>{{ step.content }}</p>
                                             </div>
                                             {% endif %}
                                         </div>
+                                        {% endfor %}
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                            {% endif %}
 
-                        <!-- 回答卡片 -->
-                        <div class="chat-answer ms-4 mt-3">
-                            <div class="card shadow-sm">
-                                <div class="card-body">
-                                    <div class="d-flex align-items-start">
-                                        <div class="assistant-avatar me-2">
-                                            <i class="fas fa-robot fa-2x text-info"></i>
+                            <!-- 回答结果 -->
+                            <div class="answer-result p-4 bg-light rounded">
+                                <h5 class="text-success mb-3">
+                                    <i class="fas fa-lightbulb me-2"></i>解答结果
+                                </h5>
+                                <div class="answer-content ps-3 border-start border-3 border-success">
+                                    {{ answer|linebreaks }}
+                                </div>
+                                
+                                <!-- 时间分析展示 -->
+                                {% if time_analysis %}
+                                <div class="time-analysis mt-3">
+                                    <div class="time-metrics">
+                                        {% for metric, value in time_analysis.items %}
+                                            <span class="time-metric">
+                                                {% if metric == "问题分解" %}
+                                                    <i class="fas fa-sitemap text-info"></i>
+                                                {% elif metric == "知识检索" %}
+                                                    <i class="fas fa-database text-success"></i>
+                                                {% elif metric == "回答生成" %}
+                                                    <i class="fas fa-sync text-warning"></i>
+                                                {% elif metric == "总思考时间" %}
+                                                    <i class="fas fa-stopwatch text-danger"></i>
+                                                {% else %}
+                                                    <i class="fas fa-clock"></i>
+                                                {% endif %}
+                                                {{ metric }}: <span class="time-value">{{ value }}</span>
+                                            </span>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- 历史记录区域 -->
+            <div class="history-section mt-4">
+                <!-- 清除历史按钮 -->
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5><i class="fas fa-history me-2"></i>历史对话</h5>
+                            <a href="/wenda?clean=1" class="btn btn-danger btn-sm">
+                                <i class="fas fa-trash-alt"></i> 清除历史记录
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chat-history">
+                    <!-- 对话记录区域 -->
+                    {% if all_wendas %}
+                        {% for qa in all_wendas %}
+                        <div class="chat-sequence mb-4">
+                            <!-- 问题卡片 -->
+                            <div class="chat-question">
+                                <div class="card shadow-sm bg-light">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-start mb-2">
+                                            <div class="user-avatar me-2">
+                                                <i class="fas fa-user-circle fa-2x text-primary"></i>
+                                            </div>
+                                            <div class="question-content w-100">
+                                                <strong class="text-primary">我的问题：</strong>
+                                                <div class="mt-2">{{ qa.question }}</div>
+                                                
+                                                <!-- 显示思考过程 (如果有) -->
+                                                {% if qa.thinking_process %}
+                                                <div class="collapse-toggle mt-2" data-bs-toggle="collapse" 
+                                                     href="#thinking-{{ forloop.counter }}" role="button">
+                                                    <i class="fas fa-brain me-1"></i> 
+                                                    <small>查看思考过程</small>
+                                                    <i class="fas fa-angle-down ms-1"></i>
+                                                </div>
+                                                
+                                                <div class="collapse" id="thinking-{{ forloop.counter }}">
+                                                    <div class="thinking-process mt-2">
+                                                        {% if qa.sub_questions %}
+                                                        <div class="question-analysis">
+                                                            <small class="text-muted fw-bold">问题分解：</small>
+                                                            <div class="analysis-content">
+                                                                {{ qa.sub_questions|linebreaks }}
+                                                            </div>
+                                                        </div>
+                                                        {% endif %}
+                                                        
+                                                        {% if qa.time_analysis %}
+                                                        <div class="time-stats mt-2">
+                                                            <small class="text-muted fw-bold">处理时间：</small>
+                                                            <div class="time-content">
+                                                                {{ qa.time_analysis }}
+                                                            </div>
+                                                        </div>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                                {% endif %}
+                                            </div>
                                         </div>
-                                        <div class="answer-content w-100">
-                                            <strong class="text-info">AI助手回答：</strong>
-                                            <div class="answer-text mt-2 {% if '知识图谱+大模型补充' in qa.kg_context %}bg-kg-lm{% else %}bg-lm{% endif %}">
-                                                {{ qa.answer|linebreaks }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 回答卡片 -->
+                            <div class="chat-answer ms-4 mt-3">
+                                <div class="card shadow-sm">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-start">
+                                            <div class="assistant-avatar me-2">
+                                                <i class="fas fa-robot fa-2x text-info"></i>
+                                            </div>
+                                            <div class="answer-content w-100">
+                                                <div class="d-flex justify-content-between">
+                                                    <strong class="text-info">AI助手回答：</strong>
+                                                    
+                                                    <!-- 显示回答类型标签 -->
+                                                    {% if '知识图谱+大模型补充' in qa.kg_context %}
+                                                    <span class="answer-type kg-lm">
+                                                        <i class="fas fa-project-diagram me-1"></i> 知识图谱增强
+                                                    </span>
+                                                    {% else %}
+                                                    <span class="answer-type lm-only">
+                                                        <i class="fas fa-brain me-1"></i> 大模型回答
+                                                    </span>
+                                                    {% endif %}
+                                                </div>
+                                                
+                                                <div class="answer-text mt-2 {% if '知识图谱+大模型补充' in qa.kg_context %}bg-kg-lm{% else %}bg-lm{% endif %}">
+                                                    {{ qa.answer|linebreaks }}
+                                                </div>
+                                                
+                                                <!-- 查询时间显示 -->
+                                                <div class="query-time text-end mt-2">
+                                                    <small class="text-muted">
+                                                        <i class="fas fa-clock me-1"></i> 查询时间：{{ qa.time_analysis|get_total_time|default:"未记录" }}
+                                                    </small>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    {% endfor %}
-                {% else %}
-                    <div class="text-center text-muted py-4">
-                        <i class="fas fa-comments fa-3x mb-3"></i>
-                        <p>暂无对话记录，开始提问吧！</p>
-                    </div>
-                {% endif %}
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center text-muted py-4">
+                            <i class="fas fa-comments fa-3x mb-3"></i>
+                            <p>暂无对话记录，开始提问吧！</p>
+                        </div>
+                    {% endif %}
+                </div>
             </div>
-
         </div>
-
     </main>
 
     <style>
-        /* 聊天界面样式 */
+        /* 基础样式 */
         .chat-history {
             max-width: 1200px;
             margin: 0 auto;
@@ -147,22 +297,217 @@
             border: 1px solid #e9ecef;
         }
 
-        /* 问题分解样式 */
+        /* 思考过程样式 */
+        .thinking-process-container {
+            background-color: #f0f7ff;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .thinking-header {
+            padding: 10px 15px;
+            background-color: #e0efff;
+            color: #0056b3;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+
+        .thinking-content {
+            padding: 15px;
+            font-size: 0.9em;
+            color: #555;
+        }
+
+        .thinking-step {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px dashed #ccc;
+        }
+
+        .thinking-step:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .step-title {
+            color: #0056b3;
+            margin-bottom: 8px;
+        }
+
+        /* 子问题与答案样式 */
+        .subquestions-container {
+            margin-top: 10px;
+        }
+        
+        .subquestion-item {
+            margin-bottom: 15px;
+            background-color: rgba(255,255,255,0.7);
+            border-radius: 8px;
+            padding: 10px;
+            border-left: 3px solid #c2e7ff;
+        }
+        
+        .subquestion {
+            display: flex;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        .question-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 22px;
+            height: 22px;
+            background-color: #0056b3;
+            color: white;
+            border-radius: 50%;
+            font-size: 0.8em;
+            margin-right: 8px;
+            flex-shrink: 0;
+        }
+        
+        .subanswer {
+            margin-left: 30px;
+            font-size: 0.9em;
+            color: #444;
+            background-color: #f4f7fa;
+            padding: 8px 10px;
+            border-radius: 6px;
+        }
+
+        /* 知识图谱节点列表 */
+        .knowledge-list li {
+            margin-bottom: 8px;
+        }
+
+        .knowledge-list .path {
+            font-weight: 500;
+        }
+
+        .knowledge-list .summary {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 3px;
+            padding-left: 10px;
+            border-left: 2px solid #ddd;
+        }
+
+        /* 知识图谱容器 */
+        .knowledge-graph-container {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        /* 时间分析样式 */
+        .time-analysis {
+            background-color: #f8f8f8;
+            border-radius: 8px;
+            padding: 10px 15px;
+            font-size: 0.85em;
+            color: #555;
+        }
+
+        .time-metrics {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .time-metric i {
+            margin-right: 5px;
+        }
+
+        .time-value {
+            font-weight: 600;
+        }
+
+        /* 答案展示样式 */
+        .answer-result {
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .answer-content {
+            line-height: 1.7;
+        }
+
+        /* 问题分析样式 */
         .question-analysis {
-            font-size: 0.95em;
+            font-size: 0.9em;
             color: #666;
             background-color: rgba(0,0,0,0.03);
-            padding: 15px;
+            padding: 12px;
             border-radius: 8px;
             margin: 10px 0;
             border-left: 3px solid #dee2e6;
         }
 
-        .answer-text {
-            line-height: 1.6;
-            color: #333;
+        .analysis-content, .time-content {
+            margin-top: 5px;
+            padding-left: 10px;
         }
 
+        /* 回答类型标签 */
+        .answer-type {
+            font-size: 0.75em;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-weight: 500;
+        }
+
+        .kg-lm {
+            background-color: rgba(25, 135, 84, 0.1);
+            color: #198754;
+        }
+
+        .lm-only {
+            background-color: rgba(13, 110, 253, 0.1);
+            color: #0d6efd;
+        }
+
+        /* 查询时间样式 */
+        .query-time {
+            font-size: 0.8em;
+            color: #888;
+        }
+
+        /* 折叠显示切换 */
+        .collapse-toggle {
+            cursor: pointer;
+            color: #6c757d;
+            font-size: 0.85em;
+            display: inline-block;
+            padding: 3px 8px;
+            background-color: #f0f0f0;
+            border-radius: 12px;
+        }
+
+        .collapse-toggle:hover {
+            background-color: #e0e0e0;
+        }
+
+        /* 知识图谱+大模型背景 */
+        .bg-kg-lm {
+            background-color: rgba(25, 135, 84, 0.05);
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 3px solid #198754;
+        }
+        
+        /* 纯大模型背景 */
+        .bg-lm {
+            background-color: rgba(13, 110, 253, 0.05);
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 3px solid #0d6efd;
+        }
+
+        /* 用户头像样式 */
         .user-avatar, .assistant-avatar {
             width: 40px;
             text-align: center;
@@ -179,39 +524,27 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.08);
         }
 
-        /* 滚动条样式 */
-        .chat-history::-webkit-scrollbar {
-            width: 8px;
+        /* 历史记录标题 */
+        .history-section h5 {
+            color: #495057;
+            margin-bottom: 15px;
         }
 
-        .chat-history::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
-
-        .chat-history::-webkit-scrollbar-thumb {
-            background: #888;
-            border-radius: 4px;
-        }
-
-        .chat-history::-webkit-scrollbar-thumb:hover {
-            background: #555;
-        }
-
-        /* 知识图谱+大模型补充的背景色 */
-        .bg-kg-lm {
-            background-color: rgba(144, 238, 144, 0.1);  /* 淡绿色 */
-            padding: 15px;
-            border-radius: 8px;
-        }
-        
-        /* 纯大模型的背景色 */
-        .bg-lm {
-            background-color: rgba(255, 255, 224, 0.2);  /* 淡黄色 */
-            padding: 15px;
-            border-radius: 8px;
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            .chat-answer {
+                margin-left: 0;
+            }
+            
+            .time-metrics {
+                flex-direction: column;
+                gap: 5px;
+            }
         }
     </style>
 
+    <!-- 添加ECharts脚本 -->
+    <script src="/static/echarts.min.js"></script>
     <script>
         window.onload = function() {
             // 自动聚焦到输入框
@@ -219,6 +552,25 @@
             if (input) {
                 input.focus();
             }
+            
+            // 折叠功能
+            document.querySelectorAll('.thinking-header').forEach(header => {
+                header.addEventListener('click', function() {
+                    const collapseElement = this.nextElementSibling;
+                    const icon = this.querySelector('.fa-chevron-down');
+                    
+                    if (collapseElement.classList.contains('show')) {
+                        collapseElement.classList.remove('show');
+                        icon.style.transform = 'rotate(0deg)';
+                    } else {
+                        collapseElement.classList.add('show');
+                        icon.style.transform = 'rotate(180deg)';
+                        
+                        // 初始化知识图谱可视化
+                        initKnowledgeGraph();
+                    }
+                });
+            });
             
             // 滚动到最新消息
             const container = document.querySelector('.chat-history');
@@ -232,6 +584,118 @@
                     latestChat.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }
             }
+            
+            // 折叠按钮点击效果
+            document.querySelectorAll('.collapse-toggle').forEach(toggle => {
+                toggle.addEventListener('click', function() {
+                    const icon = this.querySelector('.fa-angle-down');
+                    if (icon) {
+                        if (icon.style.transform === 'rotate(180deg)') {
+                            icon.style.transform = 'rotate(0deg)';
+                        } else {
+                            icon.style.transform = 'rotate(180deg)';
+                        }
+                    }
+                });
+            });
+        }
+        
+        // 初始化知识图谱可视化
+        function initKnowledgeGraph() {
+            const graphContainer = document.getElementById('knowledgeGraphPreview');
+            if (!graphContainer) return;
+            
+            // 这里可以根据当前问题相关的节点来生成小型知识图谱
+            // 以下是示例数据，实际使用时需要从后端获取
+            const graphData = {
+                nodes: [
+                    { name: 'SWAT模型', category: '模型', value: 30 },
+                    { name: '径流模拟', category: '应用', value: 25 },
+                    { name: 'DEM数据', category: '数据', value: 20 },
+                    { name: '气象数据', category: '数据', value: 20 },
+                    { name: '土壤数据', category: '数据', value: 20 },
+                    { name: '子流域划分', category: '方法', value: 15 },
+                    { name: '参数率定', category: '方法', value: 15 }
+                ],
+                links: [
+                    { source: 'SWAT模型', target: '径流模拟', name: '用于' },
+                    { source: 'DEM数据', target: 'SWAT模型', name: '输入' },
+                    { source: '气象数据', target: 'SWAT模型', name: '输入' },
+                    { source: '土壤数据', target: 'SWAT模型', name: '输入' },
+                    { source: 'SWAT模型', target: '子流域划分', name: '包含步骤' },
+                    { source: 'SWAT模型', target: '参数率定', name: '包含步骤' }
+                ],
+                categories: [
+                    { name: '模型' },
+                    { name: '应用' },
+                    { name: '数据' },
+                    { name: '方法' }
+                ]
+            };
+            
+            const myChart = echarts.init(graphContainer);
+            
+            const option = {
+                tooltip: {
+                    trigger: 'item',
+                    formatter: function(params) {
+                        if (params.dataType === 'edge') {
+                            return `${params.data.source} <span style="color:#999">→</span> ${params.data.target}`;
+                        }
+                        return params.data.name;
+                    }
+                },
+                legend: {
+                    show: true,
+                    data: graphData.categories.map(a => a.name),
+                    textStyle: {
+                        color: '#333'
+                    },
+                    bottom: 0
+                },
+                series: [{
+                    type: 'graph',
+                    layout: 'force',
+                    data: graphData.nodes,
+                    links: graphData.links,
+                    categories: graphData.categories,
+                    roam: true,
+                    label: {
+                        show: true,
+                        position: 'inside',
+                        fontSize: 12,
+                        backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                        padding: [4, 6],
+                        borderRadius: 3
+                    },
+                    force: {
+                        repulsion: 150,
+                        edgeLength: [50, 100]
+                    },
+                    edgeSymbol: ['none', 'arrow'],
+                    edgeLabel: {
+                        show: true,
+                        formatter: '{c}',
+                        fontSize: 10
+                    },
+                    lineStyle: {
+                        opacity: 0.8,
+                        width: 1.5,
+                        curveness: 0.2,
+                        color: '#999'
+                    }
+                }]
+            };
+            
+            myChart.setOption(option);
+            
+            // 窗口大小变化时调整图表
+            window.addEventListener('resize', function() {
+                myChart.resize();
+            });
+            
+            // 修复图表初始化问题
+            setTimeout(() => myChart.resize(), 100);
         }
     </script>
 {% endblock %}

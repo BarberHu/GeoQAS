@@ -1,5 +1,6 @@
 import torch
 import json
+import concurrent.futures
 from typing import List, Dict, Union, Tuple
 from transformers import AutoTokenizer, AutoModel
 from sentence_transformers import SentenceTransformer
@@ -16,8 +17,12 @@ class EntityLinker:
             auth=(neo4j_config["user"], neo4j_config["password"])
         )
         
+        # 检测GPU是否可用
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        print(f"EntityLinker 使用设备: {device}")
+        
         # 初始化模型
-        self.encoder = SentenceTransformer(model_path, device="cpu")
+        self.encoder = SentenceTransformer(model_path, device=device)
         self.tokenizer = AutoTokenizer.from_pretrained("bert-base-chinese")
         self.ranking_model = self._init_ranking_model()
         
@@ -57,6 +62,48 @@ class EntityLinker:
 
         # 合并去重
         return list(set(vector_candidates + fuzzy_candidates))[:top_k]
+    
+    def _get_candidates_batch(self, mentions: List[str], top_k: int = 50) -> Dict[str, List[str]]:
+        """批量获取多个mention的候选实体
+        
+        Args:
+            mentions: 实体提及列表
+            top_k: 每个实体返回的候选数量
+            
+        Returns:
+            Dict[str, List[str]]: 以mention为键，候选实体列表为值的字典
+        """
+        # 如果缓存为空，返回空字典
+        if not self.cache["entity_names"]:
+            print("警告: 实体缓存为空，请检查Neo4j连接和数据")
+            return {mention: [] for mention in mentions}
+        
+        results = {}
+        
+        # 批量向量编码 - 充分利用GPU
+        mention_vecs = self.encoder.encode(mentions, convert_to_tensor=True)
+        entity_vecs = self.encoder.encode(self.cache["entity_names"], convert_to_tensor=True)
+        
+        # 计算所有mention与所有实体的相似度
+        scores = torch.matmul(mention_vecs, entity_vecs.T)
+        
+        # 对每个mention处理top-k
+        for i, mention in enumerate(mentions):
+            mention_scores = scores[i]
+            top_indices = torch.topk(mention_scores, k=min(top_k//2, len(self.cache["entity_names"]))).indices.tolist()
+            vector_candidates = [self.cache["entity_names"][idx] for idx in top_indices]
+            
+            # 模糊匹配
+            fuzzy_candidates = process.extract(
+                mention, self.cache["entity_names"],
+                scorer=fuzz.ratio, limit=top_k//2
+            )
+            fuzzy_candidates = [c[0] for c in fuzzy_candidates]
+            
+            # 合并去重
+            results[mention] = list(set(vector_candidates + fuzzy_candidates))[:top_k]
+        
+        return results
 
     def _init_ranking_model(self):
         """初始化轻量级排序模型"""
@@ -98,10 +145,13 @@ class EntityLinker:
         """
         # 支持处理多个mention (元组或列表形式)
         if isinstance(mention, (tuple, list)):
-            results = {}
-            for m in mention:
-                results[m] = self._rank_single_entity(query, m, top_k)
-            return results
+            if len(mention) > 3:  # 如果实体数量大于3，使用批量处理
+                return self.rank_entities_batch_gpu(query, mention, top_k)
+            else:
+                results = {}
+                for m in mention:
+                    results[m] = self._rank_single_entity(query, m, top_k)
+                return results
         else:
             # 处理单个mention
             return {mention: self._rank_single_entity(query, mention, top_k)}
@@ -119,9 +169,16 @@ class EntityLinker:
             inputs, padding=True, truncation=True, max_length=128, return_tensors="pt"
         )
         
+        # 如果有GPU，使用GPU
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        for k, v in encoded.items():
+            encoded[k] = v.to(device)
+            
+        self.ranking_model = self.ranking_model.to(device)
+        
         # 模型预测
         with torch.no_grad():
-            scores = self.ranking_model(**encoded).squeeze().tolist()
+            scores = self.ranking_model(**encoded).squeeze().cpu().tolist()
             
         # 确保scores是列表，即使只有一个元素
         if not isinstance(scores, list):
@@ -142,6 +199,110 @@ class EntityLinker:
             key=lambda x: (x["score"], mention in x["entity"]),
             reverse=True
         )[:top_k]
+    
+    def rank_entities_batch(self, query: str, mentions: List[str], top_k: int = 5) -> Dict[str, List[Dict]]:
+        """并行执行多个实体排序
+        
+        Args:
+            query: 用户问题
+            mentions: 实体提及列表
+            top_k: 每个实体返回的top候选数量
+            
+        Returns:
+            Dict[str, List[Dict]]: 以mention为键，排序后实体列表为值的字典
+        """
+        results = {}
+        
+        # 使用线程池并行处理
+        with concurrent.futures.ThreadPoolExecutor(max_workers=min(8, len(mentions))) as executor:
+            # 提交所有任务
+            future_to_mention = {executor.submit(self._rank_single_entity, query, mention, top_k): mention for mention in mentions}
+            
+            # 处理结果
+            for future in concurrent.futures.as_completed(future_to_mention):
+                mention = future_to_mention[future]
+                try:
+                    result = future.result()
+                    results[mention] = result
+                except Exception as e:
+                    print(f"处理实体 '{mention}' 时出错: {e}")
+                    results[mention] = []
+        
+        return results
+    
+    def rank_entities_batch_gpu(self, query: str, mentions: List[str], top_k: int = 5) -> Dict[str, List[Dict]]:
+        """使用GPU加速批量处理实体排序
+        
+        Args:
+            query: 用户问题
+            mentions: 实体提及列表
+            top_k: 每个实体返回的top候选数量
+            
+        Returns:
+            Dict[str, List[Dict]]: 以mention为键，排序后实体列表为值的字典
+        """
+        # 获取所有候选实体
+        all_candidates_by_mention = self._get_candidates_batch(mentions, top_k=top_k*2)
+        
+        results = {}
+        all_inputs = []
+        all_candidates = []
+        mention_mapping = []
+        
+        # 准备批量处理的输入
+        for mention in mentions:
+            candidates = all_candidates_by_mention.get(mention, [])
+            if not candidates:
+                results[mention] = []
+                continue
+                
+            for candidate in candidates:
+                all_inputs.append(self._build_features(query, candidate))
+                all_candidates.append((mention, candidate))
+        
+        if not all_inputs:
+            return {mention: [] for mention in mentions}
+        
+        # 批量编码
+        encoded = self.tokenizer(
+            all_inputs, padding=True, truncation=True, max_length=128, return_tensors="pt"
+        )
+        
+        # 批量预测
+        with torch.no_grad():
+            # 如果有GPU，使用GPU
+            device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+            for k, v in encoded.items():
+                encoded[k] = v.to(device)
+                
+            self.ranking_model = self.ranking_model.to(device)
+            scores = self.ranking_model(**encoded).squeeze().cpu().tolist()
+        
+        # 确保scores是列表
+        if not isinstance(scores, list):
+            scores = [scores]
+        
+        # 整理结果
+        mention_results = {}
+        for (mention, candidate), score in zip(all_candidates, scores):
+            if mention not in mention_results:
+                mention_results[mention] = []
+                
+            mention_results[mention].append({
+                "entity": candidate,
+                "score": score,
+                "desc": self.cache["entity_desc"].get(candidate, "")
+            })
+        
+        # 排序并获取top-k
+        for mention, candidates in mention_results.items():
+            results[mention] = sorted(
+                candidates,
+                key=lambda x: (x["score"], mention in x["entity"]),
+                reverse=True
+            )[:top_k]
+        
+        return results
 
 # --------------------- 使用示例 ---------------------
 if __name__ == "__main__":
