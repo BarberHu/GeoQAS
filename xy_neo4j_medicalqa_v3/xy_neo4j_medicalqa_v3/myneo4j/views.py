@@ -88,7 +88,7 @@ def wenda(request):
                 if not isinstance(kg_nodes, dict):
                     print("[Views] kg_nodes 不是字典类型，初始化为空字典")
                     kg_nodes = {}
-                
+
                 # 确保必要的键存在
                 if 'nodes' not in kg_nodes:
                     kg_nodes['nodes'] = []
@@ -96,7 +96,7 @@ def wenda(request):
                     kg_nodes['links'] = []
                 if 'categories' not in kg_nodes:
                     kg_nodes['categories'] = []
-                
+                    
                 print(f"[Views] 知识图谱节点数据大小: {len(str(kg_nodes))} 字节")
                 
                 # 更新思考过程中的子问题答案

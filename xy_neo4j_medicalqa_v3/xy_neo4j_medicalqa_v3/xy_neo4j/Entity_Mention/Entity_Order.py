@@ -167,15 +167,26 @@ class EntityLinker:
                 return []
             
             # 构建 Cypher 查询
-            query = f"""
+            query = """
             MATCH (n)
-            WHERE n.name IN {json.dumps(candidates)}
-            RETURN n.name as entity, n.description as desc, n.category as category
+            WHERE n.name IN $candidates
+            WITH n, 
+                 CASE WHEN n.desc IS NOT NULL THEN n.desc
+                      ELSE '' END as description,
+                 CASE WHEN labels(n)[0] IS NOT NULL THEN labels(n)[0]
+                      ELSE 'Unknown' END as category,
+                 CASE WHEN n.source_article IS NOT NULL THEN n.source_article
+                      ELSE '' END as source
+            RETURN n.name as entity, 
+                  description as desc, 
+                  category,
+                  source as reference
+            ORDER BY n.name
             """
             print(f"[Entity Linking] 执行查询: {query}")
             
             with self.driver.session() as session:
-                result = session.run(query)
+                result = session.run(query, candidates=candidates)
                 entities = []
                 for record in result:
                     entity = {
@@ -303,6 +314,20 @@ class EntityLinker:
             )[:top_k]
         
         return results
+    
+    def _calculate_similarity(self, mention: str, entity: str) -> float:
+        """计算实体提及与知识库实体的相似度"""
+        # 基于编辑距离的简单相似度计算
+        from rapidfuzz import fuzz
+        score = fuzz.ratio(mention.lower(), entity.lower()) / 100.0
+        
+        # 考虑部分匹配情况
+        if mention.lower() in entity.lower() or entity.lower() in mention.lower():
+            score = max(score, 0.7)  # 提升部分匹配得分
+            
+        return score
+
+
 
     def link_entities(self, mentions: List[str]) -> Dict[str, List[Dict]]:
         """链接实体到知识库"""
@@ -313,7 +338,7 @@ class EntityLinker:
             for mention in mentions:
                 print(f"\n[Entity Linking] 处理实体: {mention}")
                 # 构建 Cypher 查询
-                query = f"""
+                query = """
                 MATCH (n)
                 WHERE n.name =~ '(?i).*{mention}.*' OR n.aliases =~ '(?i).*{mention}.*'
                 RETURN n.name as entity, n.description as desc, n.category as category
@@ -344,35 +369,16 @@ class EntityLinker:
             print(f"[Entity Linking] 实体链接失败: {e}")
         
         return results
-
-# --------------------- 使用示例 ---------------------
-if __name__ == "__main__":
-    # 配置
-    NEO4J_CONFIG = {
-        "uri": "bolt://localhost:7687",
-        "user": "neo4j",
-        "password": "wswy0129"
-    }
     
-    linker = EntityLinker(NEO4J_CONFIG)
-    
-    # 测试案例 - 支持多个mention
-    test_cases = [
-        ("我现在有淮河流域2015-2020年的气象数据和全国的土壤数据,如何对淮河流域进行径流模拟?", 
-         ["淮河流域", "径流模拟", "气象数据", "土壤数据"])
-    ]
-    
-    for query, mentions in test_cases:
-        print(f"\n问题: '{query}'")
-        results = linker.rank_entities(query, mentions)
+    def _calculate_similarity(self, mention: str, entity: str) -> float:
+        """计算实体提及与知识库实体的相似度"""
+        # 基于编辑距离的简单相似度计算
+        from rapidfuzz import fuzz
+        score = fuzz.ratio(mention.lower(), entity.lower()) / 100.0
         
-        # 输出每个mention的排序结果
-        for mention, entities in results.items():
-            print(f"\n待链接实体: '{mention}'")
-            if not entities:
-                print(f"  未找到匹配的实体")
-                continue
-                
-            for idx, ent in enumerate(entities, 1):
-                print(f"  {idx}. {ent['entity']} (得分: {ent['score']:.2f})")
-                print(f"     描述: {ent['desc'][:100]}" + ("..." if len(ent['desc']) > 100 else ""))
+        # 考虑部分匹配情况
+        if mention.lower() in entity.lower() or entity.lower() in mention.lower():
+            score = max(score, 0.7)  # 提升部分匹配得分
+            
+        return score
+

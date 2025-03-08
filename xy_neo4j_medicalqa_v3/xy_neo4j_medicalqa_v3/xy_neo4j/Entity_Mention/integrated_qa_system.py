@@ -140,8 +140,10 @@ class IntegratedQASystem:
             print(f"回答单个问题时出错: {e}")
             return f"抱歉，处理您的问题时遇到了技术问题：{str(e)}"
     
+    # 修改answer_with_decomposition方法，实现并行处理
     def _answer_with_decomposition(self, question: str) -> str:
-        """使用问题分解回答复杂问题
+        """
+        使用问题分解和并行处理回答复杂问题
         
         Args:
             question: 用户问题
@@ -149,52 +151,74 @@ class IntegratedQASystem:
         Returns:
             整合后的回答
         """
-        # 分解问题 - 使用规则方法更快
+        # 分解问题
         decomposed_questions = self.question_decomposer.decompose_question(question, use_llm=False)
         formatted_questions = self.question_decomposer.format_questions_for_qa(decomposed_questions)
         
-        # 减少问题数量，保留3-4个最重要的问题
+        # 减少问题数量，保留最重要的问题
         formatted_questions = formatted_questions[:4]
         
-        # 批量识别所有子问题的实体
-        if hasattr(self.entity_recognizer, 'recognize_batch'):
-            # 如果实现了批量识别，使用批量识别
-            entities_by_question = self.entity_recognizer.recognize_batch(formatted_questions)
+        # 知识状态，用于累积信息
+        knowledge_state = {
+            "original_question": question,
+            "sub_answers": {},
+            "kg_contexts": {}
+        }
         
-        # 并行处理子问题
-        sub_answers = []
+        # 并行获取所有子问题的知识图谱上下文
         with concurrent.futures.ThreadPoolExecutor(max_workers=min(4, len(formatted_questions))) as executor:
-            future_to_question = {}
-            
+            futures = {}
             for sub_question in formatted_questions:
-                future = executor.submit(self._answer_single_question, sub_question)
-                future_to_question[future] = sub_question
+                future = executor.submit(self.text_assembler.get_comprehensive_kg_context, sub_question)
+                futures[future] = sub_question
             
-            for future in concurrent.futures.as_completed(future_to_question):
-                sub_question = future_to_question[future]
+            for future in concurrent.futures.as_completed(futures):
+                sub_question = futures[future]
                 try:
-                    sub_answer = future.result()
-                    sub_answers.append({"question": sub_question, "answer": sub_answer})
+                    kg_results = future.result()
+                    # 将知识图谱结果转换为文本上下文
+                    kg_context = self.text_assembler.format_kg_results_for_context(
+                        sub_question, 
+                        kg_results.get('entity_details', {}).values()
+                    )
+                    knowledge_state["kg_contexts"][sub_question] = kg_context
                 except Exception as e:
-                    print(f"处理子问题 '{sub_question}' 时出错: {e}")
-                    sub_answers.append({"question": sub_question, "answer": f"处理时出错: {e}"})
+                    print(f"获取{sub_question}的知识图谱上下文失败: {e}")
+                    knowledge_state["kg_contexts"][sub_question] = "获取知识图谱信息时出错。"
         
-        # 按原始问题顺序排序答案
-        sub_answers.sort(key=lambda x: formatted_questions.index(x["question"]))
+        # 顺序处理子问题，整合先前的答案
+        for sub_question in formatted_questions:
+            # 构建综合提示，包含知识图谱上下文和先前回答
+            prompt = self._build_comprehensive_prompt(sub_question, knowledge_state)
+            
+            try:
+                # 调用LLM
+                response = self.llm_client.chat.completions.create(
+                    model="gpt-4o",
+                    messages=[{"role": "user", "content": prompt}],
+                    temperature=0.3,
+                    max_tokens=1000
+                )
+                
+                sub_answer = response.choices[0].message.content
+                knowledge_state["sub_answers"][sub_question] = sub_answer
+            except Exception as e:
+                print(f"处理子问题'{sub_question}'时出错: {e}")
+                knowledge_state["sub_answers"][sub_question] = f"回答此问题时遇到技术问题: {str(e)}"
         
-        # 整合所有回答
-        integration_prompt = f"""
-        基于以下对复杂问题"{question}"的分解问答，提供一个整合的完整回答：
+        # 构建最终答案提示
+        final_prompt = f"""
+        基于以下对原始问题"{question}"的分解问答，提供一个整合的完整回答：
         
-        {"".join([f'问题：{qa["question"]}\n回答：{qa["answer"]}\n\n' for qa in sub_answers])}
+        {"".join([f'问题：{q}\n回答：{a}\n\n' for q, a in knowledge_state["sub_answers"].items()])}
         
-        请提供一个连贯、全面的回答，避免重复信息，并确保覆盖所有关键点。不要分点列出子问题。
+        请提供一个连贯、全面的回答，避免重复信息，并确保覆盖所有关键点。回答应当流畅自然，不要机械地分点列出子问题。
         """
         
         try:
             response = self.llm_client.chat.completions.create(
                 model="gpt-4o",
-                messages=[{"role": "user", "content": integration_prompt}],
+                messages=[{"role": "user", "content": final_prompt}],
                 temperature=0.3,
                 max_tokens=1500
             )
@@ -204,10 +228,10 @@ class IntegratedQASystem:
             return final_answer
             
         except Exception as e:
-            print(f"整合回答时出错: {e}")
-            # 如果整合失败，返回单独的回答
-            return "\n\n".join([f"关于'{qa['question']}'：\n{qa['answer']}" for qa in sub_answers])
-    
+            print(f"生成最终回答时出错: {e}")
+            # 如果整合失败，返回所有子问题回答的简单组合
+            return "综合回答：\n\n" + "\n\n".join([f"关于「{q}」：\n{a}" for q, a in knowledge_state["sub_answers"].items()])
+        
     def generate_cypher_query(self, question: str) -> str:
         """生成Cypher查询语句
         
@@ -262,3 +286,85 @@ class IntegratedQASystem:
         except Exception as e:
             print(f"[Knowledge Graph] 查询失败: {e}")
             return []
+        
+    # 添加新的辅助方法，用于构建综合提示
+    def _build_comprehensive_prompt(self, sub_question: str, knowledge_state: Dict[str, Any]) -> str:
+        """
+        为子问题构建综合提示，整合KG上下文和先前答案
+        
+        Args:
+            sub_question: 当前子问题
+            knowledge_state: 当前的知识状态，包含先前回答和KG上下文
+            
+        Returns:
+            构建好的提示
+        """
+        prompt_parts = []
+        
+        # 添加系统提示
+        prompt_parts.append("你是一个水文领域专家，专注于SWAT模型和径流模拟相关问题的解答。请基于提供的知识信息回答问题。")
+        
+        # 添加原始问题上下文
+        prompt_parts.append(f"用户的原始问题是：{knowledge_state['original_question']}")
+        
+        # 添加先前回答（如果有）
+        prev_answers = []
+        for q, a in knowledge_state['sub_answers'].items():
+            # 只包含与当前子问题相关的先前答案
+            if self._is_related_question(q, sub_question):
+                prev_answers.append(f"问题：{q}\n回答：{a}")
+        
+        if prev_answers:
+            prompt_parts.append("以下是相关子问题的回答，可能对当前问题有帮助：\n" + "\n\n".join(prev_answers))
+        
+        # 添加知识图谱上下文
+        kg_context = knowledge_state['kg_contexts'].get(sub_question)
+        if kg_context:
+            prompt_parts.append(f"相关知识图谱信息：\n{kg_context}")
+        
+        # 添加当前问题
+        prompt_parts.append(f"当前需要回答的问题是：{sub_question}")
+        
+        # 添加回答要求
+        prompt_parts.append("请根据提供的知识图谱信息和上下文，直接回答上述问题。回答应该专业、准确、简洁。如果知识图谱中没有足够信息，请基于专业知识给出合理回答。")
+        
+        return "\n\n".join(prompt_parts)
+
+    # 添加辅助方法，判断两个问题是否相关
+    def _is_related_question(self, question1: str, question2: str) -> bool:
+        """
+        判断两个问题是否相关
+        
+        Args:
+            question1: 第一个问题
+            question2: 第二个问题
+            
+        Returns:
+            两个问题是否相关的布尔值
+        """
+        # 提取问题中的关键词
+        keywords1 = set()
+        keywords2 = set()
+        
+        # 使用实体提取器获取关键词（实体）
+        if hasattr(self.entity_recognizer, 'recognize'):
+            keywords1 = set(self.entity_recognizer.recognize(question1))
+            keywords2 = set(self.entity_recognizer.recognize(question2))
+        
+        # 计算关键词重叠度
+        if keywords1 and keywords2:
+            overlap = keywords1.intersection(keywords2)
+            if len(overlap) > 0:
+                return True
+        
+        # 如果没有关键词重叠，检查文本相似度
+        # 简单实现：检查共同单词（可以用更复杂的相似度算法替换）
+        words1 = set(question1.lower().split())
+        words2 = set(question2.lower().split())
+        common_words = words1.intersection(words2)
+        
+        # 如果共享单词超过阈值，认为相关
+        threshold = 0.3  # 可调整的阈值
+        similarity = len(common_words) / max(len(words1), len(words2))
+        
+        return similarity >= threshold

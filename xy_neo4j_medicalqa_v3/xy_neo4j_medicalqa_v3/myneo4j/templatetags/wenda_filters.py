@@ -83,3 +83,40 @@ def get_question_answer(answers_dict, question):
         return get_subanswer(question)
     except:
         return get_subanswer(question)
+
+@register.filter
+def process_kg_node(node):
+    """处理知识图谱节点数据"""
+    return {
+        'name': node.get('entity', ''),
+        'category': node.get('category', 'Unknown'),
+        'desc': node.get('desc', ''),
+        'reference': node.get('reference', '')
+        # 移除了id相关处理
+    }
+
+def extract_entity_info(self, entity_name):
+    """提取实体信息"""
+    query = """
+    MATCH (n)
+    WHERE n.name = $name
+    RETURN n.name as entity,
+           n.desc as desc,
+           labels(n)[0] as category,
+           n.source_article as reference
+    """
+    result = self.graph.run(query, name=entity_name).data()
+    return result[0] if result else None
+
+def get_related_entities(self, entity_name):
+    """获取相关实体"""
+    query = """
+    MATCH (n)-[r]-(m)
+    WHERE n.name = $name
+    RETURN m.name as entity,
+           m.desc as desc,
+           labels(m)[0] as category,
+           m.source_article as reference,
+           type(r) as relation
+    """
+    return self.graph.run(query, name=entity_name).data()

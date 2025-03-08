@@ -38,138 +38,150 @@
 
                         {% if answer %}
                         <div class="result-card mt-4">
-                            <!-- 思考过程展示 (折叠式) - 修改默认为展开 -->
-                            {% if thinking_process %}
-                            <div class="thinking-process-container mb-3">
-                                <div class="thinking-header" data-bs-toggle="collapse" href="#thinkingCollapse" role="button" aria-expanded="true" aria-controls="thinkingCollapse">
-                                    <i class="fas fa-brain me-2"></i> 
-                                    <span>系统思考过程</span>
-                                    <i class="fas fa-chevron-down ms-2" style="transform: rotate(180deg);"></i>
-                                </div>
-                                
-                                <div class="collapse show" id="thinkingCollapse">
-                                    <div class="thinking-content">
-                                        {% for step in thinking_process %}
-                                        <div class="thinking-step">
-                                            {% if step.title == "问题分解" %}
-                                            <h6 class="step-title">
-                                                <i class="fas fa-sitemap me-2"></i> {{ step.title }}
-                                            </h6>
-                                            
-                                            <div class="step-content">
-                                                <!-- 问题分解和子问题回答 -->
-                                                <div class="subquestions-container">
-                                                    {% if step.content|parse_json %}
-                                                        {% for question in step.content|parse_json %}
-                                                        <div class="subquestion-item">
-                                                            <div class="subquestion">
-                                                                <span class="question-number">{{ forloop.counter }}</span>
-                                                                <span class="question-text">{{ question }}</span>
-                                                            </div>
-                                                            <div class="subanswer">
-                                                                <i class="fas fa-angle-right text-muted me-2"></i>
-                                                                <span class="answer-text">
-                                                                    {% if step.answers and question in step.answers %}
-                                                                        {{ step.answers|get_question_answer:question }}
-                                                                    {% else %}
-                                                                        {{ question|get_subanswer }}
-                                                                    {% endif %}
-                                                                </span>
-                                                            </div>
+                            <!-- 修改内容布局 -->
+                            <div class="content-row">
+                                <!-- 左侧结构化内容 -->
+                                <div class="content-column">
+                                    <!-- 思考过程容器 -->
+                                    <div class="thinking-process-container mb-3">
+                                        <div class="thinking-header" data-bs-toggle="collapse" href="#thinkingCollapse" role="button" aria-expanded="true" aria-controls="thinkingCollapse">
+                                            <i class="fas fa-brain me-2"></i> 
+                                            <span>系统思考过程</span>
+                                            <i class="fas fa-chevron-down ms-2" style="transform: rotate(180deg);"></i>
+                                        </div>
+                                        
+                                        <div class="collapse show" id="thinkingCollapse">
+                                            <div class="thinking-content">
+                                                {% for step in thinking_process %}
+                                                <div class="thinking-step">
+                                                    {% if step.title == "问题分解" %}
+                                                    <h6 class="step-title">
+                                                        <i class="fas fa-sitemap me-2"></i> {{ step.title }}
+                                                    </h6>
+                                                    
+                                                    <div class="step-content">
+                                                        <div class="subquestions-container">
+                                                            {% if step.content|parse_json %}
+                                                                {% for question in step.content|parse_json %}
+                                                                <div class="subquestion-item">
+                                                                    <div class="subquestion">
+                                                                        <span class="question-number">{{ forloop.counter }}</span>
+                                                                        <span class="question-text">{{ question }}</span>
+                                                                    </div>
+                                                                    <div class="subanswer">
+                                                                        <i class="fas fa-angle-right text-muted me-2"></i>
+                                                                        <span class="answer-text">
+                                                                            {% if step.answers and question in step.answers %}
+                                                                                {{ step.answers|get_question_answer:question }}
+                                                                            {% else %}
+                                                                                {{ question|get_subanswer }}
+                                                                            {% endif %}
+                                                                        </span>
+                                                                    </div>
+                                                                </div>
+                                                                {% endfor %}
+                                                            {% else %}
+                                                                {% for question in step.content %}
+                                                                <div class="subquestion-item">
+                                                                    <div class="subquestion">
+                                                                        <span class="question-number">{{ forloop.counter }}</span>
+                                                                        <span class="question-text">{{ question }}</span>
+                                                                    </div>
+                                                                    <div class="subanswer">
+                                                                        <i class="fas fa-angle-right text-muted me-2"></i>
+                                                                        <span class="answer-text">
+                                                                            {% if step.answers and question in step.answers %}
+                                                                                {{ step.answers|get_question_answer:question }}
+                                                                            {% else %}
+                                                                                {{ question|get_subanswer }}
+                                                                            {% endif %}
+                                                                        </span>
+                                                                    </div>
+                                                                </div>
+                                                                {% endfor %}
+                                                            {% endif %}
                                                         </div>
-                                                        {% endfor %}
+                                                    </div>
+                                                    {% elif step.title == "知识图谱检索" %}
+                                                    <h6 class="step-title">
+                                                        <i class="fas fa-project-diagram me-2"></i> {{ step.title }}
+                                                    </h6>
+                                                    
+                                                    <div class="step-content">
+                                                        {% if step.content|length > 0 %}
+                                                            {% if step.content|parse_json %}
+                                                                <ul class="knowledge-list">
+                                                                {% for item in step.content|parse_json %}
+                                                                    <li>
+                                                                        <span class="path">{{ item.path }}</span>
+                                                                        {% if item.summary %}
+                                                                        <div class="summary">{{ item.summary }}</div>
+                                                                        {% endif %}
+                                                                    </li>
+                                                                {% endfor %}
+                                                                </ul>
+                                                            {% else %}
+                                                                <ul class="knowledge-list">
+                                                                {% for item in step.content %}
+                                                                    <li>
+                                                                        <span class="path">{{ item.path }}</span>
+                                                                        {% if item.summary %}
+                                                                        <div class="summary">{{ item.summary }}</div>
+                                                                        {% endif %}
+                                                                    </li>
+                                                                {% endfor %}
+                                                                </ul>
+                                                            {% endif %}
+                                                            
+                                                            <!-- 添加流程图展示区域 -->
+                                                            <div class="flowchart-container mt-3">
+                                                                <h6 class="mb-2"><i class="fas fa-project-diagram me-2"></i>模型流程图</h6>
+                                                                <div id="processFlowchart" style="height: 250px; background: #f4f7fa; border-radius: 8px;"></div>
+                                                            </div>
+
+                                                            <!-- 知识图谱可视化 -->
+                                                            <div class="card mt-4">
+                                                                <div class="card-header">
+                                                                    <h5 class="mb-0">
+                                                                        <i class="fas fa-project-diagram"></i> 知识图谱可视化
+                                                                    </h5>
+                                                                </div>
+                                                                <div class="card-body">
+                                                                    <div id="knowledgeGraphPreview" style="width: 100%; height: 600px;"></div>
+                                                                </div>
+                                                            </div>
+
+                                                        {% else %}
+                                                            <p>{{ step.content }}</p>
+                                                        {% endif %}
+                                                    </div>
                                                     {% else %}
-                                                        {% for question in step.content %}
-                                                        <div class="subquestion-item">
-                                                            <div class="subquestion">
-                                                                <span class="question-number">{{ forloop.counter }}</span>
-                                                                <span class="question-text">{{ question }}</span>
-                                                            </div>
-                                                            <div class="subanswer">
-                                                                <i class="fas fa-angle-right text-muted me-2"></i>
-                                                                <span class="answer-text">
-                                                                    {% if step.answers and question in step.answers %}
-                                                                        {{ step.answers|get_question_answer:question }}
-                                                                    {% else %}
-                                                                        {{ question|get_subanswer }}
-                                                                    {% endif %}
-                                                                </span>
-                                                            </div>
-                                                        </div>
-                                                        {% endfor %}
+                                                    <h6 class="step-title">
+                                                        <i class="fas fa-cog me-2"></i> {{ step.title }}
+                                                    </h6>
+                                                    <div class="step-content">
+                                                        <p>{{ step.content }}</p>
+                                                    </div>
                                                     {% endif %}
                                                 </div>
+                                                {% endfor %}
                                             </div>
-                                            {% elif step.title == "知识图谱检索" %}
-                                            <h6 class="step-title">
-                                                <i class="fas fa-project-diagram me-2"></i> {{ step.title }}
-                                            </h6>
-                                            
-                                            <div class="step-content">
-                                                {% if step.content|length > 0 %}
-                                                    {% if step.content|parse_json %}
-                                                        <ul class="knowledge-list">
-                                                        {% for item in step.content|parse_json %}
-                                                            <li>
-                                                                <span class="path">{{ item.path }}</span>
-                                                                {% if item.summary %}
-                                                                <div class="summary">{{ item.summary }}</div>
-                                                                {% endif %}
-                                                            </li>
-                                                        {% endfor %}
-                                                        </ul>
-                                                    {% else %}
-                                                        <ul class="knowledge-list">
-                                                        {% for item in step.content %}
-                                                            <li>
-                                                                <span class="path">{{ item.path }}</span>
-                                                                {% if item.summary %}
-                                                                <div class="summary">{{ item.summary }}</div>
-                                                                {% endif %}
-                                                            </li>
-                                                        {% endfor %}
-                                                        </ul>
-                                                    {% endif %}
-                                                    
-                                                    <!-- 知识图谱可视化 -->
-                                                    <div class="card mt-4">
-                                                        <div class="card-header">
-                                                            <h5 class="mb-0">
-                                                                <i class="fas fa-project-diagram"></i> 知识图谱可视化
-                                                            </h5>
-                                                        </div>
-                                                        <div class="card-body">
-                                                            <!-- 添加容器元素 -->
-                                                            <div id="knowledgeGraphPreview" style="width: 100%; height: 600px;"></div>
-                                                        </div>
-                                                    </div>
-                                                    
-                                                    <!-- 添加流程图展示区域 -->
-                                                    <div class="flowchart-container mt-3">
-                                                        <h6 class="mb-2"><i class="fas fa-project-diagram me-2"></i>模型流程图</h6>
-                                                        <div id="processFlowchart" style="height: 250px; background: #f4f7fa; border-radius: 8px;"></div>
-                                                    </div>
-
-
-
-                                                {% else %}
-                                                    <p>{{ step.content }}</p>
-                                                {% endif %}
-                                            </div>
-                                            {% else %}
-                                            <h6 class="step-title">
-                                                <i class="fas fa-cog me-2"></i> {{ step.title }}
-                                            </h6>
-                                            <div class="step-content">
-                                                <p>{{ step.content }}</p>
-                                            </div>
-                                            {% endif %}
                                         </div>
-                                        {% endfor %}
+                                    </div>
+                                    
+                                    <!-- 子问题容器 -->
+                                    <div class="subquestions-container">
+                                        <!-- ... existing subquestions content ... -->
+                                    </div>
+                                </div>
+                                
+                                <!-- 右侧知识图谱 -->
+                                <div class="graph-column">
+                                    <div class="knowledge-graph-container">
+                                        <div id="knowledgeGraphPreview" style="width: 100%; height: 100%;"></div>
                                     </div>
                                 </div>
                             </div>
-                            {% endif %}
 
                             <!-- 回答结果 -->
                             <div class="answer-result p-4 bg-light rounded">
@@ -609,21 +621,34 @@
             margin-bottom: 15px;
         }
 
+        /* 添加新的样式 */
+        .content-row {
+            display: flex;
+            gap: 20px;
+            margin: 15px 0;
+        }
 
+        .content-column {
+            flex: 1;
+            min-width: 0; /* 防止flex子项溢出 */
+        }
 
-        /* 响应式调整 */
+        .graph-column {
+            flex: 1;
+            min-height: 400px; /* 设置知识图谱最小高度 */
+        }
+
         @media (max-width: 768px) {
-            .chat-answer {
-                margin-left: 0;
+            .content-row {
+                flex-direction: column;
             }
             
-            .time-metrics {
-                flex-direction: column;
-                gap: 5px;
+            .graph-column {
+                min-height: 300px;
             }
         }
 
-                /* 添加到style标签中 */
+        /* 添加到style标签中 */
         .kg-tooltip-node {
             max-width: 350px;
             overflow-wrap: break-word;
@@ -743,8 +768,7 @@
             series: [{
                 type: 'graph',
                 layout: 'force',
-                data: graphData.nodes,
-                links: graphData.links,
+                data: processKGData(graphData),
                 categories: graphData.categories,
                 roam: true,
                 label: {
@@ -770,6 +794,26 @@
         window.addEventListener('resize', function() {
             myChart.resize();
         });
+    }
+
+    // 修改节点数据处理
+    function processKGData(data) {
+        return {
+            nodes: data.nodes.map(node => ({
+                name: node.entity,
+                category: node.category,
+                value: node.desc,
+                // 移除了id相关处理
+                itemStyle: {
+                    color: getCategoryColor(node.category)
+                }
+            })),
+            links: data.links.map(link => ({
+                source: link.source,
+                target: link.target,
+                value: link.reference || ''
+            }))
+        };
     }
 
     // 添加到scripts部分中

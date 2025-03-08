@@ -373,3 +373,171 @@ class TextAssembler:
             用于生成概念解释的文本
         """
         return self.assemble_text(question, template_type="explanation", include_context=True)
+    
+    # 在TextAssembler类中添加新方法
+def format_kg_results_for_context(self, question: str, kg_results: List[Dict], relevance_threshold: float = 0.3) -> str:
+    """
+    将知识图谱查询结果转换为结构化上下文文档
+    
+    Args:
+        question: 用户问题或子问题
+        kg_results: 知识图谱查询结果列表
+        relevance_threshold: 相关性阈值，低于此值的结果将被排除
+        
+    Returns:
+        结构化的上下文文档
+    """
+    if not kg_results:
+        return "未找到相关知识图谱信息。"
+    
+    # 排序结果，相关性高的排在前面
+    sorted_results = sorted(kg_results, key=lambda x: x.get('relevance', 0), reverse=True)
+    
+    # 过滤低相关性结果
+    filtered_results = [r for r in sorted_results if r.get('relevance', 0) >= relevance_threshold]
+    
+    # 格式化为结构化文档
+    context = ["### 知识图谱信息"]
+    
+    # 实体信息部分
+    entity_info = []
+    for i, result in enumerate(filtered_results[:5], 1):  # 最多使用前5个结果
+        if 'entity' in result:
+            entity_text = f"实体{i}: {result['entity']}\n"
+            if 'description' in result:
+                entity_text += f"描述: {result['description']}\n"
+            if 'properties' in result and isinstance(result['properties'], dict):
+                props = result['properties']
+                entity_text += "属性:\n"
+                for key, value in props.items():
+                    if key not in ['name', 'description'] and value:
+                        entity_text += f"- {key}: {value}\n"
+            entity_info.append(entity_text)
+    
+    if entity_info:
+        context.append("## 相关实体信息")
+        context.extend(entity_info)
+    
+    # 关系信息部分
+    relation_info = []
+    for i, result in enumerate(filtered_results[:5], 1):
+        if 'relations' in result and result['relations']:
+            rel_text = f"关系{i}:\n"
+            for j, rel in enumerate(result['relations'][:3], 1):  # 每个实体最多展示3个关系
+                if 'source' in rel and 'target' in rel and 'relation' in rel:
+                    rel_text += f"- {rel['source']} → {rel['relation']} → {rel['target']}\n"
+            relation_info.append(rel_text)
+    
+    if relation_info:
+        context.append("## 相关关系信息")
+        context.extend(relation_info)
+    
+    # 文献引用部分
+    references = []
+    for result in filtered_results:
+        if 'source_article' in result and result['source_article']:
+            references.append(result['source_article'])
+    
+    if references:
+        context.append("## 参考文献")
+        for i, ref in enumerate(list(set(references))[:3], 1):  # 去重并限制数量
+            context.append(f"[{i}] {ref}")
+    
+    return "\n\n".join(context)
+
+# 添加一个新方法，获取不同维度的知识图谱信息
+def get_comprehensive_kg_context(self, question: str, entity_names: List[str] = None) -> Dict[str, Any]:
+    """
+    获取全面的知识图谱上下文信息，包括实体、关系和辅助信息
+    
+    Args:
+        question: 用户问题
+        entity_names: 已知的实体名称列表（可选）
+        
+    Returns:
+        包含不同维度知识图谱信息的字典
+    """
+    # 如果没有提供实体，从问题中提取
+    if not entity_names:
+        entity_names = self.entity_recognizer.recognize(question)
+    
+    # 并行获取实体详情
+    entity_details = self._get_entity_details_batch(entity_names)
+    
+    # 获取实体之间的关系
+    relations = []
+    if len(entity_names) > 1:
+        with self.driver.session() as session:
+            query = """
+            MATCH (n1)-[r]-(n2)
+            WHERE n1.name IN $entity_names AND n2.name IN $entity_names
+            RETURN n1.name as source, type(r) as relation, n2.name as target
+            """
+            result = session.run(query, entity_names=entity_names)
+            for record in result:
+                relations.append({
+                    'source': record['source'],
+                    'relation': record['relation'],
+                    'target': record['target']
+                })
+    
+    # 获取扩展关系（一阶扩展）
+    extended_relations = []
+    if entity_names:
+        with self.driver.session() as session:
+            query = """
+            MATCH (n1)-[r]-(n2)
+            WHERE n1.name IN $entity_names AND NOT n2.name IN $entity_names
+            RETURN n1.name as source, type(r) as relation, n2.name as target
+            LIMIT 10
+            """
+            result = session.run(query, entity_names=entity_names)
+            for record in result:
+                extended_relations.append({
+                    'source': record['source'],
+                    'relation': record['relation'],
+                    'target': record['target']
+                })
+    
+    # 构建知识图谱可视化数据
+    nodes = []
+    links = []
+    
+    # 添加主实体节点
+    for name in entity_names:
+        if name in entity_details:
+            nodes.append({
+                'id': name,
+                'name': name,
+                'category': entity_details[name].get('properties', {}).get('category', '概念'),
+                'value': 2  # 主要实体权重更高
+            })
+    
+    # 添加扩展实体节点
+    for rel in extended_relations:
+        if rel['target'] not in [node['id'] for node in nodes]:
+            nodes.append({
+                'id': rel['target'],
+                'name': rel['target'],
+                'category': '相关概念',
+                'value': 1
+            })
+    
+    # 添加关系连接
+    for rel in relations + extended_relations:
+        links.append({
+            'source': rel['source'],
+            'target': rel['target'],
+            'name': rel['relation']
+        })
+    
+    # 返回多维度知识图谱信息
+    return {
+        'entity_details': entity_details,
+        'direct_relations': relations,
+        'extended_relations': extended_relations,
+        'visualization': {
+            'nodes': nodes,
+            'links': links
+        }
+    }
