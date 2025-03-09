@@ -4,40 +4,58 @@ from typing import List, Dict
 from openai import OpenAI
 
 class DirectMentionRecognizer:
-    def __init__(self, api_key: str):
-        self.client = OpenAI(
-            api_key=api_key,
-            base_url="https://api.chatanywhere.tech/v1"
-        )
-        # 添加缓存以避免重复查询
+    def __init__(self, api_key=None):
+        """初始化实体识别器"""
         self.cache = {}
-    
+        self.client = OpenAI(
+            api_key="sk-e38ac2aefd1345538e35919fc794aef5",
+            base_url="https://api.deepseek.com"
+        )
+        
+        self.system_prompt = """作为水文专家，请从以下文本中直接提取地理相关实体名称，要求：
+1. 只需输出实体名称列表
+2. 每个实体必须是文本中出现的原始片段
+3. 不要分类或解释
+
+示例输入："我现在有淮河流域2015-2020年的气象数据和全国的土壤数据,如何对淮河流域进行径流模拟?"
+示例输出：
+["淮河流域", "2015-2020年的气象数据", "全国的土壤数据", "径流模拟"]"""
+
+        # 添加过滤词列表
+        self.filter_words = {
+            "SWAT模型",
+            "SWAT",
+            "模型",
+            "水文模型",
+            "水文",
+            "模拟",
+            "系统",
+            "方法",
+            "研究",
+            "分析",
+            "计算",
+            "结果",
+            "数据",
+            "过程",
+            "方案",
+            "问题"
+        }
+
     def recognize(self, text: str) -> List[str]:
         """识别单个文本中的实体"""
-        print(f"\n[Mention Recognition] 开始识别文本中的实体: {text}")
         # 检查缓存
         if text in self.cache:
-            print(f"[Mention Recognition] 使用缓存结果: {self.cache[text]}")
             return self.cache[text]
             
-        prompt = f'''作为水文专家，请从以下文本中直接提取地理相关实体名称，要求：
-            1. 只需输出实体名称列表
-            2. 每个实体必须是文本中出现的原始片段
-            3. 不要分类或解释
-
-            示例输入："我现在有淮河流域2015-2020年的气象数据和全国的土壤数据,如何对淮河流域进行径流模拟?"
-            示例输出：
-            ["淮河流域", "2015-2020年的气象数据", "全国的土壤数据", "径流模拟"]
-
-            当前输入文本：{text}'''
-
         try:
             response = self.client.chat.completions.create(
-                model="gpt-4o",
-                messages=[{"role": "user", "content": prompt}],
+                model="deepseek-chat",
+                messages=[
+                    {"role": "system", "content": self.system_prompt},
+                    {"role": "user", "content": f"文本：{text}"}
+                ],
                 temperature=0.1,
-                max_tokens=1024,
-                timeout=30
+                max_tokens=2048
             )
             
             result = response.choices[0].message.content
@@ -49,13 +67,29 @@ class DirectMentionRecognizer:
             entities = json.loads(result)
             result = [ent.strip() for ent in entities if isinstance(ent, str)]
             
+            # 在处理 LLM 返回的实体时进行过滤
+            filtered_result = []
+            for entity in result:
+                # 跳过过滤词列表中的词
+                if entity.strip() in self.filter_words:
+                    continue
+                    
+                # 跳过过于简单的词（如单个字符）
+                if len(entity.strip()) <= 1:
+                    continue
+                    
+                # 跳过纯数字
+                if entity.strip().isdigit():
+                    continue
+                    
+                filtered_result.append(entity.strip())
+            
             # 保存到缓存
-            self.cache[text] = result
-            print(f"[Mention Recognition] 识别到的实体: {result}")
-            return result
+            self.cache[text] = filtered_result
+            return filtered_result
             
         except Exception as e:
-            print(f"[Mention Recognition] 实体识别失败: {e}")
+            print(f"实体识别失败: {e}")
             return []
     
     # 新增批量处理方法
@@ -101,8 +135,11 @@ class DirectMentionRecognizer:
         
         try:
             response = self.client.chat.completions.create(
-                model="gpt-4o",
-                messages=[{"role": "user", "content": batch_prompt}],
+                model="deepseek-chat",
+                messages=[
+                    {"role": "system", "content": self.system_prompt},
+                    {"role": "user", "content": batch_prompt}
+                ],
                 temperature=0.1,
                 max_tokens=2000
             )
@@ -120,8 +157,25 @@ class DirectMentionRecognizer:
                 key = f"文本{i+1}"
                 if key in parsed_results:
                     entities = [ent.strip() for ent in parsed_results[key] if isinstance(ent, str)]
-                    results[text] = entities
-                    self.cache[text] = entities
+                    # 在处理 LLM 返回的实体时进行过滤
+                    filtered_entities = []
+                    for entity in entities:
+                        # 跳过过滤词列表中的词
+                        if entity.strip() in self.filter_words:
+                            continue
+                            
+                        # 跳过过于简单的词（如单个字符）
+                        if len(entity.strip()) <= 1:
+                            continue
+                            
+                        # 跳过纯数字
+                        if entity.strip().isdigit():
+                            continue
+                            
+                        filtered_entities.append(entity.strip())
+                    
+                    results[text] = filtered_entities
+                    self.cache[text] = filtered_entities
             
             return results
             
@@ -131,6 +185,21 @@ class DirectMentionRecognizer:
             for text in uncached_texts:
                 results[text] = self.recognize(text)
             return results
+
+    def _format_prompt(self, text):
+        """格式化提示词"""
+        return f"""请识别以下文本中的专业术语、概念、方法和重要名词，不包括常见的模型名称和通用词汇：
+
+文本：{text}
+
+要求：
+1. 只返回关键的专业术语和概念
+2. 不要包括"SWAT模型"等常见模型名称
+3. 不要包括"研究"、"分析"等通用词汇
+4. 每个术语用逗号分隔
+5. 不要解释，只列出术语
+
+专业术语："""
 
 if __name__ == "__main__":
     recognizer = DirectMentionRecognizer(

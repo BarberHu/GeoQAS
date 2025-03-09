@@ -34,8 +34,8 @@ class IntegratedQASystem:
             
             # 初始化LLM客户端
             self.llm_client = OpenAI(
-                api_key=llm_api_key,
-                base_url="https://api.chatanywhere.tech/v1"
+                api_key="sk-e38ac2aefd1345538e35919fc794aef5",
+                base_url="https://api.deepseek.com"
             )
             
             # 初始化问题分解器(optional)
@@ -124,10 +124,10 @@ class IntegratedQASystem:
         try:
             # 调用LLM
             response = self.llm_client.chat.completions.create(
-                model="gpt-4o",
+                model="deepseek-chat",
                 messages=[{"role": "user", "content": prompt}],
-                temperature=0.3,
-                max_tokens=1000
+                temperature=0.7,
+                max_tokens=2048
             )
             
             answer = response.choices[0].message.content
@@ -194,10 +194,10 @@ class IntegratedQASystem:
             try:
                 # 调用LLM
                 response = self.llm_client.chat.completions.create(
-                    model="gpt-4o",
+                    model="deepseek-chat",
                     messages=[{"role": "user", "content": prompt}],
-                    temperature=0.3,
-                    max_tokens=1000
+                    temperature=0.7,
+                    max_tokens=2048
                 )
                 
                 sub_answer = response.choices[0].message.content
@@ -217,10 +217,10 @@ class IntegratedQASystem:
         
         try:
             response = self.llm_client.chat.completions.create(
-                model="gpt-4o",
+                model="deepseek-chat",
                 messages=[{"role": "user", "content": final_prompt}],
-                temperature=0.3,
-                max_tokens=1500
+                temperature=0.7,
+                max_tokens=2048
             )
             
             final_answer = response.choices[0].message.content
@@ -247,10 +247,10 @@ class IntegratedQASystem:
         try:
             # 调用LLM
             response = self.llm_client.chat.completions.create(
-                model="gpt-4o",
+                model="deepseek-chat",
                 messages=[{"role": "user", "content": prompt}],
-                temperature=0.1,
-                max_tokens=500
+                temperature=0.7,
+                max_tokens=2048
             )
             
             return response.choices[0].message.content

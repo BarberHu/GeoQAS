@@ -7,19 +7,14 @@ import random
 register = template.Library()
 
 @register.filter
-def get_total_time(time_analysis_str):
-    """从时间分析字符串中提取总思考时间"""
+def get_total_time(time_analysis):
+    """从时间分析数据中获取总时间"""
     try:
-        if not time_analysis_str:
+        if not time_analysis:
             return "未记录"
-            
-        # 如果是JSON字符串，尝试解析
-        if isinstance(time_analysis_str, str) and '{' in time_analysis_str:
-            time_data = json.loads(time_analysis_str)
-            if "总思考时间" in time_data:
-                return time_data["总思考时间"]
-            return "未记录"
-        return time_analysis_str
+        data = json.loads(time_analysis)
+        total = sum(float(v.replace('秒', '')) for v in data.values() if isinstance(v, str) and '秒' in v)
+        return f"{total:.2f}秒"
     except:
         return "未记录"
 
@@ -61,15 +56,6 @@ def get_subanswer(question):
     
     return random.choice(default_answers)
 
-@register.filter
-def parse_json(value):
-    """解析JSON字符串为Python对象"""
-    try:
-        if isinstance(value, str):
-            return json.loads(value)
-        return value
-    except:
-        return None
 
 @register.filter
 def get_question_answer(answers_dict, question):
@@ -127,3 +113,68 @@ def get_kg_for_question(kg_contexts, question):
     if isinstance(kg_contexts, dict) and question in kg_contexts:
         return kg_contexts[question]
     return None
+    
+@register.filter
+def get_dict_item(dictionary, key):
+    """从字典中获取指定键的值"""
+    try:
+        return dictionary.get(key, '')
+    except:
+        return ''
+
+@register.filter
+def parse_json(value):
+    """解析 JSON 字符串为 Python 对象"""
+    try:
+        if value:
+            return json.loads(value)
+        return None
+    except:
+        return None
+
+@register.filter
+def add(value, arg):
+    """将值添加到列表中"""
+    if not hasattr(value, 'append'):
+        value = []
+    value.append(arg)
+    return value
+
+@register.filter
+def is_duplicate(answer, used_answers):
+    """检查答案是否重复"""
+    return answer in used_answers
+
+@register.filter
+def unique_items(items_list, key_field):
+    """返回基于指定字段去重后的项目列表"""
+    seen = set()
+    unique_items = []
+    
+    for item in items_list:
+        if key_field in item:
+            value = item[key_field]
+            if value not in seen:
+                seen.add(value)
+                unique_items.append(item)
+    
+    return unique_items
+
+@register.filter
+def split_answer_and_references(text):
+    """将答案文本分割为答案和参考文献部分"""
+    if not text:
+        return {'answer': '', 'references': ''}
+        
+    parts = text.split('参考文献：', 1)
+    
+    if len(parts) == 2:
+        return {
+            'answer': parts[0].strip(),
+            'references': '参考文献：' + parts[1].strip()
+        }
+    else:
+        return {
+            'answer': text.strip(),
+            'references': ''
+        }

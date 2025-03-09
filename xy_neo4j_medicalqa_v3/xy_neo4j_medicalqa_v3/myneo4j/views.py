@@ -106,6 +106,7 @@ def wenda(request):
                 
                 # 保存对话历史
                 print("[Views] 保存对话历史...")
+           
                 wenda = MyWenda.objects.create(
                     user=user,
                     question=key,

@@ -8,6 +8,8 @@ import concurrent.futures
 from xy_neo4j.Entity_Mention.LLM_mention_final import DirectMentionRecognizer
 from xy_neo4j.Entity_Mention.Entity_Order import EntityLinker
 from xy_neo4j.Entity_Mention.integrated_qa_system import IntegratedQASystem
+from openai import OpenAI
+from typing import Dict
 
 class DialogueManager:
     def __init__(self):
@@ -48,6 +50,12 @@ class DialogueManager:
             self.zhipu = settings.ZHIPU
             jieba.initialize()
             
+            # 修改 LLM 客户端初始化
+            self.llm_client = OpenAI(
+                api_key="sk-e38ac2aefd1345538e35919fc794aef5",
+                base_url="https://api.deepseek.com"
+            )
+            
             init_time = time.time() - start_time
             print(f"系统初始化完成，耗时: {init_time:.2f}秒")
         except Exception as e:
@@ -82,6 +90,9 @@ class DialogueManager:
                 entities = self.entity_recognizer.recognize(sub_q)
                 kg_result = self.query_knowledge_graph(entities)
                 kg_contexts[sub_q] = kg_result
+            
+            # 存储kg_contexts作为实例变量，供_generate_final_answer使用
+            self.kg_contexts = kg_contexts
             
             kg_time = time.time() - kg_start_time
             print(f"[DialogueManager] 知识图谱查询完成，耗时: {kg_time:.2f}秒")
@@ -144,15 +155,17 @@ class DialogueManager:
             print(f"[DialogueManager] 处理完成，总耗时: {overall_time:.2f}秒")
             
             # 返回结果
-            return {
+            thinking_process = self._format_thinking_process(sub_questions, kg_contexts, sub_answers)
+            response = {
                 "answer": final_answer,
                 "sub_questions": sub_questions,
                 "sub_answers": sub_answers,
                 "kg_context": kg_contexts,
                 "kg_nodes": kg_nodes,
-                "time_analysis": time_analysis,
-                "thinking_process": self._format_thinking_process(sub_questions, kg_contexts, sub_answers)
+                "thinking_process": thinking_process,
+                "time_analysis": time_analysis
             }
+            return response
             
         except Exception as e:
             print(f"[DialogueManager] 错误: {str(e)}")
@@ -167,6 +180,7 @@ class DialogueManager:
                 "time_analysis": {"总思考时间": f"{overall_time:.2f}秒"},
                 "thinking_process": None
             }
+
     
     def decompose_question(self, question):
         """问题分解 - 使用集成问答系统的分解能力"""
@@ -205,64 +219,92 @@ class DialogueManager:
         """根据实体查询知识图谱"""
         try:
             if not entities:
+                print("[DialogueManager] 未识别到相关实体")
                 return "未识别到相关实体。"
             
-            # 实体链接
-            linked_entities = []
-            for entity in entities:
-                results = self.entity_linker._rank_single_entity("", entity, top_k=3)
-                if results:
-                    linked_entities.extend(results)
+            print(f"[DialogueManager] 开始查询知识图谱，实体列表: {entities}")
+            
+            # 使用GPU加速的批量处理方法
+            linked_entities_dict = self.entity_linker.rank_entities_batch_gpu("", entities, top_k=3)
+            print(f"[DialogueManager] 实体链接结果: {linked_entities_dict}")
             
             # 整理知识图谱结果
             kg_data = []
+            processed_entities = set()  # 用于跟踪已处理的实体
             
-            # 如果有链接实体，查询它们的关系
-            if linked_entities:
-                with self.entity_linker.driver.session() as session:
-                    for entity_info in linked_entities:
-                        entity_name = entity_info['entity']
+            for source_entity, entity_results in linked_entities_dict.items():
+                print(f"[DialogueManager] 处理源实体: {source_entity}")
+                
+                for entity_info in entity_results:
+                    try:
+                        entity_name = entity_info['name']  # 使用 'name' 而不是 'entity'
                         
-                        # 查询实体关系
-                        query = """
-                        MATCH (n)-[r]-(m)
-                        WHERE n.name = $entity_name
-                        RETURN n.name as source, type(r) as relation, m.name as target, 
-                               CASE WHEN n.desc IS NOT NULL THEN n.desc ELSE '' END as source_desc, 
-                               CASE WHEN m.desc IS NOT NULL THEN m.desc ELSE '' END as target_desc,
-                               CASE WHEN n.source_article IS NOT NULL THEN n.source_article ELSE '' END as reference
-                        LIMIT 5
-                        """
-                        result = session.run(query, entity_name=entity_name)
+                        # 避免重复处理相同的实体
+                        if entity_name in processed_entities:
+                            continue
+                        processed_entities.add(entity_name)
                         
-                        for record in result:
-                            path = f"{record['source']} → {record['relation']} → {record['target']}"
-                            summary = record['source_desc'] or record['target_desc']
-                            reference = record['reference']
-                            
-                            kg_data.append({
-                                "path": path,
-                                "summary": summary,
-                                "reference": reference
-                            })
-            
-            # 如果没有找到关系，至少返回实体信息
-            if not kg_data and linked_entities:
-                for entity_info in linked_entities:
-                    kg_data.append({
-                        "path": entity_info['entity'],
-                        "summary": entity_info.get('desc', ''),
-                        "reference": ""
-                    })
+                        print(f"[DialogueManager] 获取实体 {entity_name} 的相关实体")
+                        
+                        # 获取相关实体（最多3个）
+                        try:
+                            related_entities = self.entity_linker.get_related_entities(entity_name, limit=3)
+                            print(f"[DialogueManager] 找到 {len(related_entities)} 个相关实体")
+                        except Exception as rel_e:
+                            print(f"[DialogueManager] 获取相关实体失败: {rel_e}")
+                            related_entities = []
+                        
+                        # 构建知识路径
+                        path = f"{source_entity} → {entity_name}"
+                        if related_entities:
+                            # 添加相关实体到路径
+                            related_names = [rel['entity'] for rel in related_entities]
+                            path += f" → [{', '.join(related_names)}]"
+                        
+                        # 添加到结果中
+                        kg_item = {
+                            'path': path,
+                            'summary': entity_info.get('desc', ''),
+                            'source': source_entity,
+                            'target': entity_name,
+                            'score': entity_info.get('score', 0),
+                            'category': entity_info.get('category', 'Unknown'),
+                            'reference': entity_info.get('reference', ''),
+                            'related_entities': [
+                                {
+                                    'name': rel['entity'],
+                                    'relation': rel['relation'],
+                                    'direction': rel['direction'],
+                                    'desc': rel.get('desc', ''),
+                                    'category': rel.get('category', 'Unknown')
+                                }
+                                for rel in related_entities
+                            ]
+                        }
+                        
+                        # 确保所有必要字段都有值
+                        for key in ['summary', 'category', 'reference']:
+                            if not kg_item[key]:
+                                kg_item[key] = '未知'
+                        
+                        kg_data.append(kg_item)
+                        print(f"[DialogueManager] 成功添加实体 {entity_name} 的知识图谱项")
+                        
+                    except Exception as inner_e:
+                        print(f"[DialogueManager] 处理实体信息时出错: {inner_e}")
+                        continue
             
             if kg_data:
+                print(f"[DialogueManager] 成功构建知识图谱，共 {len(kg_data)} 个节点")
                 return json.dumps(kg_data, ensure_ascii=False)
             
+            print("[DialogueManager] 知识图谱中未找到相关信息")
             return "知识图谱中未找到相关信息。"
+            
         except Exception as e:
-            print(f"知识图谱查询失败: {e}")
+            print(f"[DialogueManager] 知识图谱查询失败: {e}")
             return f"知识图谱查询失败: {str(e)}"
-    
+        
     def _extract_kg_nodes_for_vis(self, kg_contexts):
         """从知识图谱上下文中提取节点用于可视化"""
         try:
@@ -281,66 +323,64 @@ class DialogueManager:
                         kg_data = json.loads(kg_context)
                         
                         for item in kg_data:
-                            if 'path' in item:
+                            # 检查必需字段
+                            if 'source' not in item or 'target' not in item:
+                                continue
+                                
+                            source = item['source']
+                            target = item['target']
+                            relation = "相关联"  # 默认关系
+                            
+                            # 提取路径中的关系（如果存在）
+                            if 'path' in item and '→' in item['path']:
                                 parts = item['path'].split('→')
                                 if len(parts) >= 3:
-                                    source = parts[0].strip()
                                     relation = parts[1].strip()
-                                    target = parts[2].strip()
+                            
+                            # 添加节点
+                            for node_name, node_desc, node_category in [
+                                (source, item.get('summary', ''), item.get('category', '概念')),
+                                (target, item.get('summary', ''), item.get('category', '概念'))
+                            ]:
+                                if not any(n['name'] == node_name for n in nodes):
+                                    # 为节点确定类别
+                                    category = node_category
+                                    if not category:
+                                        if '模型' in node_name:
+                                            category = '模型'
+                                        elif '数据' in node_name:
+                                            category = '数据'
+                                        elif '方法' in node_name:
+                                            category = '方法'
+                                        else:
+                                            category = '概念'
                                     
-                                    # 添加节点
-                                    for node in [source, target]:
-                                        if not any(n['name'] == node for n in nodes):
-                                            # 为节点分配类别
-                                            if '模型' in node:
-                                                category = '模型'
-                                            elif '数据' in node:
-                                                category = '数据'
-                                            elif '方法' in node:
-                                                category = '方法'
-                                            else:
-                                                category = '概念'
-                                            
-                                            # 确保类别存在
-                                            if category not in category_map:
-                                                category_map[category] = len(categories)
-                                                categories.append({'name': category})
-                                            
-                                            nodes.append({
-                                                'name': node,
-                                                'category': category_map[category],
-                                                'value': 20,
-                                                'symbolSize': 50,
-                                                'draggable': True,
-                                                'desc': item.get('summary', '')
-                                            })
+                                    # 确保类别存在
+                                    if category not in category_map:
+                                        category_map[category] = len(categories)
+                                        categories.append({'name': category})
                                     
-                                    # 添加关系
-                                    links.append({
-                                        'source': source,
-                                        'target': target,
-                                        'name': relation,
-                                        'value': relation
+                                    nodes.append({
+                                        'name': node_name,
+                                        'category': category_map[category],
+                                        'value': item.get('score', 0.5) * 20,  # 使用得分设置价值
+                                        'symbolSize': 40 + (item.get('score', 0.5) * 20), # 根据得分调整大小
+                                        'draggable': True,
+                                        'desc': item.get('summary', '')
                                     })
-                                elif len(parts) == 1:
-                                    # 处理单个实体（没有关系）
-                                    node = parts[0].strip()
-                                    if not any(n['name'] == node for n in nodes):
-                                        category = '概念'
-                                        if category not in category_map:
-                                            category_map[category] = len(categories)
-                                            categories.append({'name': category})
-                                        
-                                        nodes.append({
-                                            'name': node,
-                                            'category': category_map[category],
-                                            'value': 20,
-                                            'symbolSize': 50,
-                                            'draggable': True,
-                                            'desc': item.get('summary', '')
-                                        })
-                except json.JSONDecodeError:
-                    print(f"JSON解析失败: {kg_context[:100]}...")
+                            
+                            # 添加关系
+                            if source != target:  # 避免自环
+                                links.append({
+                                    'source': source,
+                                    'target': target,
+                                    'name': relation,
+                                    'value': relation
+                                })
+                except json.JSONDecodeError as je:
+                    print(f"JSON解析失败: {kg_context[:100]}... - {je}")
+                except Exception as e:
+                    print(f"处理知识图谱上下文时出错: {e}")
             
             # 返回结果
             return {
@@ -369,14 +409,15 @@ class DialogueManager:
             请给出专业、准确的回答。回答应当全面但简洁，突出重点信息。
             """
             
-            if self.qa_system:
-                return self.qa_system.answer_question(
-                    question=prompt,
-                    use_decomposition=False,
-                    force_refresh=True
-                )
-            else:
-                return self.zhipu.get_deepseek_response(prompt)
+            # 修改所有 LLM 调用
+            response = self.llm_client.chat.completions.create(
+                model="deepseek-chat",
+                messages=[{"role": "user", "content": prompt}],
+                temperature=0.7,
+                max_tokens=2048
+            )
+            
+            return response.choices[0].message.content.strip()
         except Exception as e:
             print(f"回答生成失败: {e}")
             return f"无法生成回答: {str(e)}"
@@ -384,6 +425,22 @@ class DialogueManager:
     def _generate_final_answer(self, question, context):
         """生成最终综合回答"""
         try:
+            # 从知识图谱结果中提取参考文献
+            references = []
+            
+            # 使用当前对话管理器中的kg_contexts变量
+            for sub_q, kg_data in getattr(self, 'kg_contexts', {}).items():
+                if kg_data and isinstance(kg_data, str) and kg_data.startswith('['):
+                    try:
+                        kg_items = json.loads(kg_data)
+                        for item in kg_items:
+                            if 'reference' in item and item['reference'] and item['reference'] not in references:
+                                references.append(item['reference'])
+                    except Exception as e:
+                        print(f"解析参考文献错误: {e}")
+                        continue
+            
+            # 修改提示以包含实际参考文献
             prompt = f"""
             作为水文领域专家，请基于以下子问题的回答，为原始问题提供一个综合全面的回答：
             
@@ -392,18 +449,28 @@ class DialogueManager:
             原始问题: {question}
             
             请给出一个连贯、专业、全面的回答，确保覆盖所有关键信息，并避免重复内容。回答应当结构清晰，语言流畅。
-            回答时,不要使用#或*等特殊字符 
-            根据给出的内容,列出参考文献,要求必须从前文中获取,不要自己生成参考文献
+            回答时，不要使用#或*等特殊字符。
+            
+            请在回答的最后添加以下参考文献列表：
             """
             
-            if self.qa_system:
-                return self.qa_system.answer_question(
-                    question=prompt,
-                    use_decomposition=False,
-                    force_refresh=True
-                )
+            # 添加实际参考文献
+            if references:
+                prompt += "参考文献：\n"
+                for i, ref in enumerate(references[:5], 1):  # 限制为最多5个参考文献
+                    prompt += f"{i}. {ref}\n"
             else:
-                return self.zhipu.get_deepseek_response(prompt)
+                prompt += "参考文献：暂无可用的参考文献。\n"
+            
+            # 调用LLM
+            response = self.llm_client.chat.completions.create(
+                model="deepseek-chat",
+                messages=[{"role": "user", "content": prompt}],
+                temperature=0.7,
+                max_tokens=2048
+            )
+            
+            return response.choices[0].message.content.strip()
         except Exception as e:
             print(f"生成最终回答失败: {e}")
             return f"无法生成综合回答: {str(e)}"
@@ -441,3 +508,55 @@ class DialogueManager:
             thinking.append(kg_step)
         
         return thinking
+
+    def get_node_answer(self, node_info, question):
+        """获取节点的回答，避免重复"""
+        # 如果已经有这个节点的回答，直接返回
+        if node_info['name'] in self.used_descriptions:
+            return None
+        
+        # 记录已使用的描述
+        self.used_descriptions.add(node_info['name'])
+        
+        # 组合节点信息生成回答
+        answer = ""
+        if node_info.get('desc'):
+            answer = node_info['desc']
+        
+        # 获取相关步骤或方法
+        steps = self.get_related_steps(node_info['name'])
+        if steps:
+            answer += "\n具体步骤：\n" + "\n".join(f"- {step}" for step in steps)
+        
+        return answer
+
+    def process_sub_questions(self, sub_questions):
+        """处理子问题，避免重复答案"""
+        self.used_descriptions = set()  # 记录已使用的描述
+        
+        answers = {}
+        for question in sub_questions:
+            # 获取相关节点
+            nodes = self.get_relevant_nodes(question)
+            
+            # 生成答案
+            answer_parts = []
+            for node in nodes:
+                node_answer = self.get_node_answer(node, question)
+                if node_answer:
+                    answer_parts.append(node_answer)
+            
+            # 如果没有找到新的答案，生成概括性回答
+            if not answer_parts:
+                answer_parts.append(self.generate_summary_answer(question))
+            
+            answers[question] = "\n".join(answer_parts)
+        
+        return answers
+
+    def generate_summary_answer(self, question):
+        """生成概括性回答，避免重复"""
+        # 使用 LLM 生成不依赖于节点描述的回答
+        prompt = f"请简要回答这个问题，不要重复已经提到过的内容：{question}"
+        response = self.llm_client.get_completion(prompt)
+        return response
