@@ -38,155 +38,123 @@
 
                         {% if answer %}
                         <div class="result-card mt-4">
-                            <!-- 修改内容布局 -->
-                            <div class="content-row">
-                                <!-- 左侧结构化内容 -->
-                                <div class="content-column">
-                                    <!-- 思考过程容器 -->
-                                    <div class="thinking-process-container mb-3">
-                                        <div class="thinking-header" data-bs-toggle="collapse" href="#thinkingCollapse" role="button" aria-expanded="true" aria-controls="thinkingCollapse">
-                                            <i class="fas fa-brain me-2"></i> 
-                                            <span>系统思考过程</span>
-                                            <i class="fas fa-chevron-down ms-2" style="transform: rotate(180deg);"></i>
-                                        </div>
-                                        
-                                        <div class="collapse show" id="thinkingCollapse">
-                                            <div class="thinking-content">
-                                                {% for step in thinking_process %}
-                                                <div class="thinking-step">
-                                                    {% if step.title == "问题分解" %}
-                                                    <h6 class="step-title">
-                                                        <i class="fas fa-sitemap me-2"></i> {{ step.title }}
-                                                    </h6>
-                                                    
-                                                    <div class="step-content">
-                                                        <div class="subquestions-container">
-                                                            {% if step.content|parse_json %}
-                                                                {% for question in step.content|parse_json %}
-                                                                <div class="subquestion-item">
-                                                                    <div class="subquestion">
-                                                                        <span class="question-number">{{ forloop.counter }}</span>
-                                                                        <span class="question-text">{{ question }}</span>
-                                                                    </div>
-                                                                    <div class="subanswer">
-                                                                        <i class="fas fa-angle-right text-muted me-2"></i>
-                                                                        <span class="answer-text">
-                                                                            {% if step.answers and question in step.answers %}
-                                                                                {{ step.answers|get_question_answer:question }}
-                                                                            {% else %}
-                                                                                {{ question|get_subanswer }}
-                                                                            {% endif %}
-                                                                        </span>
-                                                                    </div>
-                                                                </div>
-                                                                {% endfor %}
-                                                            {% else %}
-                                                                {% for question in step.content %}
-                                                                <div class="subquestion-item">
-                                                                    <div class="subquestion">
-                                                                        <span class="question-number">{{ forloop.counter }}</span>
-                                                                        <span class="question-text">{{ question }}</span>
-                                                                    </div>
-                                                                    <div class="subanswer">
-                                                                        <i class="fas fa-angle-right text-muted me-2"></i>
-                                                                        <span class="answer-text">
-                                                                            {% if step.answers and question in step.answers %}
-                                                                                {{ step.answers|get_question_answer:question }}
-                                                                            {% else %}
-                                                                                {{ question|get_subanswer }}
-                                                                            {% endif %}
-                                                                        </span>
-                                                                    </div>
-                                                                </div>
-                                                                {% endfor %}
-                                                            {% endif %}
-                                                        </div>
-                                                    </div>
-                                                    {% elif step.title == "知识图谱检索" %}
-                                                    <h6 class="step-title">
-                                                        <i class="fas fa-project-diagram me-2"></i> {{ step.title }}
-                                                    </h6>
-                                                    
-                                                    <div class="step-content">
-                                                        {% if step.content|length > 0 %}
-                                                            {% if step.content|parse_json %}
-                                                                <ul class="knowledge-list">
-                                                                {% for item in step.content|parse_json %}
-                                                                    <li>
-                                                                        <span class="path">{{ item.path }}</span>
-                                                                        {% if item.summary %}
-                                                                        <div class="summary">{{ item.summary }}</div>
-                                                                        {% endif %}
-                                                                    </li>
-                                                                {% endfor %}
-                                                                </ul>
-                                                            {% else %}
-                                                                <ul class="knowledge-list">
-                                                                {% for item in step.content %}
-                                                                    <li>
-                                                                        <span class="path">{{ item.path }}</span>
-                                                                        {% if item.summary %}
-                                                                        <div class="summary">{{ item.summary }}</div>
-                                                                        {% endif %}
-                                                                    </li>
-                                                                {% endfor %}
-                                                                </ul>
-                                                            {% endif %}
-                                                            
-                                                            <!-- 添加流程图展示区域 -->
-                                                            <div class="flowchart-container mt-3">
-                                                                <h6 class="mb-2"><i class="fas fa-project-diagram me-2"></i>模型流程图</h6>
-                                                                <div id="processFlowchart" style="height: 250px; background: #f4f7fa; border-radius: 8px;"></div>
-                                                            </div>
+                            <!-- 用户问题展示 -->
+                            <div class="user-question p-4 bg-light rounded mb-4">
+                                <h5 class="text-primary mb-3">
+                                    <i class="fas fa-question-circle me-2"></i>我的问题
+                                </h5>
+                                <div class="ps-3 border-start border-3 border-primary">
+                                    <p>{{ key }}</p>
+                                </div>
+                            </div>
 
-                                                            <!-- 知识图谱可视化 -->
-                                                            <div class="card mt-4">
-                                                                <div class="card-header">
-                                                                    <h5 class="mb-0">
-                                                                        <i class="fas fa-project-diagram"></i> 知识图谱可视化
-                                                                    </h5>
-                                                                </div>
-                                                                <div class="card-body">
-                                                                    <div id="knowledgeGraphPreview" style="width: 100%; height: 600px;"></div>
-                                                                </div>
-                                                            </div>
-
-                                                        {% else %}
-                                                            <p>{{ step.content }}</p>
-                                                        {% endif %}
+                            <!-- 问题分解区域 -->
+                            <div class="problem-decomposition p-4 bg-light rounded mb-4">
+                                <h5 class="text-info mb-3">
+                                    <i class="fas fa-sitemap me-2"></i>问题分解
+                                </h5>
+                                <div class="subquestions-container">
+                                    {% for step in thinking_process %}
+                                        {% if step.title == "问题分解" %}
+                                            {% if step.content|parse_json %}
+                                                {% for question in step.content|parse_json %}
+                                                <div class="subquestion-item">
+                                                    <div class="subquestion">
+                                                        <span class="question-number">{{ forloop.counter }}</span>
+                                                        <span class="question-text">{{ question }}</span>
                                                     </div>
-                                                    {% else %}
-                                                    <h6 class="step-title">
-                                                        <i class="fas fa-cog me-2"></i> {{ step.title }}
-                                                    </h6>
-                                                    <div class="step-content">
-                                                        <p>{{ step.content }}</p>
+                                                    <div class="subanswer">
+                                                        <i class="fas fa-angle-right text-muted me-2"></i>
+                                                        <span class="answer-text">
+                                                            {% if step.answers and question in step.answers %}
+                                                                {{ step.answers|get_question_answer:question }}
+                                                            {% else %}
+                                                                {{ question|get_subanswer }}
+                                                            {% endif %}
+                                                        </span>
                                                     </div>
-                                                    {% endif %}
                                                 </div>
                                                 {% endfor %}
+                                            {% else %}
+                                                {% for question in step.content %}
+                                                <div class="subquestion-item">
+                                                    <div class="subquestion">
+                                                        <span class="question-number">{{ forloop.counter }}</span>
+                                                        <span class="question-text">{{ question }}</span>
+                                                    </div>
+                                            
+                                                
+                                                    <div class="subanswer">
+                                                        <i class="fas fa-angle-right text-muted me-2"></i>
+                                                        <span class="answer-text">
+                                                            {% with kg_result=kg_context|get_kg_for_question:question %}
+                                                                {% if kg_result %}
+                                                                    <div class="kg-summary">
+                                                                        {% for item in kg_result|parse_json|slice:":2" %}
+                                                                            {% if item.path %}
+                                                                                <div class="kg-path">{{ item.path }}</div>
+                                                                            {% endif %}
+                                                                            {% if item.summary %}
+                                                                                <div class="kg-brief">{{ item.summary|truncatechars:80 }}</div>
+                                                                            {% endif %}
+                                                                        {% empty %}
+                                                                            <div class="kg-no-data">未找到相关知识图谱信息</div>
+                                                                        {% endfor %}
+                                                                    </div>
+                                                                {% elif step.answers and question in step.answers %}
+                                                                    {{ step.answers|get_question_answer:question|truncatechars:150 }}
+                                                                {% else %}
+                                                                    {{ question|get_subanswer|truncatechars:150 }}
+                                                                {% endif %}
+                                                            {% endwith %}
+                                                        </span>
+                                                    </div>
+
+
+                                                </div>
+                                                {% endfor %}
+                                            {% endif %}
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+
+                            <!-- 知识图谱和流程图双栏布局 -->
+                            <div class="graphs-container p-4 bg-light rounded mb-4">
+                                <div class="row">
+                                    <!-- 左侧知识图谱 -->
+                                    <div class="col-md-6">
+                                        <div class="card h-100">
+                                            <div class="card-header">
+                                                <h5 class="mb-0">
+                                                    <i class="fas fa-project-diagram"></i> 知识图谱
+                                                </h5>
+                                            </div>
+                                            <div class="card-body">
+                                                <div id="knowledgeGraphPreview" style="width: 100%; height: 400px;"></div>
                                             </div>
                                         </div>
                                     </div>
-                                    
-                                    <!-- 子问题容器 -->
-                                    <div class="subquestions-container">
-                                        <!-- ... existing subquestions content ... -->
-                                    </div>
-                                </div>
-                                
-                                <!-- 右侧知识图谱 -->
-                                <div class="graph-column">
-                                    <div class="knowledge-graph-container">
-                                        <div id="knowledgeGraphPreview" style="width: 100%; height: 100%;"></div>
+                                    <!-- 右侧流程图 -->
+                                    <div class="col-md-6">
+                                        <div class="card h-100">
+                                            <div class="card-header">
+                                                <h5 class="mb-0">
+                                                    <i class="fas fa-project-diagram"></i> 模型流程图
+                                                </h5>
+                                            </div>
+                                            <div class="card-body">
+                                                <div id="processFlowchart" style="width: 100%; height: 400px;"></div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- 回答结果 -->
+                            <!-- 最终答案 -->
                             <div class="answer-result p-4 bg-light rounded">
                                 <h5 class="text-success mb-3">
-                                    <i class="fas fa-lightbulb me-2"></i>解答结果
+                                    <i class="fas fa-lightbulb me-2"></i>最终解答
                                 </h5>
                                 <div class="answer-content ps-3 border-start border-3 border-success">
                                     {{ answer|linebreaks }}
@@ -215,6 +183,74 @@
                                     </div>
                                 </div>
                                 {% endif %}
+                            </div>
+                            
+                            <!-- 隐藏的完整思考过程 (可折叠) -->
+                            <div class="thinking-process-container mt-4">
+                                <div class="thinking-header" data-bs-toggle="collapse" href="#thinkingCollapse" role="button" aria-expanded="false" aria-controls="thinkingCollapse">
+                                    <i class="fas fa-brain me-2"></i> 
+                                    <span>查看完整思考过程</span>
+                                    <i class="fas fa-chevron-down ms-2"></i>
+                                </div>
+                                
+                                <div class="collapse" id="thinkingCollapse">
+                                    <div class="thinking-content">
+                                        {% for step in thinking_process %}
+                                        <div class="thinking-step">
+                                            {% if step.title == "问题分解" %}
+                                            <h6 class="step-title">
+                                                <i class="fas fa-sitemap me-2"></i> {{ step.title }}
+                                            </h6>
+                                            
+                                            <div class="step-content">
+                                                <!-- 问题分解内容 (已在上面显示) -->
+                                            </div>
+                                            {% elif step.title == "知识图谱检索" %}
+                                            <h6 class="step-title">
+                                                <i class="fas fa-project-diagram me-2"></i> {{ step.title }}
+                                            </h6>
+                                            
+                                            <div class="step-content">
+                                                {% if step.content|length > 0 %}
+                                                    {% if step.content|parse_json %}
+                                                        <ul class="knowledge-list">
+                                                        {% for item in step.content|parse_json %}
+                                                            <li>
+                                                                <span class="path">{{ item.path }}</span>
+                                                                {% if item.summary %}
+                                                                <div class="summary">{{ item.summary }}</div>
+                                                                {% endif %}
+                                                            </li>
+                                                        {% endfor %}
+                                                        </ul>
+                                                    {% else %}
+                                                        <ul class="knowledge-list">
+                                                        {% for item in step.content %}
+                                                            <li>
+                                                                <span class="path">{{ item.path }}</span>
+                                                                {% if item.summary %}
+                                                                <div class="summary">{{ item.summary }}</div>
+                                                                {% endif %}
+                                                            </li>
+                                                        {% endfor %}
+                                                        </ul>
+                                                    {% endif %}
+                                                {% else %}
+                                                    <p>{{ step.content }}</p>
+                                                {% endif %}
+                                            </div>
+                                            {% else %}
+                                            <h6 class="step-title">
+                                                <i class="fas fa-cog me-2"></i> {{ step.title }}
+                                            </h6>
+                                            <div class="step-content">
+                                                <p>{{ step.content }}</p>
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         {% endif %}
@@ -487,11 +523,16 @@
             border-left: 2px solid #ddd;
         }
 
-        /* 知识图谱容器 */
-        .knowledge-graph-container {
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            overflow: hidden;
+        /* 图表容器 */
+        .graphs-container .card {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border-radius: 10px;
+        }
+
+        .graphs-container .card-header {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+            padding: 12px 15px;
         }
 
         /* 时间分析样式 */
@@ -622,33 +663,24 @@
         }
 
         /* 添加新的样式 */
-        .content-row {
-            display: flex;
-            gap: 20px;
-            margin: 15px 0;
+        .user-question, .problem-decomposition, .graphs-container, .answer-result {
+            margin-bottom: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
 
-        .content-column {
-            flex: 1;
-            min-width: 0; /* 防止flex子项溢出 */
-        }
-
-        .graph-column {
-            flex: 1;
-            min-height: 400px; /* 设置知识图谱最小高度 */
-        }
-
+        /* 媒体查询 */
         @media (max-width: 768px) {
-            .content-row {
+            .graphs-container .row {
                 flex-direction: column;
             }
             
-            .graph-column {
-                min-height: 300px;
+            .graphs-container .col-md-6:not(:last-child) {
+                margin-bottom: 20px;
             }
         }
 
-        /* 添加到style标签中 */
+        /* 知识图谱提示样式 */
         .kg-tooltip-node {
             max-width: 350px;
             overflow-wrap: break-word;
@@ -674,10 +706,45 @@
             padding: 5px;
         }
 
-        .flowchart-container {
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
+        .kg-summary {
+            font-size: 0.85em;
+        }
+
+        .kg-path {
+            font-weight: 500;
+            color: #0056b3;
+            margin-bottom: 4px;
+        }
+
+        .kg-brief {
+            color: #555;
+            margin-bottom: 8px;
+        }
+
+        .kg-no-data {
+            color: #888;
+            font-style: italic;
+        }
+
+        /* 防止工具提示导致页面跳动 */
+        .echarts-tooltip {
+            position: absolute;
+            z-index: 9999;
+            pointer-events: none !important;
+        }
+
+        /* 添加CSS来固定图表容器 */
+        #knowledgeGraphPreview, #processFlowchart {
+            position: relative;
             overflow: hidden;
+        }
+        
+        /* 确保tooltip不会导致页面滚动 */
+        .echarts-tooltip {
+            position: absolute !important;
+            z-index: 9999;
+            pointer-events: none !important;
+            will-change: transform;
         }
     </style>
 
@@ -688,15 +755,11 @@
     document.addEventListener('DOMContentLoaded', function() {
         console.log("[Frontend] DOM加载完成，准备初始化...");
         
-        // 检查容器是否存在
-        const graphContainer = document.getElementById('knowledgeGraphPreview');
-        if (!graphContainer) {
-            console.error("[Frontend] 错误：找不到知识图谱容器元素 #knowledgeGraphPreview");
-            return;
-        }
-        
         // 初始化知识图谱
         initKnowledgeGraph();
+        
+        // 初始化流程图
+        initProcessFlowchart();
     });
 
     function initKnowledgeGraph() {
@@ -744,11 +807,12 @@
         }
         
         console.log("[Frontend] 开始渲染知识图谱...");
-        const myChart = echarts.init(graphContainer);
-        
         const option = {
             tooltip: {
                 show: true,
+                trigger: 'item',
+                enterable: false,
+                confine: true,
                 formatter: function(params) {
                     if (params.dataType === 'node') {
                         return `
@@ -763,13 +827,14 @@
                 }
             },
             legend: {
-                data: graphData.categories.map(a => a.name)
+                data: graphData.categories ? graphData.categories.map(a => a.name) : []
             },
             series: [{
                 type: 'graph',
                 layout: 'force',
-                data: processKGData(graphData),
-                categories: graphData.categories,
+                data: graphData.nodes || [],
+                links: graphData.links || [],
+                categories: graphData.categories || [],
                 roam: true,
                 label: {
                     show: true,
@@ -787,8 +852,23 @@
             }]
         };
         
+        const myChart = echarts.init(graphContainer);
         myChart.setOption(option);
-        console.log("[Frontend] 知识图谱初始化完成");
+        
+        // 阻止容器内的所有可能导致滚动的事件
+        graphContainer.addEventListener('mousewheel', function(e) {
+            e.stopPropagation();
+        }, { passive: true });
+        
+        graphContainer.addEventListener('mouseover', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        });
+        
+        graphContainer.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        });
         
         // 窗口大小变化时调整图表
         window.addEventListener('resize', function() {
@@ -796,38 +876,32 @@
         });
     }
 
-    // 修改节点数据处理
-    function processKGData(data) {
-        return {
-            nodes: data.nodes.map(node => ({
-                name: node.entity,
-                category: node.category,
-                value: node.desc,
-                // 移除了id相关处理
-                itemStyle: {
-                    color: getCategoryColor(node.category)
-                }
-            })),
-            links: data.links.map(link => ({
-                source: link.source,
-                target: link.target,
-                value: link.reference || ''
-            }))
-        };
-    }
-
-    // 添加到scripts部分中
+    // 添加流程图初始化
     function initProcessFlowchart() {
         const flowchartContainer = document.getElementById('processFlowchart');
-        if (!flowchartContainer) return;
         
+        
+        if (!flowchartContainer) {
+            console.error("[Frontend] 错误：找不到流程图容器元素 #processFlowchart");
+            return;
+        }
+        
+        // 确保 ECharts 已加载
+        if (typeof echarts === 'undefined') {
+            console.error('[Frontend] 错误：ECharts 未加载');
+            return;
+        }
+        
+        console.log("[Frontend] 开始初始化流程图...");
         const flowChart = echarts.init(flowchartContainer);
         
         // SWAT模型流程图数据
         const flowchartOption = {
             tooltip: {
                 trigger: 'item',
-                formatter: '{b}'
+                formatter: '{b}',
+                enterable: false,
+                confine: true,
             },
             animationDurationUpdate: 1500,
             animationEasingUpdate: 'quinticInOut',
@@ -983,6 +1057,22 @@
         };
         
         flowChart.setOption(flowchartOption);
+        console.log("[Frontend] 流程图初始化完成");
+        
+        // 阻止容器内的所有可能导致滚动的事件
+        flowchartContainer.addEventListener('mousewheel', function(e) {
+            e.stopPropagation();
+        }, { passive: true });
+        
+        flowchartContainer.addEventListener('mouseover', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        });
+        
+        flowchartContainer.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        });
         
         // 窗口大小变化时调整图表
         window.addEventListener('resize', function() {
@@ -990,5 +1080,20 @@
         });
     }
 
+    // 修改全局事件处理
+    document.addEventListener('DOMContentLoaded', function() {
+        const echartsContainers = document.querySelectorAll('.echarts-container, #knowledgeGraphPreview, #processFlowchart');
+        echartsContainers.forEach(container => {
+            // 阻止所有可能导致滚动的事件
+            ['wheel', 'mousewheel', 'mouseover', 'mouseenter', 'mouseleave', 'click'].forEach(eventType => {
+                container.addEventListener(eventType, function(e) {
+                    e.stopPropagation();
+                    if (eventType !== 'wheel' && eventType !== 'mousewheel') {
+                        e.preventDefault();
+                    }
+                }, { passive: eventType === 'wheel' || eventType === 'mousewheel' });
+            });
+        });
+    });
     </script>
 {% endblock %}

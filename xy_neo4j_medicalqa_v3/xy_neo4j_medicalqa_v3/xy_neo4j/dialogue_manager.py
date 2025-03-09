@@ -196,7 +196,7 @@ class DialogueManager:
         1. 按建模流程的5个阶段分层解析
         2. 每个子问题必须包含"问题焦点"和"预期输出"
         3. 使用水文专业术语（SWAT、DEM预处理等）
-        4. 保持黄河流域数据特性
+        4. 保持流域数据特性
         """
         
         return self.zhipu.get_deepseek_response(prompt)
@@ -392,6 +392,8 @@ class DialogueManager:
             原始问题: {question}
             
             请给出一个连贯、专业、全面的回答，确保覆盖所有关键信息，并避免重复内容。回答应当结构清晰，语言流畅。
+            回答时,不要使用#或*等特殊字符 
+            根据给出的内容,列出参考文献,要求必须从前文中获取,不要自己生成参考文献
             """
             
             if self.qa_system:

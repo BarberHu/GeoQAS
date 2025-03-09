@@ -120,3 +120,10 @@ def get_related_entities(self, entity_name):
            type(r) as relation
     """
     return self.graph.run(query, name=entity_name).data()
+
+@register.filter
+def get_kg_for_question(kg_contexts, question):
+    """获取指定问题的知识图谱内容"""
+    if isinstance(kg_contexts, dict) and question in kg_contexts:
+        return kg_contexts[question]
+    return None
