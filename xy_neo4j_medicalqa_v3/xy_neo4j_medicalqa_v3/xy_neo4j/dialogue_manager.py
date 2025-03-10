@@ -21,24 +21,20 @@ try:
 except Exception as e:
     print("配置导入错误:", e)
 from config import NEO4J_CONFIG, API_KEYS, LLM_CONFIG, ENTITY_CONFIG
+from llm_client_factory import LLMClientFactory
 
 class DialogueManager:
-    def __init__(self):
+    def __init__(self, llm_provider=None):
         self.query_stats = deque(maxlen=100)  # 保留最近100次查询数据
+        self.current_provider = llm_provider or LLM_CONFIG["default_provider"]
+        
         try:
             print("正在初始化问答系统...")
             start_time = time.time()
             
-            # 使用集中配置
-            # Neo4j配置
-            # 不再硬编码: NEO4J_CONFIG = {"uri": "bolt://localhost:7687", ...}
-            
-            # API密钥
-            # 不再硬编码: API_KEY = "sk-benW8QASpqo6tXfDsE9Eu6vYxJDhTtHeeeKGSh11wBOqW8SA"
-            
             # 初始化实体识别器
             try:
-                self.entity_recognizer = DeepSeekMentionRecognizer(api_key=API_KEYS.get("deepseek"))
+                self.entity_recognizer = DeepSeekMentionRecognizer(api_key=API_KEYS.get(self.current_provider))
             except Exception as e:
                 print(f"实体识别器初始化失败: {e}")
                 self.entity_recognizer = None  # 或使用备选识别器
@@ -50,7 +46,7 @@ class DialogueManager:
             try:
                 self.qa_system = IntegratedQASystem(
                     neo4j_config=NEO4J_CONFIG,
-                    llm_api_key=API_KEYS["deepseek"]
+                    llm_api_key=API_KEYS[self.current_provider]
                 )
             except ImportError as e:
                 print(f"问答系统初始化失败: {e}")
@@ -60,23 +56,72 @@ class DialogueManager:
             if not hasattr(settings, 'DEEPSEEK'):
                 print("警告: DEEPSEEK不在settings中，使用config.py中的配置")
                 self.deepseek = {
-                    "api_key": API_KEYS["deepseek"],
+                    "api_key": API_KEYS[self.current_provider],
                 }
             else:
                 self.deepseek = settings.DEEPSEEK
             jieba.initialize()
             
-            # 修改 LLM 客户端初始化
-            self.llm_client = OpenAI(
-                api_key=API_KEYS["deepseek"],
-                base_url=LLM_CONFIG["base_url"]
-            )
+            # 使用LLM客户端工厂创建LLM客户端
+            self.llm_client = LLMClientFactory.create_client(self.current_provider)
             
             end_time = time.time()
             print(f"问答系统初始化完成，耗时: {end_time - start_time:.2f}秒")
         except Exception as e:
             print(f"DialogueManager初始化失败: {e}")
             raise
+
+    def switch_provider(self, provider):
+        """
+        切换LLM提供商
+        
+        Args:
+            provider: 新的LLM提供商名称
+            
+        Returns:
+            切换结果信息
+        """
+        if provider not in LLM_CONFIG["providers"]:
+            return {"success": False, "message": f"未知的LLM提供商: {provider}"}
+        
+        try:
+            # 更新当前提供商
+            self.current_provider = provider
+            
+            # 更新LLM客户端
+            self.llm_client = LLMClientFactory.create_client(provider)
+            
+            # 更新实体识别器
+            self.entity_recognizer = DeepSeekMentionRecognizer(api_key=API_KEYS.get(provider))
+            
+            # 更新集成问答系统
+            self.qa_system = IntegratedQASystem(
+                neo4j_config=NEO4J_CONFIG,
+                llm_api_key=API_KEYS[provider]
+            )
+            
+            # 更新全局默认提供商
+            LLMClientFactory.set_default_provider(provider)
+            
+            return {
+                "success": True, 
+                "message": f"已切换到 {provider} API",
+                "provider": provider
+            }
+        except Exception as e:
+            return {"success": False, "message": f"切换API失败: {str(e)}"}
+    
+    def get_available_providers(self):
+        """
+        获取可用的LLM提供商列表
+        
+        Returns:
+            可用的LLM提供商列表
+        """
+        return {
+            "providers": LLMClientFactory.get_available_providers(),
+            "current": self.current_provider
+        }
 
     def get_response(self, question: str) -> dict:
         """完整处理用户问题并返回包含思考过程的回答"""
@@ -440,80 +485,49 @@ class DialogueManager:
         """基于上下文生成回答"""
         try:
             prompt = f"""
-            你是一个水文领域专家，专注于SWAT模型和径流模拟相关问题的解答。
-            
+            请基于以下知识库信息回答问题。如果无法从知识库中找到答案，请说明无法回答。
+
+            问题: {question}
+
+            知识库信息:
             {context}
-            
-            当前问题: {question}
-            
-            请给出专业、准确的回答。回答应当全面但简洁，突出重点信息。
             """
             
-            # 修改所有 LLM 调用
-            response = self.llm_client.chat.completions.create(
-                model="deepseek-chat",
-                messages=[{"role": "user", "content": prompt}],
-                temperature=0.7,
-                max_tokens=2048
-            )
+            # 使用LLM客户端工厂创建的客户端
+            messages = [{"role": "user", "content": prompt}]
+            answer = self.llm_client.chat_completion(messages)
             
-            return response.choices[0].message.content.strip()
+            return answer
+            
         except Exception as e:
-            print(f"回答生成失败: {e}")
-            return f"无法生成回答: {str(e)}"
+            print(f"生成回答时出错: {e}")
+            return f"抱歉，生成回答时出错: {str(e)}"
     
     def _generate_final_answer(self, question, context):
-        """生成最终综合回答"""
+        """生成最终回答"""
         try:
-            # 从知识图谱结果中提取参考文献
-            references = []
-            
-            # 使用当前对话管理器中的kg_contexts变量
-            for sub_q, kg_data in getattr(self, 'kg_contexts', {}).items():
-                if kg_data and isinstance(kg_data, str) and kg_data.startswith('['):
-                    try:
-                        kg_items = json.loads(kg_data)
-                        for item in kg_items:
-                            if 'reference' in item and item['reference'] and item['reference'] not in references:
-                                references.append(item['reference'])
-                    except Exception as e:
-                        print(f"解析参考文献错误: {e}")
-                        continue
-            
-            # 修改提示以包含实际参考文献
+            # 构建提示
             prompt = f"""
-            作为水文领域专家，请基于以下子问题的回答，为原始问题提供一个综合全面的回答：
-            
+            请基于以下信息生成对问题的综合回答。回答应该全面、准确、连贯。
+
+            问题: {question}
+
+            相关信息:
             {context}
-            
-            原始问题: {question}
-            
-            请给出一个连贯、专业、全面的回答，确保覆盖所有关键信息，并避免重复内容。回答应当结构清晰，语言流畅。
-            回答时，不要使用#或*等特殊字符。
-            
-            请在回答的最后添加以下参考文献列表：
             """
             
-            # 添加实际参考文献
-            if references:
-                prompt += "参考文献：\n"
-                for i, ref in enumerate(references[:5], 1):  # 限制为最多5个参考文献
-                    prompt += f"{i}. {ref}\n"
-            else:
-                prompt += "参考文献：暂无可用的参考文献。\n"
+            # 使用LLM客户端工厂创建的客户端
+            messages = [
+                {"role": "system", "content": "你是一个专业的水文学和环境科学助手，擅长提供准确、全面的回答。"},
+                {"role": "user", "content": prompt}
+            ]
+            answer = self.llm_client.chat_completion(messages)
             
-            # 调用LLM
-            response = self.llm_client.chat.completions.create(
-                model="deepseek-chat",
-                messages=[{"role": "user", "content": prompt}],
-                temperature=0.7,
-                max_tokens=2048
-            )
+            return answer
             
-            return response.choices[0].message.content.strip()
         except Exception as e:
-            print(f"生成最终回答失败: {e}")
-            return f"无法生成综合回答: {str(e)}"
+            print(f"生成最终回答时出错: {e}")
+            return f"抱歉，生成最终回答时出错: {str(e)}"
     
     def _format_thinking_process(self, sub_questions, kg_contexts, sub_answers):
         """格式化思考过程以便前端展示"""

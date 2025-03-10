@@ -5,21 +5,26 @@ import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
 from config import API_KEYS, LLM_CONFIG
+from llm_client_factory import LLMClientFactory
 
 
 class DeepSeekMentionRecognizer:
     """使用DeepSeek API进行实体识别的组件"""
     
-    def __init__(self, api_key=None):
-        """初始化DeepSeek实体识别器"""
-        self.api_key = api_key or API_KEYS["deepseek"]
-        self.base_url = LLM_CONFIG["base_url"]
+    def __init__(self, api_key=None, provider=None):
+        """
+        初始化DeepSeek实体识别器
         
-        # 初始化DeepSeek客户端
-        self.client = OpenAI(
-            api_key=self.api_key,
-            base_url=self.base_url
-        )
+        Args:
+            api_key: API密钥，如果为None则使用配置中的密钥
+            provider: LLM提供商名称，如果为None则使用默认提供商
+        """
+        # 如果未指定提供商，使用默认提供商
+        self.provider = provider or LLM_CONFIG["default_provider"]
+        self.api_key = api_key or API_KEYS[self.provider]
+        
+        # 使用LLM客户端工厂创建客户端
+        self.client = LLMClientFactory.create_client(self.provider)
         
         # 缓存，避免重复识别
         self.mention_cache = {}
@@ -46,17 +51,17 @@ class DeepSeekMentionRecognizer:
             回复格式示例: ["实体1", "实体2", "实体3"]
             """
             
-            response = self.client.chat.completions.create(
-                model=LLM_CONFIG["default_model"],
-                messages=[
-                    {"role": "system", "content": "你是一个专业的实体识别助手，擅长从文本中提取水文和环境科学领域的专业术语和实体。"},
-                    {"role": "user", "content": prompt}
-                ],
-                temperature=0.1,  # 低温度以获得更确定的结果
-                max_tokens=500
-            )
+            # 使用LLM客户端工厂创建的客户端进行调用
+            messages = [
+                {"role": "system", "content": "你是一个专业的实体识别助手，擅长从文本中提取水文和环境科学领域的专业术语和实体。"},
+                {"role": "user", "content": prompt}
+            ]
             
-            result = response.choices[0].message.content.strip()
+            # 调用API
+            result = self.client.chat_completion(
+                messages=messages,
+                temperature=0.1  # 低温度以获得更确定的结果
+            )
             
             # 尝试解析JSON结果
             try:

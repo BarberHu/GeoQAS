@@ -21,16 +21,64 @@ NEO4J_CONFIG = {
 # API密钥配置
 API_KEYS = {
     "deepseek": os.getenv("DEEPSEEK_API_KEY", "sk-e38ac2aefd1345538e35919fc794aef5"),
-    "zhipu": os.getenv("ZHIPU_API_KEY", "sk-benW8QASpqo6tXfDsE9Eu6vYxJDhTtHeeeKGSh11wBOqW8SA")
+    "zhipu": os.getenv("ZHIPU_API_KEY", "sk-benW8QASpqo6tXfDsE9Eu6vYxJDhTtHeeeKGSh11wBOqW8SA"),
+    "siliconflow": os.getenv("SILICONFLOW_API_KEY", "sk-zhfwnoxxdhilllqjbqciqxlhcxzhopuyuaabosgcepqwagrz")
 }
 
-# LLM配置
+# LLM配置 - 重构为支持多个模型
 LLM_CONFIG = {
+    # 默认使用的LLM提供商
+    "default_provider": "deepseek",
+    
+    # 各提供商的配置
+    "providers": {
+        "deepseek": {
+            "base_url": "https://api.deepseek.com",
+            "default_model": "deepseek-chat",
+            "max_tokens": 2048,
+            "temperature": 0.7,
+            "client_type": "openai"  # 使用OpenAI客户端
+        },
+        "zhipu": {
+            "base_url": "https://open.bigmodel.cn/api/paas/v4",
+            "default_model": "glm-4",
+            "max_tokens": 2048,
+            "temperature": 0.7,
+            "client_type": "openai"  # 使用OpenAI客户端
+        },
+        "siliconflow": {
+            "base_url": "https://api.siliconflow.cn/v1",
+            "default_model": "Pro/deepseek-ai/DeepSeek-V3",
+            "max_tokens": 2048,
+            "temperature": 0.7,
+            "top_p": 0.7,
+            "top_k": 50,
+            "frequency_penalty": 0.5,
+            "client_type": "requests"  # 使用requests库
+        }
+    },
+    
+    # 兼容旧代码的配置 - 指向默认提供商的配置
     "base_url": "https://api.deepseek.com",
     "default_model": "deepseek-chat",
     "max_tokens": 2048,
     "temperature": 0.7
 }
+
+# 更新兼容层配置函数
+def update_compat_layer():
+    """更新兼容层配置，使旧代码能够正常工作"""
+    provider = LLM_CONFIG["default_provider"]
+    provider_config = LLM_CONFIG["providers"][provider]
+    
+    # 更新顶层配置
+    LLM_CONFIG["base_url"] = provider_config["base_url"]
+    LLM_CONFIG["default_model"] = provider_config["default_model"]
+    LLM_CONFIG["max_tokens"] = provider_config["max_tokens"]
+    LLM_CONFIG["temperature"] = provider_config["temperature"]
+
+# 初始化时更新兼容层
+update_compat_layer()
 
 # 缓存配置
 CACHE_CONFIG = {

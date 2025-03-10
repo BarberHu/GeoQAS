@@ -14,6 +14,7 @@ if current_dir not in sys.path:
 try:
     sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
     from config import NEO4J_CONFIG, API_KEYS, LLM_CONFIG
+    from llm_client_factory import LLMClientFactory
     print("配置导入成功")
 except Exception as e:
     print(f"配置导入失败: {e}")
@@ -27,18 +28,26 @@ from .DeepSeek_mention import DeepSeekMentionRecognizer  # 导入新的实体识
 class IntegratedQASystem:
     """集成问答系统 - 整合实体识别、实体链接、文本拼接和问答"""
     
-    def __init__(self, neo4j_config=None, llm_api_key=None):
-        """初始化集成问答系统"""
+    def __init__(self, neo4j_config=None, llm_api_key=None, provider=None):
+        """
+        初始化集成问答系统
+        
+        Args:
+            neo4j_config: Neo4j数据库配置
+            llm_api_key: LLM API密钥
+            provider: LLM提供商名称
+        """
         # 使用传入的配置或默认配置
         neo4j_config = neo4j_config or NEO4J_CONFIG
-        llm_api_key = llm_api_key or API_KEYS["deepseek"]  # 默认使用DeepSeek
+        self.provider = provider or LLM_CONFIG["default_provider"]
+        llm_api_key = llm_api_key or API_KEYS[self.provider]
         
         # 获取EntityLinker单例实例
         self.entity_linker = EntityLinker.get_instance(neo4j_config)
         
         try:
             # 使用DeepSeek实体识别器替代原来的智谱实体识别器
-            self.entity_recognizer = DeepSeekMentionRecognizer(api_key=llm_api_key)
+            self.entity_recognizer = DeepSeekMentionRecognizer(api_key=llm_api_key, provider=self.provider)
             
             # 初始化文本拼接器
             from TextAssembler import TextAssembler
@@ -48,11 +57,8 @@ class IntegratedQASystem:
                 entity_linker=self.entity_linker
             )
             
-            # 初始化LLM客户端
-            self.llm_client = OpenAI(
-                api_key=llm_api_key,
-                base_url=LLM_CONFIG["base_url"]
-            )
+            # 使用LLM客户端工厂创建LLM客户端
+            self.llm_client = LLMClientFactory.create_client(self.provider)
             
             # 初始化问题分解器(optional)
             try:
@@ -129,7 +135,8 @@ class IntegratedQASystem:
         return (complexity_score >= 2) or (hydro_score >= 1 and complexity_score >= 1) or ("流域" in question and "数据" in question)
     
     def _answer_single_question(self, question: str) -> str:
-        """回答单个问题
+        """
+        回答单个问题
         
         Args:
             question: 用户问题
@@ -137,26 +144,20 @@ class IntegratedQASystem:
         Returns:
             问题的回答
         """
-        # 组装文本
-        prompt = self.text_assembler.assemble_text(question)
-        
         try:
-            # 调用LLM
-            response = self.llm_client.chat.completions.create(
-                model=LLM_CONFIG["default_model"],
-                messages=[{"role": "user", "content": prompt}],
-                temperature=LLM_CONFIG["temperature"],
-                max_tokens=LLM_CONFIG["max_tokens"]
-            )
+            # 组装文本
+            prompt = self.text_assembler.assemble_text(question)
             
-            answer = response.choices[0].message.content
+            # 调用LLM
+            messages = [{"role": "user", "content": prompt}]
+            answer = self.llm_client.chat_completion(messages)
             
             # 更新上下文
             self.text_assembler.update_context(question, answer)
             return answer
             
         except Exception as e:
-            print(f"回答单个问题时出错: {e}")
+            print(f"回答问题时出错: {e}")
             return f"抱歉，处理您的问题时遇到了技术问题：{str(e)}"
     
     # 修改answer_with_decomposition方法，实现并行处理
@@ -387,3 +388,37 @@ class IntegratedQASystem:
         similarity = len(common_words) / max(len(words1), len(words2))
         
         return similarity >= threshold
+
+    def switch_provider(self, provider):
+        """
+        切换LLM提供商
+        
+        Args:
+            provider: 新的LLM提供商名称
+            
+        Returns:
+            切换结果信息
+        """
+        if provider not in LLM_CONFIG["providers"]:
+            return {"success": False, "message": f"未知的LLM提供商: {provider}"}
+        
+        try:
+            # 更新当前提供商
+            self.provider = provider
+            
+            # 更新LLM客户端
+            self.llm_client = LLMClientFactory.create_client(provider)
+            
+            # 更新实体识别器
+            self.entity_recognizer = DeepSeekMentionRecognizer(
+                api_key=API_KEYS.get(provider),
+                provider=provider
+            )
+            
+            return {
+                "success": True, 
+                "message": f"已切换到 {provider} API",
+                "provider": provider
+            }
+        except Exception as e:
+            return {"success": False, "message": f"切换API失败: {str(e)}"}

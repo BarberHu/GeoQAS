@@ -16,7 +16,10 @@ from xy_neo4j.dialogue_manager import DialogueManager
 import uuid
 from django.http import JsonResponse
 from concurrent.futures import ThreadPoolExecutor
+from config import LLM_CONFIG
 
+# 创建一个全局的对话管理器实例
+dialogue_manager = DialogueManager()
 
 @login_required
 def index(request):
@@ -67,8 +70,13 @@ def wenda(request):
     # 获取历史记录
     history = ChatHistory.objects.filter(session_id=session_id).order_by('-timestamp')[:10]
     
+    # 获取可用的API提供商
+    available_providers = dialogue_manager.get_available_providers()
+    
     context = {
         'history': history,
+        'providers': available_providers['providers'],
+        'current_provider': available_providers['current']
     }
     
     # 如果是AJAX请求，启动异步处理
@@ -77,9 +85,8 @@ def wenda(request):
         return JsonResponse({'status': 'processing'})
     
     elif key:
-        # 调用问答系统处理问题
-        dm = DialogueManager()
-        response = dm.get_response(key)
+        # 使用全局对话管理器处理问题
+        response = dialogue_manager.get_response(key)
         
         # 创建新的历史记录
         chat_history = ChatHistory(
@@ -166,3 +173,38 @@ def export_history(request):
                            content_type='application/json')
     response['Content-Disposition'] = 'attachment; filename=chat_history.json'
     return response
+
+@csrf_exempt
+def switch_api(request):
+    """
+    切换API提供商
+    """
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            provider = data.get('provider')
+            
+            if not provider:
+                return JsonResponse({'success': False, 'message': '未提供API提供商名称'})
+            
+            # 使用全局对话管理器切换API
+            result = dialogue_manager.switch_provider(provider)
+            
+            return JsonResponse(result)
+        except Exception as e:
+            return JsonResponse({'success': False, 'message': f'切换API失败: {str(e)}'})
+    else:
+        return JsonResponse({'success': False, 'message': '仅支持POST请求'})
+
+@csrf_exempt
+def get_api_providers(request):
+    """
+    获取可用的API提供商列表
+    """
+    try:
+        # 使用全局对话管理器获取可用的API提供商
+        providers = dialogue_manager.get_available_providers()
+        
+        return JsonResponse(providers)
+    except Exception as e:
+        return JsonResponse({'success': False, 'message': f'获取API提供商列表失败: {str(e)}'})

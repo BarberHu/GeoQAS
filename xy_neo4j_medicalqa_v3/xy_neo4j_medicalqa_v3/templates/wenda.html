@@ -2,11 +2,36 @@
 {% load static %}
 {% load wenda_filters %}
 {% block content %}
+    <!-- 添加jQuery引用 -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    
     <main class="lyear-layout-content">
 
         <div class="container-fluid">
             <div class="card-header bg-primary text-white">
                 <h4 class="mb-0"><i class="fas fa-comment-medical"></i> 地理建模智能问答系统</h4>
+            </div>
+            
+            <!-- API选择区域 -->
+            <div class="col-md-12 mt-3">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0"><i class="fas fa-cog me-2"></i> API设置</h5>
+                            <div class="api-selector">
+                                <div class="btn-group" role="group">
+                                    {% for provider in providers %}
+                                    <button type="button" 
+                                            class="btn {% if provider == current_provider %}btn-primary{% else %}btn-outline-primary{% endif %} api-btn" 
+                                            data-provider="{{ provider }}">
+                                        {{ provider|title }}
+                                    </button>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
             
             <!-- 输入和结果区域 -->
@@ -54,59 +79,82 @@
                                     <i class="fas fa-sitemap me-2"></i>问题分解
                                 </h5>
                                 <div class="subquestions-container">
-                                        {% for step in thinking_process %}
-                                            {% if step.title == "问题分解" %}
+                                    {% for step in thinking_process %}
+                                        {% if step.title == "问题分解" %}
                                             {% with used_answers='' %}
-                                                {% for question in step.content %}
-                                                        <div class="subquestion-item">
-                                                            <div class="subquestion">
-                                                                <span class="question-number">{{ forloop.counter }}</span>
-                                                                <span class="question-text">{{ question }}</span>
+                                                {% for question_detail in step.detailed_content %}
+                                                    <div class="subquestion-item">
+                                                        <!-- 子问题标题 -->
+                                                        <div class="subquestion">
+                                                            <span class="question-number">{{ forloop.counter }}</span>
+                                                            <span class="question-text">{{ question_detail.question }}</span>
+                                                        </div>
+                                                        
+                                                        <!-- 识别出的实体 -->
+                                                        <div class="entity-recognition-container">
+                                                            <div class="entity-recognition-header" data-bs-toggle="collapse" 
+                                                                 href="#entityCollapse{{ forloop.counter }}" role="button">
+                                                                <i class="fas fa-tags me-2"></i> 识别实体
+                                                                <i class="fas fa-chevron-down ms-2"></i>
                                                             </div>
-                                                    
-                                                            <div class="subanswer">
-                                                                <i class="fas fa-angle-right text-muted me-2"></i>
-                                                                <span class="answer-text">
-                                                            {% with kg_result=kg_context|get_kg_for_question:question %}
-                                                                {% if kg_result %}
-                                                                    <div class="kg-summary">
-                                                                        {% with unique_summaries='' %}
-                                                                            {% for item in kg_result|parse_json|slice:":3" %}
-                                                                                {% if item.path %}
-                                                                                    {% with current_summary=item.summary|default:'' %}
-                                                                                        {% if current_summary and current_summary not in unique_summaries %}
-                                                                                            <div class="kg-path">{{ item.path }}</div>
-                                                                                            <div class="kg-brief">{{ current_summary|truncatechars:120 }}</div>
-                                                                                            {% with unique_summaries=unique_summaries|add:current_summary %}{% endwith %}
-                                                                                        {% endif %}
-                                                                                    {% endwith %}
-                                                                                {% endif %}
+                                                            <div class="collapse" id="entityCollapse{{ forloop.counter }}">
+                                                                <div class="entity-list">
+                                                                    {% if question_detail.entities %}
+                                                                        <ul class="entity-items">
+                                                                            {% for entity in question_detail.entities %}
+                                                                                <li><span class="entity-label">{{ entity }}</span></li>
                                                                             {% endfor %}
-                                                                        {% endwith %}
-                                                                    </div>
+                                                                        </ul>
                                                                     {% else %}
-                                                                    {% with current_answer=step.answers|get_question_answer:question %}
-                                                                        {% if current_answer and current_answer not in used_answers %}
-                                                                            {{ current_answer|truncatechars:150 }}
-                                                                            {% with used_answers=used_answers|add:current_answer %}{% endwith %}
-                                                                        {% else %}
-                                                                            {% if forloop.counter > 1 %}
-                                                                                请参考上述相关步骤。
-                                                                            {% else %}
-                                                                                {{ question|get_subanswer|truncatechars:150 }}
+                                                                        <p class="text-muted">未识别出实体</p>
                                                                     {% endif %}
-                                                                        {% endif %}
-                                                                    {% endwith %}
-                                                                {% endif %}
-                                                            {% endwith %}
-                                                                </span>
+                                                                </div>
                                                             </div>
                                                         </div>
-                                                        {% endfor %}
+                                                        
+                                                        <!-- 知识图谱查询结果 -->
+                                                        <div class="kg-query-container">
+                                                            <div class="kg-query-header" data-bs-toggle="collapse" 
+                                                                 href="#kgCollapse{{ forloop.counter }}" role="button">
+                                                                <i class="fas fa-project-diagram me-2"></i> 知识图谱查询结果
+                                                                <i class="fas fa-chevron-down ms-2"></i>
+                                                            </div>
+                                                            <div class="collapse" id="kgCollapse{{ forloop.counter }}">
+                                                                <div class="kg-result">
+                                                                    {% with kg_result=question_detail.kg_result|parse_json %}
+                                                                        {% if kg_result %}
+                                                                            <ul class="kg-items">
+                                                                                {% for item in kg_result %}
+                                                                                    <li>
+                                                                                        <div class="kg-item">
+                                                                                            <div class="kg-path">{{ item.path|default:"直接关联" }}</div>
+                                                                                            <div class="kg-score">相关度: {{ item.score|floatformat:2 }}</div>
+                                                                                            {% if item.summary %}
+                                                                                                <div class="kg-summary">{{ item.summary }}</div>
+                                                                                            {% endif %}
+                                                                                        </div>
+                                                                                    </li>
+                                                                                {% endfor %}
+                                                                            </ul>
+                                                                        {% else %}
+                                                                            <p class="text-muted">无相关知识图谱结果</p>
+                                                                        {% endif %}
+                                                                    {% endwith %}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        
+                                                        <!-- 子问题答案 -->
+                                                        <div class="subanswer">
+                                                            <i class="fas fa-angle-right text-muted me-2"></i>
+                                                            <span class="answer-text">{{ question_detail.answer|truncatechars:150 }}</span>
+                                                        </div>
+                                                    </div>
+                                                {% endfor %}
                                             {% endwith %}
                                         {% endif %}
                                     {% endfor %}
-                                                            </div>
+                                </div>
                             </div>
 
                             <!-- 知识图谱和流程图双栏布局 -->
@@ -950,7 +998,81 @@
             font-size: 12px;
             color: #666;
         }
+
+        /* 实体识别和知识图谱查询折叠面板 */
+        .entity-recognition-container, .kg-query-container {
+            margin: 8px 0;
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: rgba(255, 255, 255, 0.7);
+        }
+
+        .entity-recognition-header, .kg-query-header {
+            padding: 8px 12px;
+            background-color: rgba(230, 240, 255, 0.7);
+            color: #0d6efd;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.9em;
+            font-weight: 500;
+        }
+
+        .entity-list, .kg-result {
+            padding: 12px;
+            font-size: 0.85em;
+        }
+
+        .entity-items, .kg-items {
+            list-style-type: none;
+            padding-left: 0;
+            margin-bottom: 0;
+        }
+
+        .entity-items li, .kg-items li {
+            margin-bottom: 6px;
+        }
+
+        .entity-label {
+            display: inline-block;
+            background-color: #e7f4ff;
+            color: #0d6efd;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.9em;
+            border: 1px solid #d1e7ff;
+        }
+
+        .kg-item {
+            padding: 8px;
+            border-radius: 4px;
+            background-color: #f5f9ff;
+            margin-bottom: 4px;
+        }
+
+        .kg-path {
+            font-weight: 500;
+            color: #0d6efd;
+            margin-bottom: 4px;
+        }
+
+        .kg-score {
+            font-size: 0.85em;
+            color: #6c757d;
+            margin-bottom: 4px;
+        }
+
+        .kg-summary {
+            font-size: 0.95em;
+            color: #333;
+            padding-left: 8px;
+            border-left: 2px solid #e0e0e0;
+        }
     </style>
+
+    <!-- 添加tooltip容器元素 -->
+    <div id="custom-chart-tooltip" style="position: fixed; display: none; background: white; border-radius: 4px; box-shadow: 0 2px 12px rgba(0,0,0,0.1); max-width: 300px; z-index: 1000; padding: 10px;"></div>
 
     <!-- 添加ECharts脚本 -->
     <script src="/static/echarts.min.js"></script>
@@ -1063,23 +1185,25 @@
         myChart.on('click', params => {
             if (params.dataType === 'node') {
                 const tooltipEl = document.getElementById('custom-chart-tooltip');
-                tooltipEl.innerHTML = `
-                    <div class="kg-tooltip-node p-3">
-                        <h4 class="text-primary">${params.data.name}</h4>
-                        ${params.data.desc ? `<p class="mb-2">${params.data.desc}</p>` : ''}
-                        ${params.data.source_article ? 
-                            `<div class="reference mt-2">
-                                <i class="fas fa-book me-1"></i>
-                                来源文献: ${params.data.source_article}
-                            </div>` : ''}
-                    </div>
-                `;
-                tooltipEl.style.display = 'block';
-                
-                // 定位tooltip
-                const rect = graphContainer.getBoundingClientRect();
-                tooltipEl.style.left = `${params.event.offsetX + rect.left}px`;
-                tooltipEl.style.top = `${params.event.offsetY + rect.top}px`;
+                if (tooltipEl) {  // 添加元素存在性检查
+                    tooltipEl.innerHTML = `
+                        <div class="kg-tooltip-node p-3">
+                            <h4 class="text-primary">${params.data.name}</h4>
+                            ${params.data.desc ? `<p class="mb-2">${params.data.desc}</p>` : ''}
+                            ${params.data.source_article ? 
+                                `<div class="reference mt-2">
+                                    <i class="fas fa-book me-1"></i>
+                                    来源文献: ${params.data.source_article}
+                                </div>` : ''}
+                        </div>
+                    `;
+                    tooltipEl.style.display = 'block';
+                    
+                    // 定位tooltip
+                    const rect = graphContainer.getBoundingClientRect();
+                    tooltipEl.style.left = `${params.event.offsetX + rect.left}px`;
+                    tooltipEl.style.top = `${params.event.offsetY + rect.top}px`;
+                }
             }
         });
         
@@ -1324,23 +1448,25 @@ function initProcessFlowchart() {
         historyKG.on('click', params => {
             if (params.dataType === 'node') {
                 const tooltipEl = document.getElementById('custom-chart-tooltip');
-                tooltipEl.innerHTML = `
-                    <div class="kg-tooltip-node p-3">
-                        <h4 class="text-primary">${params.data.name}</h4>
-                        ${params.data.desc ? `<p class="mb-2">${params.data.desc}</p>` : ''}
-                        ${params.data.source_article ? 
-                            `<div class="reference mt-2">
-                                <i class="fas fa-book me-1"></i>
-                                来源文献: ${params.data.source_article}
-                            </div>` : ''}
-                    </div>
-                `;
-                tooltipEl.style.display = 'block';
-                
-                // 定位tooltip
-                const rect = container.getBoundingClientRect();
-                tooltipEl.style.left = `${params.event.offsetX + rect.left}px`;
-                tooltipEl.style.top = `${params.event.offsetY + rect.top}px`;
+                if (tooltipEl) {  // 添加元素存在性检查
+                    tooltipEl.innerHTML = `
+                        <div class="kg-tooltip-node p-3">
+                            <h4 class="text-primary">${params.data.name}</h4>
+                            ${params.data.desc ? `<p class="mb-2">${params.data.desc}</p>` : ''}
+                            ${params.data.source_article ? 
+                                `<div class="reference mt-2">
+                                    <i class="fas fa-book me-1"></i>
+                                    来源文献: ${params.data.source_article}
+                                </div>` : ''}
+                        </div>
+                    `;
+                    tooltipEl.style.display = 'block';
+                    
+                    // 定位tooltip
+                    const rect = container.getBoundingClientRect();
+                    tooltipEl.style.left = `${params.event.offsetX + rect.left}px`;
+                    tooltipEl.style.top = `${params.event.offsetY + rect.top}px`;
+                }
             }
         });
         
@@ -1404,5 +1530,76 @@ function initProcessFlowchart() {
             a.remove();
         });
     }
+
+    // API选择功能
+    $(document).ready(function() {
+        console.log("文档加载完成，设置API按钮事件");
+        
+        $('.api-btn').on('click', function() {
+            console.log("API按钮被点击");
+            const provider = $(this).data('provider');
+            console.log("选择的提供商:", provider);
+            
+            // 显示加载状态
+            $(this).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> 切换中...');
+            
+            // 发送API切换请求
+            $.ajax({
+                url: '/api/switch',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ provider: provider }),
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                success: function(response) {
+                    console.log("API切换响应:", response);
+                    if (response.success) {
+                        // 更新按钮状态
+                        $('.api-btn').removeClass('btn-primary').addClass('btn-outline-primary');
+                        $(`.api-btn[data-provider="${provider}"]`).removeClass('btn-outline-primary').addClass('btn-primary');
+                        
+                        // 显示成功消息
+                        alert(response.message);
+                    } else {
+                        // 显示错误消息
+                        alert(response.message);
+                    }
+                    
+                    // 恢复按钮文本
+                    $(`.api-btn[data-provider="${provider}"]`).html(provider.charAt(0).toUpperCase() + provider.slice(1));
+                },
+                error: function(xhr, status, error) {
+                    // 显示错误消息
+                    console.error("API切换错误:", error);
+                    console.error("错误状态:", status);
+                    console.error("响应文本:", xhr.responseText);
+                    alert('切换API失败: ' + error);
+                    
+                    // 恢复按钮文本
+                    $(`.api-btn[data-provider="${provider}"]`).html(provider.charAt(0).toUpperCase() + provider.slice(1));
+                }
+            });
+        });
+    });
+
+    // 确保折叠面板交互正常工作
+    document.addEventListener('DOMContentLoaded', function() {
+        const toggleButtons = document.querySelectorAll('[data-bs-toggle="collapse"]');
+        
+        toggleButtons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if(target) {
+                    if(target.classList.contains('show')) {
+                        target.classList.remove('show');
+                    } else {
+                        target.classList.add('show');
+                    }
+                }
+            });
+        });
+    });
     </script>
 {% endblock %}

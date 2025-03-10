@@ -8,4 +8,8 @@ urlpatterns = [
     re_path(r"^wenda$", wenda, name="wenda"),  # 使用 re_path 替代 url
     path('clear-history', clear_history, name='clear_history'),
     path('export-history', export_history, name='export_history'),
+    
+    # API选择功能
+    path('api/switch', switch_api, name='switch_api'),
+    path('api/providers', get_api_providers, name='get_api_providers'),
 ]
