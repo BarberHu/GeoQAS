@@ -2,14 +2,18 @@
 import json
 from typing import List, Dict
 from openai import OpenAI
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
+from config import API_KEYS, LLM_CONFIG, ENTITY_CONFIG
 
 class DirectMentionRecognizer:
     def __init__(self, api_key=None):
         """初始化实体识别器"""
         self.cache = {}
         self.client = OpenAI(
-            api_key="sk-e38ac2aefd1345538e35919fc794aef5",
-            base_url="https://api.deepseek.com"
+            api_key=api_key or API_KEYS["deepseek"],
+            base_url=LLM_CONFIG["base_url"]
         )
         
         self.system_prompt = """作为水文专家，请从以下文本中直接提取地理相关实体名称，要求：
@@ -21,25 +25,8 @@ class DirectMentionRecognizer:
 示例输出：
 ["淮河流域", "2015-2020年的气象数据", "全国的土壤数据", "径流模拟"]"""
 
-        # 添加过滤词列表
-        self.filter_words = {
-            "SWAT模型",
-            "SWAT",
-            "模型",
-            "水文模型",
-            "水文",
-            "模拟",
-            "系统",
-            "方法",
-            "研究",
-            "分析",
-            "计算",
-            "结果",
-            "数据",
-            "过程",
-            "方案",
-            "问题"
-        }
+        # 使用配置文件中的过滤词列表
+        self.filter_words = set(ENTITY_CONFIG["filter_words"])
 
     def recognize(self, text: str) -> List[str]:
         """识别单个文本中的实体"""

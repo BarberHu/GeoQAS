@@ -10,19 +10,35 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 if current_dir not in sys.path:
     sys.path.append(current_dir)
 
+# 配置导入部分增加错误捕获
+try:
+    sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
+    from config import NEO4J_CONFIG, API_KEYS, LLM_CONFIG
+    print("配置导入成功")
+except Exception as e:
+    print(f"配置导入失败: {e}")
+    # 使用默认配置
+    NEO4J_CONFIG = {"uri": "bolt://localhost:7687", "user": "neo4j", "password": "wswy0129"}
+    API_KEYS = {"deepseek": "[PROVIDE_YOUR_API_KEY]"}
+
+from .Entity_Order import EntityLinker
+from .DeepSeek_mention import DeepSeekMentionRecognizer  # 导入新的实体识别器
+
 class IntegratedQASystem:
     """集成问答系统 - 整合实体识别、实体链接、文本拼接和问答"""
     
-    def __init__(self, neo4j_config: Dict[str, str], llm_api_key: str):
+    def __init__(self, neo4j_config=None, llm_api_key=None):
         """初始化集成问答系统"""
+        # 使用传入的配置或默认配置
+        neo4j_config = neo4j_config or NEO4J_CONFIG
+        llm_api_key = llm_api_key or API_KEYS["deepseek"]  # 默认使用DeepSeek
+        
+        # 获取EntityLinker单例实例
+        self.entity_linker = EntityLinker.get_instance(neo4j_config)
+        
         try:
-            # 修改导入语句
-            from LLM_mention_final import DirectMentionRecognizer  # 改用正确的文件名
-            self.entity_recognizer = DirectMentionRecognizer(api_key=llm_api_key)
-            
-            # 初始化实体链接器
-            from Entity_Order import EntityLinker
-            self.entity_linker = EntityLinker(neo4j_config=neo4j_config)
+            # 使用DeepSeek实体识别器替代原来的智谱实体识别器
+            self.entity_recognizer = DeepSeekMentionRecognizer(api_key=llm_api_key)
             
             # 初始化文本拼接器
             from TextAssembler import TextAssembler
@@ -34,8 +50,8 @@ class IntegratedQASystem:
             
             # 初始化LLM客户端
             self.llm_client = OpenAI(
-                api_key="sk-e38ac2aefd1345538e35919fc794aef5",
-                base_url="https://api.deepseek.com"
+                api_key=llm_api_key,
+                base_url=LLM_CONFIG["base_url"]
             )
             
             # 初始化问题分解器(optional)
@@ -64,6 +80,9 @@ class IntegratedQASystem:
         Returns:
             问题的回答
         """
+        # 重置EntityLinker查询状态
+        self.entity_linker.reset_query_state()
+        
         # 检查缓存
         cache_key = f"{question}_{use_decomposition}"
         if not force_refresh and cache_key in self.answer_cache:
@@ -124,10 +143,10 @@ class IntegratedQASystem:
         try:
             # 调用LLM
             response = self.llm_client.chat.completions.create(
-                model="deepseek-chat",
+                model=LLM_CONFIG["default_model"],
                 messages=[{"role": "user", "content": prompt}],
-                temperature=0.7,
-                max_tokens=2048
+                temperature=LLM_CONFIG["temperature"],
+                max_tokens=LLM_CONFIG["max_tokens"]
             )
             
             answer = response.choices[0].message.content
@@ -194,10 +213,10 @@ class IntegratedQASystem:
             try:
                 # 调用LLM
                 response = self.llm_client.chat.completions.create(
-                    model="deepseek-chat",
+                    model=LLM_CONFIG["default_model"],
                     messages=[{"role": "user", "content": prompt}],
-                    temperature=0.7,
-                    max_tokens=2048
+                    temperature=LLM_CONFIG["temperature"],
+                    max_tokens=LLM_CONFIG["max_tokens"]
                 )
                 
                 sub_answer = response.choices[0].message.content
@@ -217,10 +236,10 @@ class IntegratedQASystem:
         
         try:
             response = self.llm_client.chat.completions.create(
-                model="deepseek-chat",
+                model=LLM_CONFIG["default_model"],
                 messages=[{"role": "user", "content": final_prompt}],
-                temperature=0.7,
-                max_tokens=2048
+                temperature=LLM_CONFIG["temperature"],
+                max_tokens=LLM_CONFIG["max_tokens"]
             )
             
             final_answer = response.choices[0].message.content
@@ -247,10 +266,10 @@ class IntegratedQASystem:
         try:
             # 调用LLM
             response = self.llm_client.chat.completions.create(
-                model="deepseek-chat",
+                model=LLM_CONFIG["default_model"],
                 messages=[{"role": "user", "content": prompt}],
-                temperature=0.7,
-                max_tokens=2048
+                temperature=LLM_CONFIG["temperature"],
+                max_tokens=LLM_CONFIG["max_tokens"]
             )
             
             return response.choices[0].message.content

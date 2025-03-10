@@ -1,23 +1,28 @@
 from openai import OpenAI
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
+from config import API_KEYS, LLM_CONFIG
 
-class GetDeepseekResponse:  # 可以保留这个类名，避免大量修改
+class GetDeepseekResponse:
     def __init__(self):
-        # 修改为ChatGPT API密钥
-        self.api_key = 'sk-w9ADthmrlb2lf6EdP6kkMtxXkmXTOHnzVXhCltfxMTssYoIs'
+        # 使用配置文件中的API密钥和基础URL
+        self.api_key = API_KEYS["deepseek"]
+        self.base_url = LLM_CONFIG["base_url"]
         
-        # 配置客户端，修改为ChatAnywhere的中转地址
+        # 配置DeepSeek客户端
         self.client = OpenAI(
             api_key=self.api_key,
-            base_url="https://api.chatanywhere.tech/v1",  # 修改为ChatAnywhere的API地址
+            base_url=self.base_url,
             timeout=30,
             max_retries=3
         )
 
-    def get_deepseek_response(self, prompt):  # 保留方法名，避免大量修改
+    def get_deepseek_response(self, prompt):
         try:
-            print("正在调用ChatGPT接口...")
+            print("正在调用DeepSeek API...")
             response = self.client.chat.completions.create(
-                model="gpt-4o-mini",  # 修改为ChatGPT的模型名称
+                model=LLM_CONFIG["default_model"],  # 使用配置中的默认模型名称
                 messages=[
                     {
                         "role": "system", 
@@ -33,15 +38,16 @@ class GetDeepseekResponse:  # 可以保留这个类名，避免大量修改
                     },
                     {"role": "user", "content": prompt}
                 ],
-                temperature=0.3,
-                max_tokens=2000,  # 增加token限制，ChatGPT支持更长回复
+                temperature=LLM_CONFIG["temperature"],
+                max_tokens=LLM_CONFIG["max_tokens"],
                 stream=False
             )
             return response.choices[0].message.content
             
         except Exception as e:
-            print(f"ChatGPT接口调用失败: {str(e)}")
+            print(f"DeepSeek API调用失败: {str(e)}")
             print(f"错误类型: {type(e)}")
-            print(f"API密钥: {self.api_key[:11]}...{self.api_key[-4:]}")
-            return "抱歉，AI接口暂时无法访问，请稍后再试。"
-
+            # 不要打印完整API密钥，只打印部分用于调试
+            masked_key = f"{self.api_key[:5]}...{self.api_key[-4:]}"
+            print(f"API密钥: {masked_key}")
+            return "抱歉，DeepSeek API暂时无法访问，请稍后再试。" 

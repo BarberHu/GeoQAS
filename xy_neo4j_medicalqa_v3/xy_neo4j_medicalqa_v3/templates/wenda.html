@@ -54,19 +54,19 @@
                                     <i class="fas fa-sitemap me-2"></i>问题分解
                                 </h5>
                                 <div class="subquestions-container">
-                                    {% for step in thinking_process %}
-                                        {% if step.title == "问题分解" %}
+                                        {% for step in thinking_process %}
+                                            {% if step.title == "问题分解" %}
                                             {% with used_answers='' %}
                                                 {% for question in step.content %}
-                                                <div class="subquestion-item">
-                                                    <div class="subquestion">
-                                                        <span class="question-number">{{ forloop.counter }}</span>
-                                                        <span class="question-text">{{ question }}</span>
-                                                    </div>
+                                                        <div class="subquestion-item">
+                                                            <div class="subquestion">
+                                                                <span class="question-number">{{ forloop.counter }}</span>
+                                                                <span class="question-text">{{ question }}</span>
+                                                            </div>
                                                     
-                                                    <div class="subanswer">
-                                                        <i class="fas fa-angle-right text-muted me-2"></i>
-                                                        <span class="answer-text">
+                                                            <div class="subanswer">
+                                                                <i class="fas fa-angle-right text-muted me-2"></i>
+                                                                <span class="answer-text">
                                                             {% with kg_result=kg_context|get_kg_for_question:question %}
                                                                 {% if kg_result %}
                                                                     <div class="kg-summary">
@@ -84,7 +84,7 @@
                                                                             {% endfor %}
                                                                         {% endwith %}
                                                                     </div>
-                                                                {% else %}
+                                                                    {% else %}
                                                                     {% with current_answer=step.answers|get_question_answer:question %}
                                                                         {% if current_answer and current_answer not in used_answers %}
                                                                             {{ current_answer|truncatechars:150 }}
@@ -94,19 +94,19 @@
                                                                                 请参考上述相关步骤。
                                                                             {% else %}
                                                                                 {{ question|get_subanswer|truncatechars:150 }}
-                                                                            {% endif %}
+                                                                    {% endif %}
                                                                         {% endif %}
                                                                     {% endwith %}
                                                                 {% endif %}
                                                             {% endwith %}
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                                {% endfor %}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                        {% endfor %}
                                             {% endwith %}
                                         {% endif %}
                                     {% endfor %}
-                                </div>
+                                                            </div>
                             </div>
 
                             <!-- 知识图谱和流程图双栏布局 -->
@@ -165,7 +165,7 @@
                                                 {{ answer_parts.references|linebreaks }}
                                             </div>
                                         </div>
-                                        {% endif %}
+                                                                    {% endif %}
                                     {% endwith %}
                                 </div>
                                 
@@ -177,12 +177,12 @@
                                             <span class="time-metric">
                                                 <i class="fas fa-clock text-muted me-1"></i>
                                                 {{ metric }}: {{ value }}
-                                            </span>
+                                                                </span>
                                         {% endfor %}
-                                    </div>
-                                </div>
-                                {% endif %}
-                            </div>
+                                                            </div>
+                                                        </div>
+                                                    {% endif %}
+                                                </div>
                             
                             <!-- 隐藏的完整思考过程 (可折叠) -->
                             <div class="thinking-process-container mt-4">
@@ -253,240 +253,149 @@
                             </div>
                                 </div>
                                                 {% endif %}
-                    </div>
-                </div>
-            </div>
-
-            <!-- 历史记录区域 -->
-            <div class="history-section mt-4">
-                <!-- 清除历史按钮 -->
-                <div class="row mb-3">
-                    <div class="col-12">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <h5><i class="fas fa-history me-2"></i>历史对话</h5>
-                            <a href="/wenda?clean=1" class="btn btn-danger btn-sm">
-                                <i class="fas fa-trash-alt"></i> 清除历史记录
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="chat-history">
-                    {% if all_wendas %}
-                        {% for qa in all_wendas %}
-                        <div class="chat-sequence mb-4">
-                            <!-- 问题卡片 -->
-                            <div class="chat-question">
-                                <div class="card shadow-sm">
-                                    <div class="card-body">
-                                        <div class="d-flex align-items-start">
-                                            <div class="user-avatar me-3">
-                                                <i class="fas fa-user-circle fa-2x text-primary"></i>
-                                            </div>
-                                            <div class="question-content flex-grow-1">
-                                                <div class="user-question p-3 rounded">
-                                                    {{ qa.question }}
-                                                </div>
-                                            </div>
-                                        </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- 回答卡片 -->
-                            <div class="chat-answer mt-3">
-                                <div class="card shadow-sm">
-                                    <div class="card-body">
-                                        <div class="d-flex align-items-start">
-                                            <div class="assistant-avatar me-3">
-                                                <i class="fas fa-robot fa-2x text-success"></i>
+            <!-- 添加历史记录部分 -->
+            <div class="history-container mt-4">
+                <div class="history-header d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="text-primary mb-0"><i class="fas fa-history me-2"></i>历史对话</h4>
+                    <div class="btn-group">
+                        <button class="btn btn-sm btn-outline-secondary" onclick="exportHistory()">
+                            <i class="fas fa-download me-1"></i> 导出历史
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="clearHistory()">
+                            <i class="fas fa-trash-alt me-1"></i> 清空历史
+                        </button>
+                </div>
+            </div>
+
+                {% if history %}
+                    <div class="accordion" id="historyAccordion">
+                        {% for chat in history %}
+                            <div class="accordion-item mb-3 border rounded shadow-sm">
+                                <h2 class="accordion-header" id="heading{{ forloop.counter }}">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                            data-bs-target="#collapse{{ forloop.counter }}" aria-expanded="false" 
+                                            aria-controls="collapse{{ forloop.counter }}">
+                                        <div class="d-flex w-100 justify-content-between">
+                                            <span class="text-truncate me-3">{{ chat.question|truncatechars:80 }}</span>
+                                            <small class="text-muted">{{ chat.timestamp|date:"Y-m-d H:i" }}</small>
+                        </div>
+                                    </button>
+                                </h2>
+                                <div id="collapse{{ forloop.counter }}" class="accordion-collapse collapse" 
+                                     aria-labelledby="heading{{ forloop.counter }}" data-bs-parent="#historyAccordion">
+                                    <div class="accordion-body">
+                                        <!-- 问题 -->
+                                        <div class="user-question p-3 bg-light rounded mb-3">
+                                            <h5 class="text-primary mb-2">
+                                                <i class="fas fa-question-circle me-2"></i>问题
+                                            </h5>
+                                            <div class="ps-3 border-start border-3 border-primary">
+                                                <p>{{ chat.question }}</p>
+                    </div>
+                </div>
+
+                                        <!-- 知识图谱 -->
+                                        {% if chat.kg_nodes %}
+                                            <div class="graph-container mb-3">
+                                                <h5 class="text-info mb-2">
+                                                    <i class="fas fa-project-diagram me-2"></i>知识图谱
+                                                </h5>
+                                                <div id="history-kg-{{ forloop.counter }}" class="knowledge-graph-container" style="height: 300px;"></div>
                                             </div>
-                                            <div class="answer-content flex-grow-1">
-                                                <!-- 思考过程部分 -->
-                                                <div class="thinking-process-container mb-3">
-                                                    <div class="thinking-header p-2" data-bs-toggle="collapse" 
-                                                     href="#thinking-{{ forloop.counter }}" role="button">
-                                                        <i class="fas fa-brain me-2"></i>思考过程
-                                                        <i class="fas fa-chevron-down float-end"></i>
+                                            <script>
+                                                document.addEventListener('DOMContentLoaded', function() {
+                                                    try {
+                                                        const kgData = JSON.parse('{{ chat.kg_nodes|escapejs }}');
+                                                        initHistoryKg('history-kg-{{ forloop.counter }}', kgData);
+                                                    } catch(e) {
+                                                        console.error("无法加载历史知识图谱:", e);
+                                                    }
+                                                });
+                                            </script>
+                                        {% endif %}
+                                        
+                                        <!-- 问题分解 -->
+                                        {% if chat.thinking_process %}
+                                            <div class="thinking-process mb-3">
+                                                <h5 class="text-info mb-2">
+                                                    <i class="fas fa-sitemap me-2"></i>问题分解
+                                                </h5>
+                                                <div class="subquestions-container">
+                                                    {% with thinking_process=chat.get_thinking_process %}
+                                                        {% for step in thinking_process %}
+                                                            {% if step.title == "问题分解" %}
+                                                                {% for question in step.content %}
+                                                                    <div class="subquestion-item">
+                                                                        <div class="subquestion">
+                                                                            <span class="question-number">{{ forloop.counter }}</span>
+                                                                            <span class="question-text">{{ question }}</span>
                                                 </div>
-                                                
-                                                <div class="collapse" id="thinking-{{ forloop.counter }}">
-                                                        <div class="thinking-process p-3">
-                                                            <!-- 问题分解部分 -->
-                                                        {% if qa.sub_questions %}
-                                                            <div class="problem-decomposition mb-3">
-                                                                <h6 class="text-muted mb-2">问题分解：</h6>
-                                                                <div class="subquestions-container">
-                                                                {% with subq=qa.sub_questions|parse_json %}
-                                                                        {% for q in subq %}
-                                                                        <div class="subquestion-item p-2 mb-2">
-                                                                            <div class="subquestion">
-                                                                                <span class="question-number">{{ forloop.counter }}</span>
-                                                                                <span class="question-text">{{ q }}</span>
-                                                                            </div>
-                                                                            <div class="subanswer mt-2">
-                                                                                {% with sub_answers=qa.sub_answers|parse_json %}
-                                                                                    {% if sub_answers and q in sub_answers %}
-                                                                                        {% with current_answer=sub_answers|get_dict_item:q %}
-                                                                                            {% if not current_answer in used_answers %}
-                                                                                                {{ current_answer|truncatechars:150 }}
-                                                                                                {% with used_answers=used_answers|add:current_answer %}{% endwith %}
-                                                                                            {% else %}
-                                                                                                <!-- 如果答案重复，显示概括性回答 -->
-                                                                                                请参考上述相关步骤。
-                                                                                            {% endif %}
-                                                                                        {% endwith %}
-                                                                                    {% else %}
-                                                                                        {{ q|get_subanswer|truncatechars:150 }}
-                                                                                    {% endif %}
-                                                                                {% endwith %}
-                                                                            </div>
-                                                                        </div>
+                                                                    </div>
                                                                         {% endfor %}
+                                                                    {% endif %}
+                                                        {% endfor %}
                                                                 {% endwith %}
                                                             </div>
                                                         </div>
                                                         {% endif %}
                                                         
-                                                            <!-- 知识图谱部分 -->
-                                                            {% if qa.kg_nodes %}
-                                                            <div class="knowledge-graph-section mb-3">
-                                                                <h6 class="text-muted mb-2">相关知识图谱：</h6>
-                                                                <div class="mini-kg-container" id="history-kg-{{ forloop.counter }}" style="height: 300px;"></div>
-                                                                <script>
-                                                                    document.addEventListener('DOMContentLoaded', function() {
-                                                                        try {
-                                                                            const historyKG = echarts.init(document.getElementById('history-kg-{{ forloop.counter }}'));
-                                                                            const kgData = JSON.parse('{{ qa.kg_nodes|escapejs }}');
-                                                                            
-                                                                            const option = {
-                                                                                tooltip: {
-                                                                                    show: false
-                                                                                },
-                                                                                series: [{
-                                                                                    type: 'graph',
-                                                                                    layout: 'force',
-                                                                                    data: kgData.nodes || [],
-                                                                                    links: kgData.links || [],
-                                                                                    categories: kgData.categories || [],
-                                                                                    roam: true,
-                                                                                    label: {
-                                                                                        show: true,
-                                                                                        position: 'inside',
-                                                                                        formatter: '{b}',
-                                                                                        fontSize: 12,
-                                                                                        color: '#333',
-                                                                                        fontWeight: 500,
-                                                                                        backgroundColor: 'rgba(255, 255, 255, 0.8)',
-                                                                                        padding: [4, 8],
-                                                                                        borderRadius: 4
-                                                                                    },
-                                                                                    force: {
-                                                                                        repulsion: 200,
-                                                                                        edgeLength: 100
-                                                                                    },
-                                                                                    itemStyle: {
-                                                                                        borderWidth: 2,
-                                                                                        borderColor: '#fff',
-                                                                                        shadowBlur: 10,
-                                                                                        shadowColor: 'rgba(0, 0, 0, 0.3)'
-                                                                                    },
-                                                                                    edgeSymbol: ['none', 'arrow'],
-                                                                                    edgeLabel: {
-                                                                                        show: true,
-                                                                                        formatter: '{c}',
-                                                                                        fontSize: 10,
-                                                                                        color: '#666'
-                                                                                    }
-                                                                                }]
-                                                                            };
-                                                                            
-                                                                            historyKG.setOption(option);
-                                                                            
-                                                                            // Custom tooltip handling
-                                                                            const tooltipEl = document.getElementById('custom-chart-tooltip');
-                                                                            
-                                                                            historyKG.on('mouseover', function(params) {
-                                                                                if (params.dataType === 'node') {
-                                                                                    tooltipEl.innerHTML = `<div class="kg-tooltip-node">
-                                                                                        <h4>${params.data.name}</h4>
-                                                                                        ${params.data.desc ? `<p>${params.data.desc}</p>` : ''}
-                                                                                    </div>`;
-                                                                                    tooltipEl.style.display = 'block';
-                                                                                } else if (params.dataType === 'edge') {
-                                                                                    tooltipEl.innerHTML = `${params.data.source} ${params.data.name} ${params.data.target}`;
-                                                                                    tooltipEl.style.display = 'block';
-                                                                                }
-                                                                            });
-                                                                            
-                                                                            historyKG.on('mousemove', function(params) {
-                                                                                tooltipEl.style.left = (params.event.offsetX + 15) + 'px';
-                                                                                tooltipEl.style.top = (params.event.offsetY + 15) + 'px';
-                                                                            });
-                                                                            
-                                                                            historyKG.on('mouseout', function() {
-                                                                                tooltipEl.style.display = 'none';
-                                                                            });
-                                                                            
-                                                                            // Handle window resize
-                                                                            window.addEventListener('resize', function() {
-                                                                                historyKG.resize();
-                                                                            });
-                                                                        } catch(e) {
-                                                                            console.error('Error initializing history KG:', e);
-                                                                        }
-                                                                    });
-                                                                </script>
+                                        <!-- 流程图 -->
+                                        {% if chat.has_flowchart %}
+                                            <div class="flowchart-container mb-3">
+                                                <h5 class="text-info mb-2">
+                                                    <i class="fas fa-sitemap me-2"></i>流程图
+                                                </h5>
+                                                <div id="history-flow-{{ forloop.counter }}" class="flowchart-container" style="height: 300px;"></div>
                                                             </div>
-                                                            {% endif %}
-
-                                                            <!-- 时间分析部分 -->
-                                                        {% if qa.time_analysis %}
-                                                            <div class="time-analysis">
-                                                                <h6 class="text-muted mb-2">处理时间分析：</h6>
-                                                                <div class="time-details">
-                                                                {% with time_data=qa.time_analysis|parse_json %}
-                                                                    {% if time_data %}
-                                                                            <ul class="list-unstyled">
-                                                                        {% for key, value in time_data.items %}
-                                                                                <li><small>{{ key }}: {{ value }}</small></li>
-                                                                        {% endfor %}
-                                                                        </ul>
-                                                                    {% endif %}
-                                                                {% endwith %}
-                                                            </div>
-                                                        </div>
+                                            <script>
+                                                document.addEventListener('DOMContentLoaded', function() {
+                                                    initFlowchart('history-flow-{{ forloop.counter }}');
+                                                });
+                                            </script>
                                                         {% endif %}
-                                    </div>
-                                </div>
-                            </div>
-
-                                                <!-- 最终答案部分 -->
-                                                <div class="answer-result p-3 rounded">
-                                                    {{ qa.answer|linebreaks }}
+                                        
+                                        <!-- 回答 -->
+                                        <div class="answer-container">
+                                            <h5 class="text-success mb-2">
+                                                <i class="fas fa-comment-medical me-2"></i>回答
+                                            </h5>
+                                            <div class="ps-3 border-start border-3 border-success">
+                                                {{ chat.answer|linebreaks }}
+                                            </div>
                                                 </div>
                                                 
-                                                <!-- 查询时间显示 -->
-                                                <div class="query-time text-end mt-2">
-                                                    <small class="text-muted">
-                                                        <i class="fas fa-clock me-1"></i>
-                                                        总用时：{{ qa.time_analysis|get_total_time|default:"未记录" }}
-                                                    </small>
+                                        <!-- 参考文献 -->
+                                        {% if chat.references %}
+                                            <div class="references-container mt-3">
+                                                <h5 class="text-secondary mb-2">
+                                                    <i class="fas fa-book me-2"></i>参考文献
+                                                </h5>
+                                                <div class="ps-3 border-start border-3 border-secondary">
+                                                    <ul class="list-unstyled">
+                                                        {% with references=chat.references|parse_json %}
+                                                            {% for ref in references %}
+                                                                <li class="mb-1"><small>{{ ref }}</small></li>
+                                                            {% endfor %}
+                                                        {% endwith %}
+                                                    </ul>
                                                 </div>
-                                            </div>
-                                        </div>
-                                    </div>
+                                                </div>
+                                        {% endif %}
                                 </div>
                             </div>
                         </div>
                         {% endfor %}
+                    </div>
                     {% else %}
-                        <div class="text-center text-muted py-4">
-                            <i class="fas fa-comments fa-3x mb-3"></i>
-                            <p>暂无对话记录，开始提问吧！</p>
+                    <div class="text-center text-muted my-5">
+                        <i class="fas fa-comment-slash fa-3x mb-3"></i>
+                        <p>暂无历史对话记录</p>
                         </div>
                     {% endif %}
-                </div>
             </div>
         </div>
     </main>
@@ -1015,6 +924,32 @@
             padding: 0.25rem 0.75rem;
             border-radius: 1rem;
         }
+
+        #custom-chart-tooltip {
+            position: fixed;
+            display: none;
+            background: white;
+            border-radius: 4px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+            max-width: 300px;
+            z-index: 1000;
+            transform: translate(-50%, -100%);
+            margin-top: -10px;
+        }
+        
+        .kg-tooltip-node {
+            font-size: 14px;
+        }
+        
+        .kg-tooltip-node h4 {
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+        
+        .kg-tooltip-node .reference {
+            font-size: 12px;
+            color: #666;
+        }
     </style>
 
     <!-- 添加ECharts脚本 -->
@@ -1033,19 +968,19 @@
 
     function initKnowledgeGraph() {
         console.log("[Frontend] 开始初始化知识图谱...");
-        const graphContainer = document.getElementById('knowledgeGraphPreview');
+    const graphContainer = document.getElementById('knowledgeGraphPreview');
         if (!graphContainer) {
             console.error("[Frontend] 错误：找不到知识图谱容器元素 #knowledgeGraphPreview");
             return;
         }
-        
+    
         // 初始化默认数据
-        let graphData = {
-            nodes: [],
-            links: [],
-            categories: []
-        };
-        
+    let graphData = {
+        nodes: [],
+        links: [],
+        categories: []
+    };
+    
         try {
             console.log("[Frontend] 尝试获取知识图谱数据...");
             const kgNodesScript = document.getElementById('kg-nodes-json');
@@ -1054,17 +989,17 @@
                 console.log("[Frontend] 解析到的原始数据:", kgNodes);
                 
                 if (kgNodes && typeof kgNodes === 'object') {
-                    if (kgNodes.nodes && kgNodes.links) {
-                        graphData = kgNodes;
+            if (kgNodes.nodes && kgNodes.links) {
+                graphData = kgNodes;
                         console.log("[Frontend] 成功加载知识图谱数据，节点数:", kgNodes.nodes.length);
                     } else {
                         console.log("[Frontend] 数据格式不完整，使用默认数据");
                     }
-                }
-            } else {
-                console.log("[Frontend] 未找到知识图谱数据，使用默认数据");
             }
-        } catch (error) {
+        } else {
+                console.log("[Frontend] 未找到知识图谱数据，使用默认数据");
+        }
+    } catch (error) {
             console.error('[Frontend] 解析知识图谱数据失败:', error);
             console.log('[Frontend] 原始数据:', document.getElementById('kg-nodes-json')?.textContent);
         }
@@ -1076,85 +1011,102 @@
         }
         
         console.log("[Frontend] 开始渲染知识图谱...");
-        const option = {
-            tooltip: {
-                show: false
+    const option = {
+        tooltip: {
+            show: false  // 禁用默认tooltip，我们将使用点击事件
+        },
+        legend: {
+            data: graphData.categories ? graphData.categories.map(a => a.name) : []
+        },
+        series: [{
+            type: 'graph',
+            layout: 'force',
+            data: graphData.nodes || [],
+            links: graphData.links || [],
+            categories: graphData.categories || [],
+            roam: true,
+            label: {
+                show: true,           // 始终显示标签
+                position: 'inside',   // 将标签放在节点内部
+                formatter: '{b}',     // 显示节点名称
+                fontSize: 12,
+                color: '#333',
+                fontWeight: 500,
+                backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                padding: [4, 8],
+                borderRadius: 4
             },
-            legend: {
-                data: graphData.categories ? graphData.categories.map(a => a.name) : []
+            force: {
+                repulsion: 200,
+                edgeLength: 100
             },
-            series: [{
-                type: 'graph',
-                layout: 'force',
-                data: graphData.nodes || [],
-                links: graphData.links || [],
-                categories: graphData.categories || [],
-                roam: true,
-                label: {
-                    show: true,
-                    position: 'inside',
-                    formatter: '{b}',
-                    fontSize: 12,
-                    color: '#333',
-                    fontWeight: 500,
-                    backgroundColor: 'rgba(255, 255, 255, 0.8)',
-                    padding: [4, 8],
-                    borderRadius: 4
-                },
-                force: {
-                    repulsion: 200,
-                    edgeLength: 100
-                },
-                itemStyle: {
-                    borderWidth: 2,
-                    borderColor: '#fff',
-                    shadowBlur: 10,
-                    shadowColor: 'rgba(0, 0, 0, 0.3)'
-                },
-                edgeSymbol: ['none', 'arrow'],
-                edgeLabel: {
-                    show: true,
-                    formatter: '{c}',
-                    fontSize: 10,
-                    color: '#666'
-                }
-            }]
-        };
-        
+            itemStyle: {
+                borderWidth: 2,
+                borderColor: '#fff',
+                shadowBlur: 10,
+                shadowColor: 'rgba(0, 0, 0, 0.3)'
+            },
+            edgeSymbol: ['none', 'arrow'],
+            edgeLabel: {
+                show: true,
+                formatter: '{c}',
+                fontSize: 10,
+                color: '#666'
+            }
+        }]
+    };
+    
         const myChart = echarts.init(graphContainer);
-        myChart.setOption(option);
+    myChart.setOption(option);
+    
+        // 新增点击事件监听
+        myChart.on('click', params => {
+            if (params.dataType === 'node') {
+                const tooltipEl = document.getElementById('custom-chart-tooltip');
+                tooltipEl.innerHTML = `
+                    <div class="kg-tooltip-node p-3">
+                        <h4 class="text-primary">${params.data.name}</h4>
+                        ${params.data.desc ? `<p class="mb-2">${params.data.desc}</p>` : ''}
+                        ${params.data.source_article ? 
+                            `<div class="reference mt-2">
+                                <i class="fas fa-book me-1"></i>
+                                来源文献: ${params.data.source_article}
+                            </div>` : ''}
+                    </div>
+                `;
+                tooltipEl.style.display = 'block';
+                
+                // 定位tooltip
+                const rect = graphContainer.getBoundingClientRect();
+                tooltipEl.style.left = `${params.event.offsetX + rect.left}px`;
+                tooltipEl.style.top = `${params.event.offsetY + rect.top}px`;
+            }
+        });
         
-        // 保留滚轮事件阻止传播
-        graphContainer.addEventListener('wheel', function(e) {
-            e.stopPropagation();
-        }, { passive: true });
-        
-        // 防止鼠标事件冒泡和默认行为
-        graphContainer.addEventListener('mouseover', function(e) {
-            e.stopPropagation();
-        }, { passive: true });
-        
-        graphContainer.addEventListener('mousemove', function(e) {
-            e.stopPropagation();
-        }, { passive: true });
+        // 添加点击空白处隐藏
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('#knowledgeGraphPreview')) {
+                document.getElementById('custom-chart-tooltip').style.display = 'none';
+            }
+        });
     }
 
     // 修改流程图初始化函数
-    function initProcessFlowchart() {
-        const flowchartContainer = document.getElementById('processFlowchart');
+function initProcessFlowchart() {
+    const flowchartContainer = document.getElementById('processFlowchart');
         if (!flowchartContainer) {
             console.error("[Frontend] 错误：找不到流程图容器元素 #processFlowchart");
             return;
         }
-        
-        const flowChart = echarts.init(flowchartContainer);
-        
-        const flowchartOption = {
-            tooltip: {
+    
+    const flowChart = echarts.init(flowchartContainer);
+    
+    const flowchartOption = {
+        tooltip: {
                 show: false
-            },
-            animationDurationUpdate: 1500,
-            animationEasingUpdate: 'quinticInOut',
+        },
+        animationDurationUpdate: 1500,
+        animationEasingUpdate: 'quinticInOut',
             series: [{
                 type: 'graph',
                 layout: 'none',
@@ -1318,71 +1270,139 @@
                     curveness: 0
                 }
             }]
-        };
-        
-        flowChart.setOption(flowchartOption);
-        
-        // 保留滚轮事件阻止传播
-        flowchartContainer.addEventListener('wheel', function(e) {
-            e.stopPropagation();
-        }, { passive: true });
-        
-        // 防止鼠标事件冒泡和默认行为
-        flowchartContainer.addEventListener('mouseover', function(e) {
-            e.stopPropagation();
-        }, { passive: true });
-        
-        flowchartContainer.addEventListener('mousemove', function(e) {
-            e.stopPropagation();
-        }, { passive: true });
+    };
+    
+    flowChart.setOption(flowchartOption);
     }
 
-    // 添加全局事件处理
-    document.addEventListener('DOMContentLoaded', function() {
-        // 防止图表容器内的事件传播到文档
-        const chartContainers = document.querySelectorAll('#knowledgeGraphPreview, #processFlowchart, [id^="history-kg-"]');
+    // 初始化历史记录中的知识图谱
+    function initHistoryKg(containerId, graphData) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
         
-        chartContainers.forEach(container => {
-            if (!container) return;
-            
-            // 阻止所有可能导致滚动的事件
-            ['wheel', 'mousewheel', 'DOMMouseScroll', 'scroll'].forEach(eventType => {
-                container.addEventListener(eventType, function(e) {
-                    e.stopPropagation();
-                }, { passive: true });
-            });
-            
-            // 阻止鼠标事件引起页面滚动
-            ['mouseover', 'mouseenter', 'mousemove', 'mouseleave', 'mouseout'].forEach(eventType => {
-                container.addEventListener(eventType, function(e) {
-                    e.stopPropagation();
-                }, { passive: true });
-            });
-            
-            // 阻止触摸事件
-            ['touchstart', 'touchmove', 'touchend'].forEach(eventType => {
-                container.addEventListener(eventType, function(e) {
-                    e.stopPropagation();
-                }, { passive: true });
-            });
+        const historyKG = echarts.init(container);
+        
+        const option = {
+            tooltip: {
+                show: false
+            },
+            legend: {
+                data: graphData.categories ? graphData.categories.map(a => a.name) : []
+            },
+            series: [{
+                type: 'graph',
+                layout: 'force',
+                data: graphData.nodes || [],
+                links: graphData.links || [],
+                categories: graphData.categories || [],
+                roam: true,
+                label: {
+                    show: true,
+                    position: 'inside',
+                    formatter: '{b}',
+                    fontSize: 12,
+                    color: '#333',
+                    fontWeight: 500,
+                    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                    padding: [4, 8],
+                    borderRadius: 4
+                },
+                force: {
+                    repulsion: 100,
+                    edgeLength: 100
+                },
+                lineStyle: {
+                    color: 'source',
+                    curveness: 0.3
+                }
+            }]
+        };
+        
+        historyKG.setOption(option);
+        
+        // 添加点击事件
+        historyKG.on('click', params => {
+            if (params.dataType === 'node') {
+                const tooltipEl = document.getElementById('custom-chart-tooltip');
+                tooltipEl.innerHTML = `
+                    <div class="kg-tooltip-node p-3">
+                        <h4 class="text-primary">${params.data.name}</h4>
+                        ${params.data.desc ? `<p class="mb-2">${params.data.desc}</p>` : ''}
+                        ${params.data.source_article ? 
+                            `<div class="reference mt-2">
+                                <i class="fas fa-book me-1"></i>
+                                来源文献: ${params.data.source_article}
+                            </div>` : ''}
+                    </div>
+                `;
+                tooltipEl.style.display = 'block';
+                
+                // 定位tooltip
+                const rect = container.getBoundingClientRect();
+                tooltipEl.style.left = `${params.event.offsetX + rect.left}px`;
+                tooltipEl.style.top = `${params.event.offsetY + rect.top}px`;
+            }
         });
         
-        // 监听页面滚动，确保不是图表交互引起的
-        let lastScrollY = window.scrollY;
-        let isChartInteracting = false;
+        // 窗口大小变化时自动调整
+        window.addEventListener('resize', function() {
+            historyKG.resize();
+        });
+    }
+    
+    // 初始化历史记录中的流程图
+    function initFlowchart(containerId) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
         
-        document.addEventListener('mouseover', function(e) {
-            const isChart = e.target.closest('#knowledgeGraphPreview, #processFlowchart, [id^="history-kg-"]');
-            isChartInteracting = !!isChart;
-        }, { passive: true });
+        const flowChart = echarts.init(container);
         
-        window.addEventListener('scroll', function() {
-            if (isChartInteracting && Math.abs(window.scrollY - lastScrollY) > 10) {
-                window.scrollTo(window.scrollX, lastScrollY);
-            } else {
-                lastScrollY = window.scrollY;
-            }
-        }, { passive: true });
+        // 使用与主流程图相同的配置
+        const flowchartOption = {
+            // ... 流程图配置 ...
+    };
+    
+    flowChart.setOption(flowchartOption);
+    
+        // 窗口大小变化时自动调整
+    window.addEventListener('resize', function() {
+        flowChart.resize();
     });
+}
+
+    function clearHistory() {
+        if (confirm('确定要清空所有历史记录吗？此操作不可撤销。')) {
+            // 发送清除请求
+            fetch('/clear-history', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert('清除历史记录失败: ' + data.error);
+                }
+            });
+        }
+    }
+    
+    function exportHistory() {
+        // 导出为JSON文件
+        fetch('/export-history')
+        .then(response => response.blob())
+        .then(blob => {
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'chat_history.json';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+        });
+    }
     </script>
 {% endblock %}

@@ -1,33 +1,81 @@
 import torch
 import json
 import concurrent.futures
+import threading
+import time
 from typing import List, Dict, Union, Tuple, Any, Optional
 from transformers import AutoTokenizer, AutoModel
 from sentence_transformers import SentenceTransformer
 from neo4j import GraphDatabase
 from rapidfuzz import process, fuzz
-import time
+
+# 修改这一行
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
+from config import NEO4J_CONFIG, ENTITY_CONFIG, CACHE_CONFIG
+
+# 模块级变量用于存储单例实例
+_instance = None
+_instance_lock = threading.Lock()
 
 class EntityLinker:
-    """实体链接与排序系统 - 优化版"""
+    """实体链接与排序系统 - 单例模式实现"""
     
-    def __init__(self, neo4j_config: Dict, model_path: str = "BAAI/bge-small-zh-v1.5"):
-        # 首先初始化缓存属性
-        self.cache = {
+    @classmethod
+    def get_instance(cls, neo4j_config=None, model_path=None):
+        """获取EntityLinker的单例实例
+        
+        Args:
+            neo4j_config: Neo4j数据库配置
+            model_path: 模型路径
+            
+        Returns:
+            EntityLinker: 单例实例
+        """
+        global _instance
+        
+        # 双重检查锁定模式，确保线程安全
+        if _instance is None:
+            with _instance_lock:
+                if _instance is None:
+                    print("首次创建EntityLinker单例实例...")
+                    _instance = cls(neo4j_config, model_path)
+                    print("EntityLinker单例实例创建完成")
+        
+        return _instance
+    
+    def __init__(self, neo4j_config=None, model_path=None):
+        """初始化实体链接系统 (已修改为支持单例模式)"""
+        # 检查是否重复初始化
+        global _instance
+        if _instance is not None:
+            print("警告: EntityLinker应通过get_instance()方法获取单例实例")
+            return
+            
+        # 使用传入的配置或默认配置
+        neo4j_config = neo4j_config or NEO4J_CONFIG
+        model_path = model_path or ENTITY_CONFIG["model_path"]
+        
+        # 初始化持久状态 (在单例生命周期内保持)
+        self.persistent_state = {
             "entity_desc": {},
             "entity_names": [],
-            "entity_vectors": None,  # 用于存储预计算的实体向量
-            "query_results": {},     # 用于存储查询结果
-            "candidate_cache": {}    # 用于存储候选实体
+            "entity_vectors": None,
+            "model_path": model_path,
+            "last_full_refresh": time.time()
         }
+        
+        # 初始化查询状态 (每次查询前重置)
+        self.reset_query_state()
         
         # 知识库连接 - 使用连接池优化
         self.driver = GraphDatabase.driver(
             neo4j_config["uri"],
             auth=(neo4j_config["user"], neo4j_config["password"]),
-            max_connection_lifetime=3600,
-            max_connection_pool_size=50,
-            connection_acquisition_timeout=60
+            max_connection_lifetime=neo4j_config.get("max_connection_lifetime", 3600),
+            max_connection_pool_size=neo4j_config.get("max_connection_pool_size", 50),
+            connection_acquisition_timeout=neo4j_config.get("connection_acquisition_timeout", 60)
         )
         
         # 检测GPU是否可用
@@ -42,8 +90,32 @@ class EntityLinker:
         # 预加载实体信息
         self._preload_entities()
         
-        print(f"EntityLinker初始化完成，缓存包含属性: {list(self.cache.keys())}")
-
+        print(f"EntityLinker初始化完成，缓存包含属性: {list(self.persistent_state.keys())}")
+    
+    def reset_query_state(self):
+        """重置查询状态 - 在每次新查询前调用"""
+        # 初始化每次查询特有的缓存和状态
+        self.query_state = {
+            "query_results": {},     # 用于存储查询结果
+            "candidate_cache": {},   # 用于存储候选实体
+            "query_start_time": time.time()
+        }
+        return self
+    
+    def check_and_refresh_if_needed(self, force=False):
+        """检查并在必要时刷新实体缓存
+        
+        Args:
+            force: 是否强制刷新
+        """
+        current_time = time.time()
+        # 如果距离上次完全刷新超过24小时或强制刷新
+        if force or (current_time - self.persistent_state["last_full_refresh"] > 86400):
+            print("开始刷新EntityLinker实体缓存...")
+            self._preload_entities()
+            self.persistent_state["last_full_refresh"] = current_time
+            print("EntityLinker实体缓存刷新完成")
+    
     def _preload_entities(self):
         """预加载实体基础信息并计算向量"""
         print("开始预加载实体信息和计算实体向量...")
@@ -55,17 +127,21 @@ class EntityLinker:
                 MATCH (n) 
                 WHERE n.name IS NOT NULL
                 RETURN n.name as name, n.desc as desc, 
-                       labels(n)[0] as category, 
-                       n.source_article as reference
+                    labels(n)[0] as category, 
+                    n.source_article as reference
                 LIMIT 500
             """)
             
             entities = []
+            # 清空现有实体信息
+            self.persistent_state["entity_desc"] = {}
+            self.persistent_state["entity_names"] = []
+            
             for record in result:
                 name = record["name"]
                 if name:
-                    self.cache["entity_desc"][name] = record.get("desc", "")
-                    self.cache["entity_names"].append(name)
+                    self.persistent_state["entity_desc"][name] = record.get("desc", "")
+                    self.persistent_state["entity_names"].append(name)
                     entities.append({
                         "name": name,
                         "desc": record.get("desc", ""),
@@ -74,28 +150,28 @@ class EntityLinker:
                     })
         
         # 预计算实体向量（仅在有实体时进行）
-        if self.cache["entity_names"]:
+        if self.persistent_state["entity_names"]:
             try:
-                self.cache["entity_vectors"] = self.encoder.encode(
-                    self.cache["entity_names"], 
+                self.persistent_state["entity_vectors"] = self.encoder.encode(
+                    self.persistent_state["entity_names"], 
                     convert_to_tensor=True,
                     show_progress_bar=False
                 )
             except Exception as e:
                 print(f"预计算实体向量失败: {e}")
-                self.cache["entity_vectors"] = None
+                self.persistent_state["entity_vectors"] = None
         
         end_time = time.time()
-        print(f"预加载完成，共加载 {len(self.cache['entity_names'])} 个实体，耗时: {end_time - start_time:.2f}秒")
+        print(f"预加载完成，共加载 {len(self.persistent_state['entity_names'])} 个实体，耗时: {end_time - start_time:.2f}秒")
 
     def query_with_cache(self, cypher_query: str, parameters: Dict) -> List[Dict]:
-        """使用缓存执行Cypher查询"""
+        """使用缓存执行Cypher查询 (已更新为使用query_state)"""
         # 生成缓存键
         cache_key = f"{cypher_query}_{json.dumps(parameters, sort_keys=True)}"
         
         # 检查缓存
-        if cache_key in self.cache["query_results"]:
-            return self.cache["query_results"][cache_key]
+        if cache_key in self.query_state["query_results"]:
+            return self.query_state["query_results"][cache_key]
         
         # 执行查询
         with self.driver.session() as session:
@@ -103,7 +179,7 @@ class EntityLinker:
             data = [dict(record) for record in result]
         
         # 更新缓存
-        self.cache["query_results"][cache_key] = data
+        self.query_state["query_results"][cache_key] = data
         return data
 
     def batch_fetch_entities(self, entity_names: List[str]) -> Dict[str, Dict]:
@@ -112,7 +188,7 @@ class EntityLinker:
             return {}
             
         # 过滤已缓存的实体
-        uncached_entities = [e for e in entity_names if e not in self.cache["entity_desc"]]
+        uncached_entities = [e for e in entity_names if e not in self.persistent_state["entity_desc"]]
         
         # 如果有未缓存的实体，执行查询
         if uncached_entities:
@@ -130,17 +206,17 @@ class EntityLinker:
                 for record in result:
                     name = record["name"]
                     if name:
-                        self.cache["entity_desc"][name] = record.get("desc", "")
-                        if name not in self.cache["entity_names"]:
-                            self.cache["entity_names"].append(name)
+                        self.persistent_state["entity_desc"][name] = record.get("desc", "")
+                        if name not in self.persistent_state["entity_names"]:
+                            self.persistent_state["entity_names"].append(name)
         
         # 收集所有请求的实体信息
         entity_details = {}
         for name in entity_names:
-            if name in self.cache["entity_desc"]:
+            if name in self.persistent_state["entity_desc"]:
                 entity_details[name] = {
                     "name": name,
-                    "desc": self.cache["entity_desc"].get(name, ""),
+                    "desc": self.persistent_state["entity_desc"].get(name, ""),
                 }
         
         # 批量获取关系
@@ -172,8 +248,8 @@ class EntityLinker:
         return entity_details
 
     def _get_candidates_batch_optimized(self, mentions: List[str], top_k: int = 50) -> Dict[str, List[str]]:
-        """优化版批量获取候选实体"""
-        if not self.cache["entity_names"]:
+        """优化版批量获取候选实体 (已更新为使用相应状态)"""
+        if not self.persistent_state["entity_names"]:
             print("警告: 实体缓存为空，请检查Neo4j连接和数据")
             return {mention: [] for mention in mentions}
         
@@ -183,8 +259,8 @@ class EntityLinker:
         
         for mention in mentions:
             cache_key = f"{mention}_{top_k}"
-            if cache_key in self.cache["candidate_cache"]:
-                cached_results[mention] = self.cache["candidate_cache"][cache_key]
+            if cache_key in self.query_state["candidate_cache"]:
+                cached_results[mention] = self.query_state["candidate_cache"][cache_key]
             else:
                 uncached_mentions.append(mention)
         
@@ -199,29 +275,29 @@ class EntityLinker:
             mention_vecs = self.encoder.encode(uncached_mentions, convert_to_tensor=True)
             
             # 向量检索（使用预计算的实体向量）
-            if self.cache["entity_vectors"] is not None:
-                scores = torch.matmul(mention_vecs, self.cache["entity_vectors"].T)
+            if self.persistent_state["entity_vectors"] is not None:
+                scores = torch.matmul(mention_vecs, self.persistent_state["entity_vectors"].T)
                 
                 # 为每个mention处理top-k
                 for i, mention in enumerate(uncached_mentions):
                     mention_scores = scores[i]
-                    top_k_half = min(top_k//2, len(self.cache["entity_names"]))
+                    top_k_half = min(top_k//2, len(self.persistent_state["entity_names"]))
                     top_indices = torch.topk(mention_scores, k=top_k_half).indices.tolist()
-                    vector_candidates = [self.cache["entity_names"][idx] for idx in top_indices]
+                    vector_candidates = [self.persistent_state["entity_names"][idx] for idx in top_indices]
                     
                     # 模糊匹配 - 并行处理
                     fuzzy_candidates = process.extract(
-                        mention, self.cache["entity_names"],
+                        mention, self.persistent_state["entity_names"],
                         scorer=fuzz.ratio, limit=top_k//2
                     )
                     fuzzy_candidates = [c[0] for c in fuzzy_candidates]
-                    
+
                     # 合并去重
                     combined = list(set(vector_candidates + fuzzy_candidates))[:top_k]
                     results[mention] = combined
                     
                     # 更新缓存
-                    self.cache["candidate_cache"][f"{mention}_{top_k}"] = combined
+                    self.query_state["candidate_cache"][f"{mention}_{top_k}"] = combined
             else:
                 # 回退到单独处理
                 for mention in uncached_mentions:
@@ -238,11 +314,11 @@ class EntityLinker:
         """获取候选实体"""
         # 优先使用缓存
         cache_key = f"{mention}_{top_k}"
-        if cache_key in self.cache["candidate_cache"]:
-            return self.cache["candidate_cache"][cache_key]
+        if cache_key in self.query_state["candidate_cache"]:
+            return self.query_state["candidate_cache"][cache_key]
             
         # 如果缓存为空，返回空列表
-        if not self.cache["entity_names"]:
+        if not self.persistent_state["entity_names"]:
             print("警告: 实体缓存为空，请检查Neo4j连接和数据")
             return []
         
@@ -251,27 +327,27 @@ class EntityLinker:
             mention_vec = self.encoder.encode(mention, convert_to_tensor=True)
             
             # 检查是否有预计算的实体向量
-            if self.cache["entity_vectors"] is not None:
-                entity_vecs = self.cache["entity_vectors"]
+            if self.persistent_state["entity_vectors"] is not None:
+                entity_vecs = self.persistent_state["entity_vectors"]
             else:
-                entity_vecs = self.encoder.encode(self.cache["entity_names"], convert_to_tensor=True)
+                entity_vecs = self.encoder.encode(self.persistent_state["entity_names"], convert_to_tensor=True)
                 
             scores = torch.matmul(mention_vec, entity_vecs.T)
-            top_indices = torch.topk(scores, k=min(top_k//2, len(self.cache["entity_names"]))).indices.tolist()
-            vector_candidates = [self.cache["entity_names"][i] for i in top_indices]
+            top_indices = torch.topk(scores, k=min(top_k//2, len(self.persistent_state["entity_names"]))).indices.tolist()
+            vector_candidates = [self.persistent_state["entity_names"][i] for i in top_indices]
 
             # 阶段2：模糊匹配
             fuzzy_candidates = process.extract(
-                mention, self.cache["entity_names"],
+                mention, self.persistent_state["entity_names"],
                 scorer=fuzz.ratio, limit=top_k//2
             )
             fuzzy_candidates = [c[0] for c in fuzzy_candidates]
-
+            
             # 合并去重
             combined = list(set(vector_candidates + fuzzy_candidates))[:top_k]
             
             # 更新缓存
-            self.cache["candidate_cache"][cache_key] = combined
+            self.query_state["candidate_cache"][cache_key] = combined
             
             return combined
         except Exception as e:
@@ -279,19 +355,19 @@ class EntityLinker:
             # 回退到简单的模糊匹配
             try:
                 fuzzy_candidates = process.extract(
-                    mention, self.cache["entity_names"],
+                    mention, self.persistent_state["entity_names"],
                     scorer=fuzz.ratio, limit=top_k
                 )
                 candidates = [c[0] for c in fuzzy_candidates]
                 
                 # 更新缓存
-                self.cache["candidate_cache"][cache_key] = candidates
+                self.query_state["candidate_cache"][cache_key] = candidates
                 
                 return candidates
             except Exception as e2:
                 print(f"模糊匹配失败: {e2}")
                 return []
-    
+
     def _init_ranking_model(self):
         """初始化轻量级排序模型"""
         class RankingModel(torch.nn.Module):
@@ -312,10 +388,10 @@ class EntityLinker:
     
     def _build_features(self, query: str, candidate: str) -> str:
         """构建特征数据"""
-        desc = self.cache["entity_desc"].get(candidate, "")
+        desc = self.persistent_state["entity_desc"].get(candidate, "")
         # 特征拼接方式1：query + 实体描述
         return f"{query}[SEP]{desc}"
-    
+
     def rank_entities(self, query: str, mention: Union[str, Tuple[str, ...], List[str]], top_k: int = 5) -> Dict[str, List[Dict]]:
         """执行实体排序
         
@@ -339,7 +415,7 @@ class EntityLinker:
         else:
             # 处理单个mention
             return {mention: self._rank_single_entity(query, mention, top_k)}
-    
+            
     def _rank_single_entity(self, query: str, mention: str, top_k: int = 5) -> List[Dict]:
         """为单个mention排序候选实体"""
         print(f"\n[Entity Linking] 处理实体: {mention}")
@@ -355,16 +431,16 @@ class EntityLinker:
             MATCH (n)
             WHERE n.name IN $candidates
             WITH n, 
-                 CASE WHEN n.desc IS NOT NULL THEN n.desc
-                      ELSE '' END as description,
-                 CASE WHEN labels(n)[0] IS NOT NULL THEN labels(n)[0]
-                      ELSE 'Unknown' END as category,
-                 CASE WHEN n.source_article IS NOT NULL THEN n.source_article
-                      ELSE '' END as source
+                CASE WHEN n.desc IS NOT NULL THEN n.desc
+                    ELSE '' END as description,
+                CASE WHEN labels(n)[0] IS NOT NULL THEN labels(n)[0]
+                    ELSE 'Unknown' END as category,
+                CASE WHEN n.source_article IS NOT NULL THEN n.source_article
+                    ELSE '' END as source
             RETURN n.name as entity, 
-                  description as desc, 
-                  category,
-                  source as reference
+                description as desc, 
+                category,
+                source as reference
             ORDER BY n.name
             """
             print(f"[Entity Linking] 执行查询: {query_str}")
@@ -399,7 +475,7 @@ class EntityLinker:
                 print(f"  - {e['entity']} (得分: {e['score']:.2f})")
             
             return entities
-        
+            
         except Exception as e:
             print(f"[Entity Linking] 实体 '{mention}' 处理失败: {e}")
             return []
@@ -513,14 +589,14 @@ class EntityLinker:
                         except Exception as e:
                             print(f"[Entity Linking] 处理候选实体 '{candidate}' 失败: {e}")
                             continue
-                    
+            
                     # 排序并获取top-k
                     results[mention] = sorted(
                         mention_results,
                         key=lambda x: x["score"],
                         reverse=True
                     )[:top_k]
-                    
+                
                 except Exception as e:
                     print(f"[Entity Linking] 处理实体 '{mention}' 失败: {e}")
                     results[mention] = []
@@ -545,7 +621,7 @@ class EntityLinker:
             end_time = time.time()
             print(f"[Entity Linking] 单个处理完成，耗时: {end_time - start_time:.2f}秒")
             return results
-
+    
     def extract_entity_info(self, entity_name: str) -> Dict[str, Any]:
         """获取实体的详细信息
         
@@ -569,8 +645,8 @@ class EntityLinker:
         
         try:
             # 首先检查缓存
-            if entity_name in self.cache["entity_desc"]:
-                entity_info["desc"] = self.cache["entity_desc"][entity_name]
+            if entity_name in self.persistent_state["entity_desc"]:
+                entity_info["desc"] = self.persistent_state["entity_desc"][entity_name]
                 print(f"[Entity Linking] 从缓存获取到实体 '{entity_name}' 的描述")
             
             # 查询Neo4j获取完整信息
@@ -636,12 +712,12 @@ class EntityLinker:
                     print(f"[Entity Linking] 查询实体 '{entity_name}' 信息时出错: {e}")
             
             # 更新缓存
-            self.cache["entity_desc"][entity_name] = entity_info["desc"]
-            if entity_name not in self.cache["entity_names"]:
-                self.cache["entity_names"].append(entity_name)
+            self.persistent_state["entity_desc"][entity_name] = entity_info["desc"]
+            if entity_name not in self.persistent_state["entity_names"]:
+                self.persistent_state["entity_names"].append(entity_name)
             
             return entity_info
-            
+                    
         except Exception as e:
             print(f"[Entity Linking] 获取实体 '{entity_name}' 信息失败: {e}")
             return entity_info
@@ -714,6 +790,6 @@ class EntityLinker:
     def link_entities(self, mentions: List[str]) -> Dict[str, List[Dict]]:
         """链接实体到知识库"""
         print(f"\n[Entity Linking] 开始实体链接: {mentions}")
-        
+
         # 直接使用批量处理方法
         return self.rank_entities_batch(query="", mentions=mentions, top_k=5)

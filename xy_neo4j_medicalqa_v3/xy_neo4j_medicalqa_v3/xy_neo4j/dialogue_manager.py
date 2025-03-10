@@ -8,8 +8,19 @@ import concurrent.futures
 from xy_neo4j.Entity_Mention.LLM_mention_final import DirectMentionRecognizer
 from xy_neo4j.Entity_Mention.Entity_Order import EntityLinker
 from xy_neo4j.Entity_Mention.integrated_qa_system import IntegratedQASystem
+from xy_neo4j.Entity_Mention.DeepSeek_mention import DeepSeekMentionRecognizer
 from openai import OpenAI
 from typing import Dict
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
+print("Python路径:", sys.path)
+try:
+    import config
+    print("配置导入成功:", config.API_KEYS)
+except Exception as e:
+    print("配置导入错误:", e)
+from config import NEO4J_CONFIG, API_KEYS, LLM_CONFIG, ENTITY_CONFIG
 
 class DialogueManager:
     def __init__(self):
@@ -18,48 +29,53 @@ class DialogueManager:
             print("正在初始化问答系统...")
             start_time = time.time()
             
+            # 使用集中配置
             # Neo4j配置
-            NEO4J_CONFIG = {
-                "uri": "bolt://localhost:7687",
-                "user": "neo4j", 
-                "password": "wswy0129"
-            }
+            # 不再硬编码: NEO4J_CONFIG = {"uri": "bolt://localhost:7687", ...}
             
             # API密钥
-            API_KEY = "sk-benW8QASpqo6tXfDsE9Eu6vYxJDhTtHeeeKGSh11wBOqW8SA"
+            # 不再硬编码: API_KEY = "sk-benW8QASpqo6tXfDsE9Eu6vYxJDhTtHeeeKGSh11wBOqW8SA"
             
             # 初始化实体识别器
-            self.entity_recognizer = DirectMentionRecognizer(api_key=API_KEY)
+            try:
+                self.entity_recognizer = DeepSeekMentionRecognizer(api_key=API_KEYS.get("deepseek"))
+            except Exception as e:
+                print(f"实体识别器初始化失败: {e}")
+                self.entity_recognizer = None  # 或使用备选识别器
             
-            # 初始化实体链接器
-            self.entity_linker = EntityLinker(neo4j_config=NEO4J_CONFIG)
+            # 获取EntityLinker单例实例并重置查询状态
+            self.entity_linker = EntityLinker.get_instance().reset_query_state()
             
             # 初始化集成问答系统
             try:
                 self.qa_system = IntegratedQASystem(
                     neo4j_config=NEO4J_CONFIG,
-                    llm_api_key=API_KEY
+                    llm_api_key=API_KEYS["deepseek"]
                 )
             except ImportError as e:
                 print(f"问答系统初始化失败: {e}")
                 self.qa_system = None
             
             # 初始化其他组件
-            if not hasattr(settings, 'ZHIPU'):
-                raise Exception("ZHIPU not found in settings")
-            self.zhipu = settings.ZHIPU
+            if not hasattr(settings, 'DEEPSEEK'):
+                print("警告: DEEPSEEK不在settings中，使用config.py中的配置")
+                self.deepseek = {
+                    "api_key": API_KEYS["deepseek"],
+                }
+            else:
+                self.deepseek = settings.DEEPSEEK
             jieba.initialize()
             
             # 修改 LLM 客户端初始化
             self.llm_client = OpenAI(
-                api_key="sk-e38ac2aefd1345538e35919fc794aef5",
-                base_url="https://api.deepseek.com"
+                api_key=API_KEYS["deepseek"],
+                base_url=LLM_CONFIG["base_url"]
             )
             
-            init_time = time.time() - start_time
-            print(f"系统初始化完成，耗时: {init_time:.2f}秒")
+            end_time = time.time()
+            print(f"问答系统初始化完成，耗时: {end_time - start_time:.2f}秒")
         except Exception as e:
-            print("DialogueManager 初始化失败:", e)
+            print(f"DialogueManager初始化失败: {e}")
             raise
 
     def get_response(self, question: str) -> dict:
@@ -68,6 +84,9 @@ class DialogueManager:
         print(f"\n[DialogueManager] 开始处理问题: {question}")
         
         try:
+            # 重置EntityLinker查询状态
+            self.entity_linker.reset_query_state()
+            
             # 1. 问题分解
             decomp_start_time = time.time()
             print("[DialogueManager] 开始问题分解...")
@@ -156,16 +175,37 @@ class DialogueManager:
             
             # 返回结果
             thinking_process = self._format_thinking_process(sub_questions, kg_contexts, sub_answers)
-            response = {
-                "answer": final_answer,
-                "sub_questions": sub_questions,
-                "sub_answers": sub_answers,
-                "kg_context": kg_contexts,
-                "kg_nodes": kg_nodes,
-                "thinking_process": thinking_process,
-                "time_analysis": time_analysis
+            
+            # 从知识图谱结果中提取参考文献
+            references = []
+            
+            # 使用当前对话管理器中的kg_contexts变量
+            for sub_q, kg_data in getattr(self, 'kg_contexts', {}).items():
+                if kg_data and isinstance(kg_data, str) and kg_data.startswith('['):
+                    try:
+                        kg_items = json.loads(kg_data)
+                        for item in kg_items:
+                            if 'reference' in item and item['reference'] and item['reference'] not in references:
+                                references.append(item['reference'])
+                    except Exception as e:
+                        print(f"解析参考文献错误: {e}")
+                        continue
+            
+            # 返回完整响应数据
+            return {
+                'answer': final_answer,
+                'kg_nodes': kg_nodes,
+                'thinking_process': thinking_process,
+                'time_analysis': {
+                    'total': f"{overall_time:.2f}秒",
+                    'decompose': f"{decomp_time:.2f}秒",
+                    'kg_query': f"{kg_time:.2f}秒",
+                    'answer_gen': f"{gen_time:.2f}秒"
+                },
+                'references': references,
+                'sub_questions': sub_questions,
+                'sub_answers': sub_answers
             }
-            return response
             
         except Exception as e:
             print(f"[DialogueManager] 错误: {str(e)}")
@@ -213,7 +253,7 @@ class DialogueManager:
         4. 保持流域数据特性
         """
         
-        return self.zhipu.get_deepseek_response(prompt)
+        return self.deepseek["api_key"].get_deepseek_response(prompt)
     
     def query_knowledge_graph(self, entities):
         """根据实体查询知识图谱"""
