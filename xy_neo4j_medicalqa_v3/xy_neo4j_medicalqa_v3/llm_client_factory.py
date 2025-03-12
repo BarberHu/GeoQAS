@@ -3,6 +3,7 @@ LLM客户端工厂模块 - 用于创建不同类型的LLM客户端
 """
 
 import requests
+import time
 from openai import OpenAI
 from config import API_KEYS, LLM_CONFIG
 
@@ -73,7 +74,63 @@ class LLMClientFactory:
         return list(LLM_CONFIG["providers"].keys())
 
 
-class OpenAIClient:
+class LLMClientBase:
+    """LLM客户端基类，提供共享的错误处理逻辑"""
+    
+    def __init__(self, provider, api_key, config):
+        """
+        初始化LLM客户端基类
+        
+        Args:
+            provider: LLM提供商名称
+            api_key: API密钥
+            config: 提供商配置
+        """
+        self.provider = provider
+        self.api_key = api_key
+        self.config = config
+        self.max_retries = 3
+        self.retry_delay_factor = 2  # 重试延迟因子
+    
+    def _handle_api_error(self, func, *args, **kwargs):
+        """
+        通用API错误处理器
+        
+        Args:
+            func: 要执行的API调用函数
+            *args: 函数参数
+            **kwargs: 函数关键字参数
+            
+        Returns:
+            API调用结果或错误消息
+        """
+        retry_count = 0
+        
+        while retry_count < self.max_retries:
+            try:
+                # 调用API
+                return func(*args, **kwargs)
+                
+            except Exception as e:
+                retry_count += 1
+                print(f"API调用失败 (尝试 {retry_count}/{self.max_retries}): {str(e)}")
+                
+                if retry_count >= self.max_retries:
+                    print(f"达到最大重试次数，返回错误信息")
+                    
+                    # 处理API密钥打印（如果需要调试）
+                    if hasattr(self, 'api_key') and self.api_key:
+                        masked_key = f"{self.api_key[:5]}...{self.api_key[-4:]}"
+                        print(f"API密钥: {masked_key}")
+                    
+                    return f"抱歉，{self.provider.capitalize()} API暂时无法访问，请稍后再试。错误: {str(e)}"
+                
+                # 等待一段时间后重试，使用指数退避策略
+                delay = self.retry_delay_factor * retry_count
+                time.sleep(delay)
+
+
+class OpenAIClient(LLMClientBase):
     """使用OpenAI库的LLM客户端"""
     
     def __init__(self, provider, api_key, config):
@@ -85,9 +142,7 @@ class OpenAIClient:
             api_key: API密钥
             config: 提供商配置
         """
-        self.provider = provider
-        self.api_key = api_key
-        self.config = config
+        super().__init__(provider, api_key, config)
         
         # 创建OpenAI客户端
         self.client = OpenAI(
@@ -108,42 +163,29 @@ class OpenAIClient:
         Returns:
             API响应
         """
-        # 设置重试参数
-        max_retries = 3
-        retry_count = 0
+        def api_call():
+            # 合并默认参数和自定义参数
+            params = {
+                "model": self.config["default_model"],
+                "temperature": self.config["temperature"],
+                "max_tokens": self.config["max_tokens"],
+                "stream": False
+            }
+            params.update(kwargs)
+            
+            # 调用API
+            response = self.client.chat.completions.create(
+                messages=messages,
+                **params
+            )
+            
+            return response.choices[0].message.content
         
-        while retry_count < max_retries:
-            try:
-                # 合并默认参数和自定义参数
-                params = {
-                    "model": self.config["default_model"],
-                    "temperature": self.config["temperature"],
-                    "max_tokens": self.config["max_tokens"],
-                    "stream": False
-                }
-                params.update(kwargs)
-                
-                # 调用API
-                response = self.client.chat.completions.create(
-                    messages=messages,
-                    **params
-                )
-                
-                return response.choices[0].message.content
-                
-            except Exception as e:
-                retry_count += 1
-                print(f"API调用失败 (尝试 {retry_count}/{max_retries}): {str(e)}")
-                if retry_count >= max_retries:
-                    print(f"达到最大重试次数，返回错误信息")
-                    return f"抱歉，{self.provider.capitalize()} API暂时无法访问，请稍后再试。错误: {str(e)}"
-                
-                # 等待一段时间后重试
-                import time
-                time.sleep(2 * retry_count)  # 随着重试次数增加等待时间
+        # 使用基类的错误处理器
+        return self._handle_api_error(api_call)
 
 
-class RequestsClient:
+class RequestsClient(LLMClientBase):
     """使用requests库的LLM客户端"""
     
     def __init__(self, provider, api_key, config):
@@ -155,9 +197,7 @@ class RequestsClient:
             api_key: API密钥
             config: 提供商配置
         """
-        self.provider = provider
-        self.api_key = api_key
-        self.config = config
+        super().__init__(provider, api_key, config)
         self.base_url = config["base_url"]
     
     def chat_completion(self, messages, **kwargs):
@@ -171,69 +211,53 @@ class RequestsClient:
         Returns:
             API响应
         """
-        # 设置重试参数
-        max_retries = 3
-        retry_count = 0
+        def api_call():
+            # 合并默认参数和自定义参数
+            params = {
+                "model": self.config["default_model"],
+                "messages": messages,
+                "temperature": self.config["temperature"],
+                "max_tokens": self.config["max_tokens"],
+                "stream": False
+            }
+            
+            # 添加特定于提供商的参数
+            if self.provider == "siliconflow":
+                params.update({
+                    "top_p": self.config.get("top_p", 0.7),
+                    "top_k": self.config.get("top_k", 50),
+                    "frequency_penalty": self.config.get("frequency_penalty", 0.5),
+                    "n": 1,
+                    "response_format": {"type": "text"},
+                    "stop": None
+                })
+            
+            # 添加自定义参数
+            for key, value in kwargs.items():
+                if key not in ["model", "messages"]:  # 避免覆盖关键参数
+                    params[key] = value
+            
+            # 准备请求头
+            headers = {
+                "Authorization": f"Bearer {self.api_key}",
+                "Content-Type": "application/json"
+            }
+            
+            # 构建URL
+            url = f"{self.base_url}/chat/completions"
+            
+            # 发送请求，增加超时时间
+            response = requests.post(url, json=params, headers=headers, timeout=60)
+            response.raise_for_status()  # 抛出HTTP错误
+            
+            # 解析响应
+            result = response.json()
+            
+            # 提取内容
+            if self.provider == "siliconflow":
+                return result["choices"][0]["message"]["content"]
+            else:
+                return result["choices"][0]["message"]["content"]
         
-        while retry_count < max_retries:
-            try:
-                # 合并默认参数和自定义参数
-                params = {
-                    "model": self.config["default_model"],
-                    "messages": messages,
-                    "temperature": self.config["temperature"],
-                    "max_tokens": self.config["max_tokens"],
-                    "stream": False
-                }
-                
-                # 添加特定于提供商的参数
-                if self.provider == "siliconflow":
-                    params.update({
-                        "top_p": self.config.get("top_p", 0.7),
-                        "top_k": self.config.get("top_k", 50),
-                        "frequency_penalty": self.config.get("frequency_penalty", 0.5),
-                        "n": 1,
-                        "response_format": {"type": "text"},
-                        "stop": None
-                    })
-                
-                # 添加自定义参数
-                for key, value in kwargs.items():
-                    if key not in ["model", "messages"]:  # 避免覆盖关键参数
-                        params[key] = value
-                
-                # 准备请求头
-                headers = {
-                    "Authorization": f"Bearer {self.api_key}",
-                    "Content-Type": "application/json"
-                }
-                
-                # 构建URL
-                url = f"{self.base_url}/chat/completions"
-                
-                # 发送请求，增加超时时间
-                response = requests.post(url, json=params, headers=headers, timeout=60)
-                response.raise_for_status()  # 抛出HTTP错误
-                
-                # 解析响应
-                result = response.json()
-                
-                # 提取内容
-                if self.provider == "siliconflow":
-                    return result["choices"][0]["message"]["content"]
-                else:
-                    return result["choices"][0]["message"]["content"]
-                    
-            except Exception as e:
-                retry_count += 1
-                print(f"API调用失败 (尝试 {retry_count}/{max_retries}): {str(e)}")
-                if retry_count >= max_retries:
-                    print(f"达到最大重试次数，返回错误信息")
-                    # 不要打印完整API密钥，只打印部分用于调试
-                    masked_key = f"{self.api_key[:5]}...{self.api_key[-4:]}" if self.api_key else "None"
-                    print(f"API密钥: {masked_key}")
-                    return f"抱歉，{self.provider.capitalize()} API暂时无法访问，请稍后再试。错误: {str(e)}"
-                
-                # 等待一段时间后重试
-                import time
-                time.sleep(2 * retry_count)  # 随着重试次数增加等待时间 
+        # 使用基类的错误处理器
+        return self._handle_api_error(api_call) 

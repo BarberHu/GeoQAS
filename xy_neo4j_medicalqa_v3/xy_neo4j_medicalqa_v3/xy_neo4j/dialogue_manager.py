@@ -133,140 +133,195 @@ class DialogueManager:
             self.entity_linker.reset_query_state()
             
             # 1. 问题分解
-            decomp_start_time = time.time()
-            print("[DialogueManager] 开始问题分解...")
-            sub_questions = self.decompose_question(question)
-            decomp_time = time.time() - decomp_start_time
-            print(f"[DialogueManager] 问题分解完成，耗时: {decomp_time:.2f}秒")
-            
-            if sub_questions:
-                print("[DialogueManager] 子问题列表:")
-                for i, q in enumerate(sub_questions, 1):
-                    print(f"  {i}. {q}")
+            sub_questions, decomp_time = self._perform_question_decomposition(question)
             
             # 2. 知识图谱查询
-            print("\n[DialogueManager] 开始知识图谱查询...")
-            kg_start_time = time.time()
-            
-            # 为每个子问题查询知识图谱
-            kg_contexts = {}
-            for sub_q in sub_questions:
-                entities = self.entity_recognizer.recognize(sub_q)
-                kg_result = self.query_knowledge_graph(entities)
-                kg_contexts[sub_q] = kg_result
-            
-            # 存储kg_contexts作为实例变量，供_generate_final_answer使用
-            self.kg_contexts = kg_contexts
-            
-            kg_time = time.time() - kg_start_time
-            print(f"[DialogueManager] 知识图谱查询完成，耗时: {kg_time:.2f}秒")
+            kg_contexts, kg_time = self._perform_knowledge_graph_query(sub_questions)
             
             # 3. 提取知识图谱节点用于可视化
-            print("[DialogueManager] 开始提取知识图谱节点...")
             kg_nodes = self._extract_kg_nodes_for_vis(kg_contexts)
-            print(f"[DialogueManager] 知识图谱节点统计:")
-            print(f"  - 节点数量: {len(kg_nodes.get('nodes', []))}")
-            print(f"  - 关系数量: {len(kg_nodes.get('links', []))}")
+            self._log_kg_node_stats(kg_nodes)
             
             # 4. 渐进式回答生成
-            print("\n[DialogueManager] 开始渐进式生成回答...")
-            sub_answers = {}
-            accumulated_context = ""
-            
-            for sub_q in sub_questions:
-                # 构建当前子问题的上下文
-                current_context = f"问题: {sub_q}\n\n"
-                
-                # 添加知识图谱上下文
-                if sub_q in kg_contexts and kg_contexts[sub_q]:
-                    current_context += f"知识图谱信息: {kg_contexts[sub_q]}\n\n"
-                
-                # 添加累积上下文（先前子问题的回答）
-                if accumulated_context:
-                    current_context += f"先前的回答: {accumulated_context}\n\n"
-                
-                # 生成当前子问题的回答
-                print(f"[DialogueManager] 生成子问题回答: {sub_q}")
-                sub_answer = self._generate_answer_with_context(sub_q, current_context)
-                sub_answers[sub_q] = sub_answer
-                
-                # 更新累积上下文
-                accumulated_context += f"\n子问题: {sub_q}\n回答: {sub_answer}"
+            sub_answers = self._generate_sub_answers(sub_questions, kg_contexts)
             
             # 5. 生成最终综合回答
-            gen_start_time = time.time()
-            print("\n[DialogueManager] 开始生成最终回答...")
+            final_answer, gen_time = self._generate_final_comprehensive_answer(question, sub_questions, sub_answers)
             
-            final_context = f"原始问题: {question}\n\n"
-            final_context += "子问题分解与回答:\n"
-            for sub_q, answer in sub_answers.items():
-                final_context += f"问: {sub_q}\n答: {answer}\n\n"
-            
-            final_answer = self._generate_final_answer(question, final_context)
-            gen_time = time.time() - gen_start_time
-            
-            # 计算总思考时间
+            # 6. 计算总时间并记录
             overall_time = time.time() - overall_start_time
+            time_analysis = self._create_time_analysis(decomp_time, kg_time, gen_time, overall_time)
             
-            # 时间统计信息
-            time_analysis = {
-                "问题分解": f"{decomp_time:.2f}秒",
-                "知识检索": f"{kg_time:.2f}秒",
-                "回答生成": f"{gen_time:.2f}秒",
-                "总思考时间": f"{overall_time:.2f}秒"
-            }
-            
-            print(f"[DialogueManager] 处理完成，总耗时: {overall_time:.2f}秒")
-            
-            # 返回结果
+            # 7. 生成思考过程和提取参考文献
             thinking_process = self._format_thinking_process(sub_questions, kg_contexts, sub_answers)
+            references = self._extract_references_from_kg(kg_contexts)
             
-            # 从知识图谱结果中提取参考文献
-            references = []
-            
-            # 使用当前对话管理器中的kg_contexts变量
-            for sub_q, kg_data in getattr(self, 'kg_contexts', {}).items():
-                if kg_data and isinstance(kg_data, str) and kg_data.startswith('['):
-                    try:
-                        kg_items = json.loads(kg_data)
-                        for item in kg_items:
-                            if 'reference' in item and item['reference'] and item['reference'] not in references:
-                                references.append(item['reference'])
-                    except Exception as e:
-                        print(f"解析参考文献错误: {e}")
-                        continue
-            
-            # 返回完整响应数据
-            return {
-                'answer': final_answer,
-                'kg_nodes': kg_nodes,
-                'thinking_process': thinking_process,
-                'time_analysis': {
-                    'total': f"{overall_time:.2f}秒",
-                    'decompose': f"{decomp_time:.2f}秒",
-                    'kg_query': f"{kg_time:.2f}秒",
-                    'answer_gen': f"{gen_time:.2f}秒"
-                },
-                'references': references,
-                'sub_questions': sub_questions,
-                'sub_answers': sub_answers
-            }
+            # 8. 返回完整响应数据
+            return self._create_response_dict(
+                final_answer, kg_nodes, thinking_process, time_analysis,
+                references, sub_questions, sub_answers, overall_time
+            )
             
         except Exception as e:
-            print(f"[DialogueManager] 错误: {str(e)}")
-            overall_time = time.time() - overall_start_time
-            
-            return {
-                "answer": f"抱歉，系统处理您的问题时遇到了错误: {str(e)}",
-                "sub_questions": None,
-                "sub_answers": None,
-                "kg_context": None,
-                "kg_nodes": {"nodes": [], "links": [], "categories": []},
-                "time_analysis": {"总思考时间": f"{overall_time:.2f}秒"},
-                "thinking_process": None
-            }
-
+            return self._handle_response_error(e, question, overall_start_time)
     
+    def _perform_question_decomposition(self, question):
+        """执行问题分解步骤"""
+        decomp_start_time = time.time()
+        print("[DialogueManager] 开始问题分解...")
+        
+        sub_questions = self.decompose_question(question)
+        decomp_time = time.time() - decomp_start_time
+        
+        print(f"[DialogueManager] 问题分解完成，耗时: {decomp_time:.2f}秒")
+        if sub_questions:
+            print("[DialogueManager] 子问题列表:")
+            for i, q in enumerate(sub_questions, 1):
+                print(f"  {i}. {q}")
+        
+        return sub_questions, decomp_time
+    
+    def _perform_knowledge_graph_query(self, sub_questions):
+        """执行知识图谱查询步骤"""
+        print("\n[DialogueManager] 开始知识图谱查询...")
+        kg_start_time = time.time()
+        
+        # 为每个子问题查询知识图谱
+        kg_contexts = {}
+        for sub_q in sub_questions:
+            entities = self.entity_recognizer.recognize(sub_q)
+            kg_result = self.query_knowledge_graph(entities)
+            kg_contexts[sub_q] = kg_result
+        
+        # 存储kg_contexts作为实例变量，供_generate_final_answer使用
+        self.kg_contexts = kg_contexts
+        
+        kg_time = time.time() - kg_start_time
+        print(f"[DialogueManager] 知识图谱查询完成，耗时: {kg_time:.2f}秒")
+        
+        return kg_contexts, kg_time
+    
+    def _log_kg_node_stats(self, kg_nodes):
+        """记录知识图谱节点统计信息"""
+        print(f"[DialogueManager] 知识图谱节点统计:")
+        print(f"  - 节点数量: {len(kg_nodes.get('nodes', []))}")
+        print(f"  - 关系数量: {len(kg_nodes.get('links', []))}")
+    
+    def _generate_sub_answers(self, sub_questions, kg_contexts):
+        """为每个子问题生成回答"""
+        print("\n[DialogueManager] 开始渐进式生成回答...")
+        sub_answers = {}
+        accumulated_context = ""
+        
+        for sub_q in sub_questions:
+            # 构建当前子问题的上下文
+            current_context = self._build_sub_question_context(sub_q, kg_contexts, accumulated_context)
+            
+            # 生成当前子问题的回答
+            print(f"[DialogueManager] 生成子问题回答: {sub_q}")
+            sub_answer = self._generate_answer_with_context(sub_q, current_context)
+            sub_answers[sub_q] = sub_answer
+            
+            # 更新累积上下文
+            accumulated_context += f"\n子问题: {sub_q}\n回答: {sub_answer}"
+        
+        return sub_answers
+    
+    def _build_sub_question_context(self, sub_q, kg_contexts, accumulated_context):
+        """构建子问题的上下文"""
+        current_context = f"问题: {sub_q}\n\n"
+        
+        # 添加知识图谱上下文
+        if sub_q in kg_contexts and kg_contexts[sub_q]:
+            current_context += f"知识图谱信息: {kg_contexts[sub_q]}\n\n"
+        
+        # 添加累积上下文（先前子问题的回答）
+        if accumulated_context:
+            current_context += f"先前的回答: {accumulated_context}\n\n"
+        
+        return current_context
+    
+    def _generate_final_comprehensive_answer(self, question, sub_questions, sub_answers):
+        """生成最终综合回答"""
+        gen_start_time = time.time()
+        print("\n[DialogueManager] 开始生成最终回答...")
+        
+        final_context = self._build_final_answer_context(question, sub_questions, sub_answers)
+        final_answer = self._generate_final_answer(question, final_context)
+        
+        gen_time = time.time() - gen_start_time
+        return final_answer, gen_time
+    
+    def _build_final_answer_context(self, question, sub_questions, sub_answers):
+        """构建最终回答的上下文"""
+        final_context = f"原始问题: {question}\n\n"
+        final_context += "子问题分解与回答:\n"
+        
+        for sub_q, answer in sub_answers.items():
+            final_context += f"问: {sub_q}\n答: {answer}\n\n"
+        
+        return final_context
+    
+    def _create_time_analysis(self, decomp_time, kg_time, gen_time, overall_time):
+        """创建时间分析记录"""
+        return {
+            "问题分解": f"{decomp_time:.2f}秒",
+            "知识检索": f"{kg_time:.2f}秒",
+            "回答生成": f"{gen_time:.2f}秒",
+            "总思考时间": f"{overall_time:.2f}秒"
+        }
+    
+    def _extract_references_from_kg(self, kg_contexts):
+        """从知识图谱结果中提取参考文献"""
+        references = []
+        
+        # 使用当前对话管理器中的kg_contexts变量
+        for sub_q, kg_data in getattr(self, 'kg_contexts', {}).items():
+            if kg_data and isinstance(kg_data, str) and kg_data.startswith('['):
+                try:
+                    kg_items = json.loads(kg_data)
+                    for item in kg_items:
+                        if 'reference' in item and item['reference'] and item['reference'] not in references:
+                            references.append(item['reference'])
+                except Exception as e:
+                    print(f"解析参考文献错误: {e}")
+                    continue
+        
+        return references
+    
+    def _create_response_dict(self, final_answer, kg_nodes, thinking_process, time_analysis, 
+                             references, sub_questions, sub_answers, overall_time):
+        """创建完整的响应字典"""
+        return {
+            'answer': final_answer,
+            'kg_nodes': kg_nodes,
+            'thinking_process': thinking_process,
+            'time_analysis': {
+                'total': f"{overall_time:.2f}秒",
+                'decompose': time_analysis["问题分解"],
+                'kg_query': time_analysis["知识检索"],
+                'answer_gen': time_analysis["回答生成"]
+            },
+            'references': references,
+            'sub_questions': sub_questions,
+            'sub_answers': sub_answers
+        }
+    
+    def _handle_response_error(self, error, question, start_time):
+        """处理响应过程中的错误"""
+        print(f"[DialogueManager] 错误: {str(error)}")
+        overall_time = time.time() - start_time
+        
+        return {
+            "answer": f"抱歉，系统处理您的问题时遇到了错误: {str(error)}",
+            "sub_questions": None,
+            "sub_answers": None,
+            "kg_context": None,
+            "kg_nodes": {"nodes": [], "links": [], "categories": []},
+            "time_analysis": {"总思考时间": f"{overall_time:.2f}秒"},
+            "thinking_process": None
+        }
+
     def decompose_question(self, question):
         """问题分解 - 使用集成问答系统的分解能力"""
         if self.qa_system and hasattr(self.qa_system, 'question_decomposer'):
@@ -484,6 +539,17 @@ class DialogueManager:
     def _generate_answer_with_context(self, question, context):
         """基于上下文生成回答"""
         try:
+            # 生成缓存键
+            import hashlib
+            cache_key = f"answer_{hashlib.md5((question + context).encode()).hexdigest()}"
+            
+            # 检查缓存
+            if hasattr(self, 'answer_cache') and cache_key in self.answer_cache:
+                print(f"[缓存命中] 使用缓存的子问题回答: {question[:30]}...")
+                return self.answer_cache[cache_key]
+            
+            print(f"[缓存未命中] 生成子问题回答: {question[:30]}...")
+            
             prompt = f"""
             请基于以下知识库信息回答问题。如果无法从知识库中找到答案，请说明无法回答。
 
@@ -497,6 +563,11 @@ class DialogueManager:
             messages = [{"role": "user", "content": prompt}]
             answer = self.llm_client.chat_completion(messages)
             
+            # 存入缓存
+            if not hasattr(self, 'answer_cache'):
+                self.answer_cache = {}
+            self.answer_cache[cache_key] = answer
+            
             return answer
             
         except Exception as e:
@@ -506,6 +577,17 @@ class DialogueManager:
     def _generate_final_answer(self, question, context):
         """生成最终回答"""
         try:
+            # 生成缓存键
+            import hashlib
+            cache_key = f"final_{hashlib.md5((question + context).encode()).hexdigest()}"
+            
+            # 检查缓存
+            if hasattr(self, 'answer_cache') and cache_key in self.answer_cache:
+                print(f"[缓存命中] 使用缓存的最终回答: {question[:30]}...")
+                return self.answer_cache[cache_key]
+            
+            print(f"[缓存未命中] 生成最终回答: {question[:30]}...")
+            
             # 构建提示
             prompt = f"""
             请基于以下信息生成对问题的综合回答。回答应该全面、准确、连贯。
@@ -522,6 +604,11 @@ class DialogueManager:
                 {"role": "user", "content": prompt}
             ]
             answer = self.llm_client.chat_completion(messages)
+            
+            # 存入缓存
+            if not hasattr(self, 'answer_cache'):
+                self.answer_cache = {}
+            self.answer_cache[cache_key] = answer
             
             return answer
             
