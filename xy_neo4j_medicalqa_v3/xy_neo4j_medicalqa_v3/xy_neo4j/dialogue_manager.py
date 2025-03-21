@@ -327,7 +327,7 @@ class DialogueManager:
         if self.qa_system and hasattr(self.qa_system, 'question_decomposer'):
             try:
                 # 使用集成系统的分解器
-                decomposed = self.qa_system.question_decomposer.decompose_question(question, use_llm=False)
+                decomposed = self.qa_system.question_decomposer.decompose_question(question, use_llm=True)
                 formatted = self.qa_system.question_decomposer.format_questions_for_qa(decomposed)
                 return formatted
             except Exception as e:

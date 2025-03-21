@@ -158,11 +158,30 @@
             tooltip: {
                 formatter: function(params) {
                     if (params.dataType === 'node') {
-                        return `<strong>${params.data.name}</strong><br/>
-                                类型：${params.data.category}<br/>
-                                描述：${params.data.attr.desc}<br/>
-                                参考文献：${params.data.source_article}`;
+                        let tooltipContent = `<strong>${params.data.name}</strong><br/>`;
+                        
+                        // 添加节点类型
+                        if (params.data.category) {
+                            tooltipContent += `类型：${params.data.category}<br/>`;
+                        }
+                        
+                        // 添加描述
+                        if (params.data.attr && params.data.attr.desc) {
+                            tooltipContent += `描述：${params.data.attr.desc}<br/>`;
+                        }
+                        
+                        // 只有地理问题类型节点才显示参考文献
+                        if (params.data.category === '地理问题' && params.data.source_article) {
+                            tooltipContent += `参考文献：${params.data.source_article}`;
+                        }
+                        
+                        return tooltipContent;
                     }
+                    
+                    if (params.dataType === 'edge') {
+                        return `关系：${params.data.name}`;
+                    }
+                    
                     return params.data.name;
                 }
             },
@@ -266,12 +285,5 @@
 </script>
 
 <!-- 修改数据预渲染部分 -->
-<script type="text/javascript">
-    window.GRAPH_DATA = {
-        legendData: {{ legend_data|default:"[]"|safe }},
-        categories: {{ categories|default:"[]"|safe }},
-        nodes: {{ datas|default:"[]"|safe }},
-        links: {{ links|default:"[]"|safe }}
-    };
-</script>
+<!-- 移除重复的window.GRAPH_DATA定义，使用上面的定义 -->
 {% endblock %}

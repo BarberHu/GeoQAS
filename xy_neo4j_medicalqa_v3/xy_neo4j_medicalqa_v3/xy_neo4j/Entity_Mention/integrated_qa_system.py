@@ -63,7 +63,7 @@ class IntegratedQASystem:
             # 初始化问题分解器(optional)
             try:
                 from question_decomposition_module import HydrologicalQuestionDecomposer
-                self.question_decomposer = HydrologicalQuestionDecomposer(use_api=False)
+                self.question_decomposer = HydrologicalQuestionDecomposer(use_api=True)
             except ImportError as e:
                 print(f"问题分解器导入失败: {e}")
                 self.question_decomposer = None
@@ -172,7 +172,7 @@ class IntegratedQASystem:
             整合后的回答
         """
         # 分解问题
-        decomposed_questions = self.question_decomposer.decompose_question(question, use_llm=False)
+        decomposed_questions = self.question_decomposer.decompose_question(question, use_llm=True)
         formatted_questions = self.question_decomposer.format_questions_for_qa(decomposed_questions)
         
         # 减少问题数量，保留最重要的问题

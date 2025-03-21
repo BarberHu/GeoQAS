@@ -123,13 +123,33 @@ class EntityLinker:
             
             # 查询所有实体节点
             with self.driver.session() as session:
+                # 先检查数据库中的节点标签
+                try:
+                    label_query = "MATCH (n) RETURN DISTINCT labels(n) as labels LIMIT 10"
+                    label_result = list(session.run(label_query))
+                    if label_result:
+                        print("数据库中发现的节点标签示例:")
+                        for i, record in enumerate(label_result[:5]):
+                            print(f"  - {record['labels']}")
+                except Exception as e:
+                    print(f"获取节点标签时出错: {e}")
+
+                # 尝试执行节点计数查询
+                try:
+                    count_query = "MATCH (n) RETURN count(n) as count"
+                    count_result = session.run(count_query).single()
+                    if count_result:
+                        print(f"数据库中的总节点数: {count_result['count']}")
+                except Exception as e:
+                    print(f"计数节点时出错: {e}")
+                    
                 # 修改查询语句，考虑source_article可能存在或不存在的情况
                 query = """
                 MATCH (n) 
                 WHERE n:地理问题 OR n:数据 OR n:方法 OR n:模型 OR n:模型应用 OR n:结果
                 RETURN n.name as name, n.desc as desc, 
-                       CASE WHEN n:地理问题 THEN n.source_article ELSE NULL END as source_article,
-                       labels(n) as labels
+                    CASE WHEN n:地理问题 THEN n.source_article ELSE NULL END as source_article,
+                    labels(n) as labels
                 """
                 result = session.run(query)
                 
@@ -138,27 +158,93 @@ class EntityLinker:
                     self.persistent_state["entity_desc"] = {}
                 if "entity_source" not in self.persistent_state:
                     self.persistent_state["entity_source"] = {}
+                if "entity_names" not in self.persistent_state:
+                    self.persistent_state["entity_names"] = []
+                
+                # 清空现有数据以避免旧数据问题
+                self.persistent_state["entity_desc"].clear()
+                self.persistent_state["entity_source"].clear()
+                self.persistent_state["entity_names"].clear()
                 
                 # 处理每个实体
+                entity_count = 0
                 for record in result:
                     # 确保name是字符串类型
                     name = record.get("name")
+                    if name is None:
+                        continue  # 跳过没有名称的实体
+                        
                     if isinstance(name, list):
                         name = name[0] if name else "未命名实体"  # 取第一个元素或提供默认值
                     
                     # 存储实体描述
                     self.persistent_state["entity_desc"][name] = record.get("desc", "")
                     
+                    # 将实体名称添加到列表中
+                    if name not in self.persistent_state["entity_names"]:
+                        self.persistent_state["entity_names"].append(name)
+                    
                     # 只为"地理问题"类型节点存储source_article
                     labels = record.get("labels", [])
                     if "地理问题" in labels and record.get("source_article"):
                         self.persistent_state["entity_source"][name] = record.get("source_article")
                     
-                print(f"预加载了 {len(self.persistent_state['entity_desc'])} 个实体")
+                    entity_count += 1
+                
+                # 打印更详细的信息
+                print(f"预加载了 {entity_count} 个实体")
+                print(f"entity_names列表长度: {len(self.persistent_state['entity_names'])}")
+                print(f"entity_desc字典长度: {len(self.persistent_state['entity_desc'])}")
+                print(f"entity_source字典长度: {len(self.persistent_state['entity_source'])}")
+                
+                # 如果没有找到实体，尝试更宽松的查询
+                if entity_count == 0:
+                    print("未找到任何实体，尝试更宽松的查询...")
+                    fallback_query = """
+                    MATCH (n) 
+                    RETURN n.name as name, n.desc as desc, 
+                        CASE WHEN "地理问题" IN labels(n) THEN n.source_article ELSE NULL END as source_article,
+                        labels(n) as labels
+                    LIMIT 1000
+                    """
+                    fallback_result = session.run(fallback_query)
+                    
+                    # 处理每个实体
+                    fallback_count = 0
+                    for record in fallback_result:
+                        name = record.get("name")
+                        if name is None:
+                            continue
+                            
+                        if isinstance(name, list):
+                            name = name[0] if name else "未命名实体"
+                        
+                        self.persistent_state["entity_desc"][name] = record.get("desc", "")
+                        
+                        if name not in self.persistent_state["entity_names"]:
+                            self.persistent_state["entity_names"].append(name)
+                        
+                        labels = record.get("labels", [])
+                        if "地理问题" in labels and record.get("source_article"):
+                            self.persistent_state["entity_source"][name] = record.get("source_article")
+                        
+                        fallback_count += 1
+                    
+                    print(f"备用查询加载了 {fallback_count} 个实体")
                 
         except Exception as e:
             print(f"EntityLinker预初始化失败: {e}")
-            raise
+            print(f"错误类型: {type(e).__name__}")
+            import traceback
+            print(f"错误详情: {traceback.format_exc()}")
+            # 不抛出异常，保持系统能继续运行
+            print("创建最小化的实体缓存以允许系统继续运行...")
+            if "entity_desc" not in self.persistent_state:
+                self.persistent_state["entity_desc"] = {}
+            if "entity_source" not in self.persistent_state:
+                self.persistent_state["entity_source"] = {}
+            if "entity_names" not in self.persistent_state:
+                self.persistent_state["entity_names"] = []
 
     def query_with_cache(self, cypher_query: str, parameters: Dict) -> List[Dict]:
         """使用缓存执行Cypher查询 (已更新为使用query_state)"""
@@ -194,7 +280,7 @@ class EntityLinker:
                 WHERE n.name IN $entity_names
                 RETURN n.name as name, n.desc as desc, 
                        labels(n)[0] as category, 
-                       n.source_article as reference
+                       CASE WHEN '地理问题' IN labels(n) THEN n.source_article ELSE NULL END as reference
                 """
                 
                 result = session.run(query, entity_names=uncached_entities)
@@ -462,7 +548,7 @@ class EntityLinker:
                     ELSE '' END as description,
                 CASE WHEN labels(n)[0] IS NOT NULL THEN labels(n)[0]
                     ELSE 'Unknown' END as category,
-                CASE WHEN n.source_article IS NOT NULL THEN n.source_article
+                CASE WHEN '地理问题' IN labels(n) AND n.source_article IS NOT NULL THEN n.source_article
                     ELSE '' END as source
             RETURN n.name as entity, 
                 description as desc, 
@@ -698,15 +784,15 @@ class EntityLinker:
                     if record:
                         # 处理节点属性
                         props = record["properties"]
+                        labels = record["labels"]
                         entity_info.update({
                             "name": props.get("name", entity_name),
                             "desc": props.get("desc", ""),
-                            "reference": props.get("source_article", ""),
+                            "reference": props.get("source_article", "") if "地理问题" in labels else "",
                             "properties": props
                         })
                         
                         # 处理节点标签
-                        labels = record["labels"]
                         if labels:
                             entity_info["category"] = labels[0]
                         
@@ -861,3 +947,16 @@ class EntityLinker:
         except Exception as e:
             print(f"[DEBUG] 查询节点 '{node_name}' 的标签失败: {e}")
             return None
+
+    def get_entity_info(self, entity_name):
+        """获取实体信息，包括描述和源文献（如果有）"""
+        info = {
+            'name': entity_name,
+            'desc': self.persistent_state.get("entity_desc", {}).get(entity_name, ""),
+        }
+        
+        # 只有在实体存在于entity_source中时才添加reference字段
+        if entity_name in self.persistent_state.get("entity_source", {}):
+            info['reference'] = self.persistent_state["entity_source"][entity_name]
+        
+        return info

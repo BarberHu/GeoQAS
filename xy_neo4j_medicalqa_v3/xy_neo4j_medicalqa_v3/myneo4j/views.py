@@ -27,33 +27,97 @@ def index(request):
         start = request.GET.get("start", "")
         relation = request.GET.get("relation", "")
         end = request.GET.get("end", "")
+        
+        print(f"查询参数: start={start}, relation={relation}, end={end}")
+        
         all_datas = get_all_relation(start, relation, end)
+        
+        # 调试输出
+        print("原始数据:")
+        print(f"- 节点数量: {len(all_datas.get('datas', []))}")
+        print(f"- 关系数量: {len(all_datas.get('links', []))}")
+        print(f"- 分类数量: {len(all_datas.get('categories', []))}")
         
         # 确保节点数据包含 source_article 属性（只有地理问题类型才有）
         for node in all_datas.get("datas", []):
+            # 确保categories字段始终是列表
+            if "categories" in node:
+                if isinstance(node["categories"], str):
+                    node["categories"] = [node["categories"]]
+            else:
+                if "category" in node:
+                    node["categories"] = [node["category"]]
+                else:
+                    node["categories"] = []
+                
             # 检查节点是否有标签信息并且是地理问题类型
+            node_category = node.get("category", "")
             categories = node.get("categories", [])
-            is_geo_problem = any(cat == "地理问题" for cat in categories)
+            is_geo_problem = node_category == "地理问题" or "地理问题" in categories
             
             # 只有地理问题类型才需要source_article
             if not is_geo_problem and "source_article" in node:
                 del node["source_article"]  # 删除非地理问题节点的source_article
             elif is_geo_problem and "source_article" not in node:
                 node["source_article"] = ""  # 为地理问题类型节点添加默认值
+            
+            # 确保attr中至少包含name和desc
+            if "attr" not in node:
+                node["attr"] = {}
+            
+            if "name" not in node["attr"]:
+                node["attr"]["name"] = node.get("name", "")
+            
+            if "desc" not in node["attr"]:
+                node["attr"]["desc"] = ""
         
-        links = json.dumps(all_datas.get("links", []))
-        datas = json.dumps(all_datas.get("datas", []))
-        categories = json.dumps(all_datas.get("categories", []))
-        legend_data = json.dumps(all_datas.get("legend_data", []))
+        # 确保使用JSON序列化时不会出现循环引用
+        try:
+            links = json.dumps(all_datas.get("links", []))
+            datas = json.dumps(all_datas.get("datas", []))
+        except Exception as e:
+            print(f"JSON序列化错误: {e}")
+            # 如果JSON序列化失败，尝试简化数据
+            simplified_datas = []
+            for node in all_datas.get("datas", []):
+                simplified_node = {
+                    "name": node.get("name", ""),
+                    "category": node.get("category", ""),
+                    "categories": node.get("categories", []),
+                    "color": node.get("color", "#ccc"),
+                    "attr": {
+                        "name": node.get("name", ""),
+                        "desc": node.get("attr", {}).get("desc", "")
+                    }
+                }
+                if "source_article" in node:
+                    simplified_node["source_article"] = node["source_article"]
+                simplified_datas.append(simplified_node)
+            
+            links = json.dumps(all_datas.get("links", []))
+            datas = json.dumps(simplified_datas)
+        
+        # 确保categories是列表
+        categories_data = all_datas.get("categories", [])
+        if isinstance(categories_data, str):
+            categories_data = [categories_data]
+        categories = json.dumps(categories_data)
+        
+        # 确保legend_data是列表
+        legend_data_values = all_datas.get("legend_data", [])
+        if isinstance(legend_data_values, str):
+            legend_data_values = [legend_data_values]
+        legend_data = json.dumps(legend_data_values)
 
-        print("Data to render:", {
-            "links": links,
-            "datas": datas,
-            "categories": categories,
-            "legend_data": legend_data
-        })
+        print("处理后数据准备渲染:")
+        print("- 节点数量:", len(json.loads(datas)))
+        print("- 关系数量:", len(json.loads(links)))
+        print("- 分类数量:", len(json.loads(categories)))
+        print("- 图例数量:", len(json.loads(legend_data)))
     except Exception as e:
         print("Error in index view:", e)
+        import traceback
+        traceback.print_exc()  # 打印详细错误信息
         links, datas, categories, legend_data = "[]", "[]", "[]", "[]"
     
     return render(request, "index.html", locals())

@@ -45,7 +45,7 @@ class MultiTurnQAManager:
         
         # 从问题分解模块导入
         from question_decomposition_module import HydrologicalQuestionDecomposer
-        self.question_decomposer = HydrologicalQuestionDecomposer(use_api=False)
+        self.question_decomposer = HydrologicalQuestionDecomposer(use_api=True)
     
     def reset_context(self):
         """重置对话上下文"""
