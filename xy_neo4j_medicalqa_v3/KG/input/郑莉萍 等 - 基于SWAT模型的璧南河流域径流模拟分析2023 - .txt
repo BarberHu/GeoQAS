@@ -1,0 +1,475 @@
+# 基于 SWAT 模型的璧南河流域径流模拟分析* 
+
+邓君萍 ${ }^{1}$ ，胡煜佳 ${ }^{1}$ ，张鱼林 ${ }^{1}$ ，鄂景安 ${ }^{1-2}$ ，郭 就 ${ }^{1}$<br>（1. 重庆师范大学 地理与旅游学院，重庆 401331；2. 三峡库区地表过程与环境遥感重庆市重点实验室，重庆 401331）
+
+摘要：【目的】将 SWAT (soil and water assessment tool) 模型运用于重庆三峡库区长江支流的流域径流过程研究，为流域水资源的合理调控提供理论依据。【方法】以位于重庆市西部的璧南河流域为研究对象，构建 SWAT 模型对该流域的径流过程进行模拟。【结果】1）本定期与验证期流域月均径流量模拟值与实测值份合度较好，本定期和验证期的 NashSuttcliffe 效率系数、确定性系数和相对误差接近一致，表明 SWAT 模型在璧南河流域具有很好的适用性。2）2013— 2021 年璧南河流域年平均径流总量为 $1.79 \times 10^{6} \mathrm{~m}^{3}$ ，多年平均径流深为 $346.04 \mathrm{~mm} 。$ 各子流域产流主要集中在汛期 （6-10月），非汛期产流量不足，季节产流量分配不均匀，夏秋季节产流量高，春冬季节产流量低；流域产流量整体呈下降趋势。3）流域径流深在空间上呈现东西两侧高，中间低的分布特征，多年径流深变化率呈现出高产流量区域的产流量变化率低，低产流量区域的产流量变化率高的空间分布规律；产流量高值区主要集中在吴淮，三合，广音，建龙等镇（街道），产流量低值区主要位于陕舍、丁家、京兴、束风、青杜等镇（街道），与流域地势两侧高中间低以及坡度、降水量两侧大中间小的空间分布特征相符。4）在模拟未来气候变化情景中，璧南河流域降水量变化与径流量变化呈正相关系系，与气温变化呈负相关系系；与气温变化相比，流域径流量对降水量变化的敏感性更高，且降水量是影响未来璧南河流域径流变化的主要因素。【结论】SWAT 模型可用于璧南河流域径流过程的模拟；可以考虑通过水土保持生态建设、水存储和调水基础设施建设、在田水利建设等措施提高流域水资源利用率，同时调整和优化流域土地利用结构，从而实现未来气候变化背景下璧南河流域水资源的科学管理。
+关键词：璧南河流域；SWAT 模型；径流模拟；径流深；水资源；三峡库区
+中图分类号：P339
+文献标志码：A
+文章编号：1672-6693（2023）03-0031-17
+
+近几十年来，随着社会经济的快速发展和人口密度急剧增加，全球大多数区域都面临着水资源短缺问题。在气候变化和人类活动共同作用下，许多流域径流量发生了明显变化，对流域水资源造成了严重影响 ${ }^{[1-2]}$ 。当前，水科学已成为了全球学者的研究热点 ${ }^{[3]}$ 。河川径流作为流域水资源的重要组成部分，就它的径流过程及变化趋势进行研究，不仅对流域水资源的开发管理具有重要意义，而且也是解决水资源问题的基础 ${ }^{[4]}$ 。
+
+水文模型是开展流域径流过程研究的主要手段。分布式水文模型 SWAT（soil and water assessment tool）历经多次修改和扩展 ${ }^{[5-11]}$ ，不仅能够利用 GIS 和 RS 提供的空间数据模拟大中型流域复杂的水文过程并实现该过程的可视化，而且模型计算效率高、输人变量易获取且可以进行长时间序列的模拟。因此，SWAT 模型在水文过程、非点源污染、土地利用、农业管理等多个领域中得到了充分的应用 ${ }^{[12]}$ ，它在流域径流模拟方面的应用尤为广泛，获得了众多研究者的认可。在径流研究方面，国际上主要将 SWAT 模型应用在探讨径流过程的时空演变特征 ${ }^{[13-15]}$ 、土地利用变化和降水空间异质性对径流过程的影响 ${ }^{[16]}$ 、未来水文预测 ${ }^{[17]}$ 、径流对气候和人类活动的响应 ${ }^{[20-21]}$ 等方面。在中国，相关研究主要集中在水文过程的时空变化特征 ${ }^{[18]}$ 、对土地利用及气候变化的响应 ${ }^{[20-21]}$ 、变化环境下的水文预测 ${ }^{[22]}$ 、生态补水应用及生态流量计算 ${ }^{[23-24]}$ 等方面。总体来看，运用 SWAT 模型探索径流时空变化特征及对该变化未来趋势的预测，是未来相关研究的一大热点和主要方向。
+
+璧南河位于重庆市西部，为长江左岸一级支流。近些年的调查研究结果显示，璧南河流域水环境质量不稳定，水质长期在甘类到V类间波动 ${ }^{[25]}$ ；因此该流域的水环境问题对重庆市中心城区乃至重庆三峡库区尾段的水生态环境存在不良影响。与此同时，璧南河流域水资源供需矛盾也日渐凸显，而且前有关该流域的研究多集中
+
+[^0]
+[^0]:    * 依稿日期：2022-08-30 修回日期：2023-02-01 周练出版时间：2023-06-01T08：36
+
+    资助项目：国家社会科学基金重大项目（No.20E-ZD096）
+    第一作者简介：邓莉萍，女，研究方向为环境灾害与生态保护，E-mail：842187990@qq.com；通信作者：邵景安，男，研究员，博士，E-mail：shao ja2003@sohu.com
+    周练出版地址：https://kns.cnki.net/kcms2/detail/50,1185,n.20230531,0918,002.html
+
+在水质和面源污染的监测方面 ${ }^{[26]}$ ，对该流域水资源量和径流时空分布特征进行深入探讨的研究鲜有报道。有鉴于此，本研究构建了壁南河流域的 SWAT 模型，并在此基础上分析该流域径流的时空变化特征，同时对该流域未来气候变化情景进行设置，预测未来流域内径流的变化趋势，以期为该流域今后的水资源管理提供科学依据和理论指导。
+
+# 1 材料与方法 
+
+## 1. 1 研究区概况
+
+壁南河流域位于东经 $106^{\circ} \sim 106.33^{\circ}$ 、北纬 $29.17^{\circ} \sim 29.83^{\circ}$ ，主要由壁南河干流以及支流梅江河、九龙河、隆济溪组成，流域总面积达 $1058.9 \mathrm{~km}^{2}$ ；壁南河干流长 95 km 。流经重庆市壁山区、江津区和水川区（图1）。壁南河流域内地势两侧高、中间低，海拔高程范围为 $183 \sim 971 \mathrm{~m}$ ，以丘陵地貌为主，水系广布，河流两岸 I 级阶地发育。流域内气候属中亚热带湿润季风气候，多年平均气温为 $18^{\circ} \mathrm{C}$ ，多年平均降水量为 1080.31 mm ，多年平均径流量为 $10.9 \mathrm{~m}^{2} \cdot \mathrm{~s}^{-1}$ 、年平均径流总量达 $1.63 \times 10^{6} \mathrm{~m}^{2}$ 。壁南河流域的土地利用类型以耕地和林地为主，耕地主要沿中部宽广谷地分布，林地主要分布在东西两侧；流域内土壤类型以紫色土和水稻土为主，少部分黄壤和潮土集中分布在流域南部和西部 ${ }^{[27]}$ 。
+
+## 1. 2 数据来源及处理
+
+### 1.2.1 数字高程模型（DEM）
+
+相关研究表明，DEM 分辨率范围在 $20 \sim 150 \mathrm{~m}$ 时 SWAT 模型的模拟效果较好 ${ }^{[28-31]}$ 。本研究采用 $30 \mathrm{~m} \times 30 \mathrm{~m}$ 精度的 DEM 提取流域相关地形参数（图 2a）。有关 DEM 数据来源于地理空间数据云平台 （http://www.gscloud.cn）。根据墨卡托投影分度带，研究区位于 48 分带，因此将所有地图投影坐标统一设置为 WGS_1984_ UTM_Zone_48。
+
+### 1.2.2 土地利用数据
+
+土地利用数据是流域下垫面的直接体现，是建模必须的数据之一。本研究所使用的壁南河流域土地利用数据来源于重庆市生态环境大数据中心（http://sthjj.cq. gov.cn/），土地利用数据在使用前需经过处理和重分类以满足模型需要，然后制作土地利用索引表。研究区土地利用类型分布及相关模型代码分布见图 2 b 和表 1 。
+
+### 1.2.3 土壤数据
+
+壁南河流域土壤类型空间分布图来源于 HWSD(harmonized world soil database) 全球土壤数据库，该数据库直接采用 USDA 分级制，符合模型运行标准。对研究区土壤类型图进行重分类，有关信息见图 2 c 和表 2 。
+
+### 1.2.4 垅度数据
+
+提取壁南河流域坡度范围，有关信息如图 2 d 所示。为更加准确反映全流域实际地形，达到理想模拟效果，本研究在对研究区坡度面积占比进行分析的基础上，将流域坡度类型划分为 5 种，即 $0 \sim 5^{\circ} 、>5^{\circ} \sim 10^{\circ} 、>10^{\circ} \sim$ $20^{\circ} 、>20^{\circ} \sim 30^{\circ}$ 和 $>30^{\circ}$ 。
+
+### 1.2.5 土壤属性数据
+
+土壤物理属性参数影响土壤剖面中水和气的运动情况，是模型运行的基础数据，对流域水文响应单元划分起着关键作用。壁南河流域上、下层土壤物理属性数据分别见表 3 。
+
+
+a
+
+b
+
+c
+
+
+图2 壁南河流域 DEM、土地利用、土壤类型及坡度
+Fig. 2 DEM. land use. soil type and slope in Binan River Basin
+表1 壁南河流域土地利用类型
+Tab. 1 Land use types in Binan River Basin
+
+| 序号 | 覆被类型 | 模型代码 | 面积 $/ \mathrm{hm}^{2}$ | 占比 | 序号 | 覆被类型 | 模型代码 | 面积 $/ \mathrm{hm}^{2}$ | 占比 |
+| :--: | :--: | :--: | :--: | :--: | :--: | :--: | :--: | :--: | :--: |
+| 1 | 耕地 | AGRL | 37609.28 | $34.72 \%$ | 6 | 草地 | PAST | 5600.07 | $5.17 \%$ |
+| 2 | 林地 | FRST | 28577.76 | $26.38 \%$ | 7 | 交通用地 | UTRN | 3926.07 | $3.62 \%$ |
+| 3 | 间地 | ORCD | 16468.90 | $15.20 \%$ | 8 | 工业用地 | UIDU | 2536.57 | $2.34 \%$ |
+| 4 | 居民地 | URMD | 7564.21 | $6.99 \%$ | 9 | 末利用地 | BALD | 418.86 | $0.39 \%$ |
+| 5 | 水域 | WATR | 5617.07 | $5.19 \%$ |  |  |  |  |  |
+
+表2 壁南河流域土壤类型
+Tab. 2 Soil types in Binan River basin
+
+| 序号 | 土壤类型 | 缩写 | 面积 $/ \mathrm{km}^{2}$ | 占比 | 序号 | 土壤类型 | 缩写 | 面积 $/ \mathrm{km}^{2}$ | 占比 |
+| :--: | :--: | :--: | :--: | :--: | :--: | :--: | :--: | :--: | :--: |
+| 1 | 高活性强般土(ALISOLS) | ALh | 200.51 | $19.63 \%$ | 4 | 高活性淋溶土(LUVISOLS) | LVx | 16.08 | $1.57 \%$ |
+| 2 | 人为土(ANTHROSOLS) | ATc | 663.53 | $64.95 \%$ | 5 | 石灰性疏松岩性土(REGOSOLS) | RGc | 76.84 | $7.52 \%$ |
+| 3 | 不饱和雏形土(CAMBISOLS) | CMd | 64.66 | $6.33 \%$ |  |  |  |  |  |
+
+# 1.2.6 气象数据 
+
+选取壁南河流域内部及周边的 3 个基本气象站即流域内部的壁山站（编号 57514），流域外南部的江津站（编号 57517）和流域外西部的永川站（编号 57506），将它们的实测逐日气象数据进行分析。上述气象数据通过访问重庆市生态环境大数据中心获得，气象数据时间步长为2011年1月1日—2021年12月31日，具体包括逐日气温、降水量、相对湿度、风速、日照时数等实测数据。
+
+### 1.2.7 水文数据
+
+选取壁南河流域青杜水文站观测的 2013-2020年逐月径流数据进行分析，这一时期的数据连续性较好，可作为模型率定与验证的依据。上述水文数据通过访问重庆市生态环境大数据中心获得。
+
+## 1.3 研究方法
+
+### 1.3.1 SWAT 分布式水文模型构建
+
+根据 SWAT 模型结构原理 ${ }^{[28]}$ ，搜集整理壁南河流域高程、土地利用、土壤、气象等相关数据，构建空间和属性数据库，完成径流模拟的准备工作。将模拟结果代人 SWAT-CUP 软件，完成模型的率定与验证工作。该软件已被广泛应用于 SWAT 模型的率定与验证，实现了自动参数率定，且集成了粒子群优化算法、马尔科夫链蒙特卡罗法、SUFI-2 算法、参数求解法、广义似然不确定性估计法等 ${ }^{[29]}$ ，操作方便，效率高，输出结果可视化，目前版本已更新到 SWAT-CUP 2012。
+
+表3 璧南河流域上、下层土壤物理属性
+Tab. 3 Physical properties of upper soil and subsoil in Binan River Basin
+
+| 参数 | 土壤层次 | 土壤类型 |  |  |  |  |
+| :--: | :--: | :--: | :--: | :--: | :--: | :--: |
+|  |  | LVx | CMd | RGc | ATc | ALh |
+| 土壤分层数（NLAYERS） | 上层 | 2 | 2 | 2 | 2 | 2 |
+|  | 下层 | 2 | 2 | 2 | 2 | 2 |
+| 水文分组（HYDGRP） | 上层 | C/D | A/A | A/A | A/A | A/C |
+|  | 下层 | C/D | A/A | A/A | A/A | A/C |
+| 土壤坡面最大根系深度（SOL_ZMX）/mm | 上层 | 1000 | 1000 | 1000 | 1000 | 1000 |
+|  | 下层 | 1000 | 1000 | 1000 | 1000 | 1000 |
+| 阴离子交换孔隙度（ANION_EXCL） | 上层 | 0.5 | 0.5 | 0.5 | 0.5 | 0.5 |
+|  | 下层 | 0.5 | 0.5 | 0.5 | 0.5 | 0.5 |
+| 土壤坡面潜在或最大裂隙体积（SOL_CRK） | 上层 | 0.5 | 0.5 | 0.5 | 0.5 | 0.5 |
+|  | 下层 | 0.5 | 0.5 | 0.5 | 0.5 | 0.5 |
+| 土壤层结构（TEXTURE） | 上层 | C-C | L-L | L-L | SL-L | L-CL |
+|  | 下层 | C-C | L-L | L-L | SL-L | L-CL |
+| 表层到底层的深度（SOL_Z）/mm | 上层 | 300 | 300 | 300 | 300 | 300 |
+|  | 下层 | 1000 | 1000 | 1000 | 1000 | 1000 |
+| 土壤混容重（SOL_BD）/（g・cm ${ }^{-1}$ ） | 上层 | 1. 35 | 1. 44 | 1. 44 | 1. 4 | 1. 43 |
+|  | 下层 | 1. 30 | 1. 45 | 1. 43 | 1. 41 | 1. 50 |
+| 土壤可利用水量（SOL_AWC） $/\left(\mathrm{mm} \cdot \mathrm{~mm}^{-1}\right)$ | 上层 | 0.13 | 0.14 | 0.13 | 0.16 | 0.14 |
+|  | 下层 | 0.12 | 0.13 | 0.14 | 0.15 | 0.13 |
+| 炮和水利传导系数（SOL_K） $/\left(\mathrm{mm} \cdot \mathrm{h}^{-1}\right)$ | 上层 | 1. 59 | 15.84 | 14.88 | 12.74 | 12.12 |
+|  | 下层 | 1. 02 | 16.37 | 10.21 | 13.43 | 3. 17 |
+| 有机碳含量（SOL_CBN） $/ \%$ | 上层 | 2. 1 | 2. 5 | 1. 3 | 0.0 | 2. 0 |
+|  | 下层 | 1. 0 | 0.9 | 0.8 | 1. 4 | 0.6 |
+| 粘土含量（CLAY） $/ \%$ | 上层 | 46 | 20 | 21 | 21 | 23 |
+|  | 下层 | 54 | 20 | 25 | 21 | 32 |
+| 粉土含量（SILT） $/ \%$ | 上层 | 27 | 38 | 35 | 50 | 37 |
+|  | 下层 | 25 | 35 | 35 | 45 | 33 |
+| 砂土含量（SAND） $/ \%$ | 上层 | 27 | 42 | 44 | 29 | 40 |
+|  | 下层 | 21 | 45 | 40 | 34 | 35 |
+| 砤石含量（ROCK） $/ \%$ | 上层 | 4 | 10 | 14 | 10 | 8 |
+|  | 下层 | 6 | 19 | 18 | 10 | 7 |
+| 地表反照率（SOL_ALB） | 上层 | 0.01 | 0.01 | 0.01 | 0.01 | 0.01 |
+|  | 下层 | 0.01 | 0.01 | 0.01 | 0.01 | 0.01 |
+| USLE 方程中可饶性因子（USLE_K） | 上层 | 0.13 | 0.14 | 0.17 | 0.19 | 0.15 |
+|  | 下层 | 0.14 | 0.17 | 0.17 | 0.17 | 0.16 |
+| 电导率（SOL_EC） $/\left(\mu \mathrm{S} \cdot \mathrm{cm}^{-1}\right)$ | 上层 | 0.1 | 0.1 | 0.2 | 0.3 | 0.1 |
+|  | 下层 | 0.1 | 0.1 | 0.3 | 0.3 | 0.1 |
+
+注：有机碳、粘土、粉土、砂土和砤石的含量以它们的质量占土壤湿质量的百分比计。各土壤类型的中文含义见表2。
+
+# 1.3.2 SUFI-2 算法及全局敏感性分析 
+
+SUFI-2 算法是根据拉丁超立方随机采样（LH-OAT）方法获取模型所需参数值，根据优化梯度搜索的原理，通过不断迭代更新参数取值实现模型的率定验证 ${ }^{[32]}$ ，在 SWAT-CUP 软件中，有两种检验参数敏感性的方法：全局敏感性分析和单个敏感性分析。衡量参数敏感性的指标分别是 $t$-stat 和 $p$-value。其中 $t$-stat 表征参数的敏感程度，它的绝对值越大表示参数敏感程度越高； $p$-value 反映敏感性参数的显著性，该值越趋近于 0 ，参数越显著，敏感程度则越高 ${ }^{[33]}$ 。本研究采用全局敏感性分析，基于 LH-OAT 方法采样的目标函数多元逐步回归 $t$ 检验值，得出模型全局参数敏感性，并以此进行参数敏感性分析，具体计算公式为：
+
+$$
+\hat{\sigma}=\alpha+\sum_{i=1}^{n} \beta_{i} b_{i}
+$$
+
+式中： $\hat{\sigma}$ 为目标函数值； $\beta_{i}$ 为第 $i$ 个敏感性分析的参数； $b_{i}$ 为参数 $\beta_{i}$ 的待定系数； $\alpha$ 为待定常数。
+
+### 1.3.3 模型适应性评价方法
+
+模型运行结束后，需对模拟结果的正确性做出量化判断。通过 Nash-Suttcliffe 效率系数、确定性系数和相对误差共 3 个指标参数来评价模型在流域的适应性，它们的计算公式如下：
+
+$$
+\begin{gathered}
+E_{n n}=1-\left[\sum_{i=1}^{n}\left(Q_{n}-Q_{n}\right)^{2} / \sum_{i=1}^{n}\left(Q_{n}-\bar{Q}_{n}\right)^{2}\right] \\
+R^{2}=\sum_{i=1}^{n}\left[\left(Q_{n}-\bar{Q}_{n}\right)\left(Q_{n}-\bar{Q}_{n}\right)^{2}\right] /\left[\sum_{i=1}^{n}\left(Q_{n}-\bar{Q}_{n}\right)^{2} \sum_{i=1}^{n}\left(Q_{n}-\bar{Q}_{n}\right)^{2}\right] \\
+R_{n}=\left[\sum_{i=1}^{n}\left(Q_{n}-Q_{n}\right) / \sum_{i=1}^{n} Q_{n}\right] \times 100 \%
+\end{gathered}
+$$
+
+式中： $E_{n n}$ 为 Nash-Suttcliffe 效率系数； $R^{2}$ 为确定性系数； $R_{n}$ 为相对误差； $Q_{n} 、 Q_{n}$ 分别表示实测值、模拟值； $\bar{Q}_{n}$ 、 $\bar{Q}_{n}$ 分别表示实测值的平均值、模拟值的平均值。
+
+Nash-Suttcliffe 效率系数取值范围为 $0 \sim 1$ ，该系数值越趋近于 1 则模拟值和实测值越接近，而当它的取值小于 0 时表示模拟结果无意义。确定性系数表示模拟数据被模型结构解释的比例程度，该系统值越接近 1 则说明模拟值与实测值拟合度越高。相对误差表示模型模拟造成的误差；当它的值小于 0 ，表示模拟值比实测值偏小；当它的值大于 0 ，表示模拟值比实测值偏大；而当相对误差值为 0 时，模型模拟值与实测值吻合。根据前人的研究成果可知，当 Nash-Suttcliffe 效率系数值大于或等于 0.55 、确定性系数值大于或等于 0.7 、相对误差的绝对值小于或等于 $25 \%$ 时，模型的适应性较好 ${ }^{[34]}$ 。
+
+## 2 结果与分析
+
+### 2.1 SWAT 模型构建结果
+
+### 2.1.1 子流域及水文响应单元划分
+
+子流域是由汇人河流网格单元的产汇流累积量超过集水面积阈值所形成的区域 ${ }^{[35]}$ ，子流域个数的划分取决于集水面积阈值；集水面积阈值越小则所划分的子流域个数就越多；集水面积阈值越大则所划分的子流域个数就越少。研究表明，划分出的子流域个数对模型进行径流模拟时的结果影响不大 ${ }^{[36-37]}$ 。由于模型会根据加载的 DEM 自动推荐合适的集水面积阈值，因此本研究在参考模型推荐数值和相关研究 ${ }^{[38]}$ 的基础上，反复试验，最终将集水面积阈值确定为 $1900 \mathrm{hm}^{2}$ ，整个壁南河流域因此被划分成 23 个子流域（图 3）。
+
+水文响应单元（HRU）是模型汇流演算与计算水量平衡的最小单元，是指下垫面单一、均匀的区域，可以反映不同土地利用类型、土壤类型、坡度组合的空间异质性 ${ }^{[39]}$ 。本研究使用 Multiple HRUs 法，依据 HRU 平均面积不超过流域总面积的 $10 \%$ 为划分标准 ${ }^{[39]}$ ，并考虑流域的地形情况，将流域土地利用面积、土壤面积和坡度等级的阈值分别设置为 $10 \% 、 15 \%$ 和 $10 \%$ ，最终将壁南河流域划分成 282 个 HRU。
+
+### 2.1.2 参数敏感性分析
+
+模型中与径流相关的参数共有 28 个，经模型运行 500 次，得出所有与径流相关参数的敏感性排序结果，为保证模型模拟的效率及质量，根据模型敏感性分析结果，在充分考虑流域水文条件、模型结构的基础上，参考相关文献 ${ }^{[40-41]}$ ，选定 22 个径流模拟相关参数，通过 SWAT-CUP 多次迭代，过滤掉低灵敏参数，最终确定对壁南河
+
+流域径流模拟影响较大的 11 个参数，由此进行参数率定与验证，敏感性分析结果如表 4 所示。
+
+# 2.1.3 参数率定与模型验证 
+
+敏感性参数排序确定后，即可针对性地进行模型的率定。设置模型的预热期为 2011-2012年，率定期为为 2013-2016年，验证期为 2017-2020年。结合研究区实际情况，参考前人研究经验 ${ }^{[36]}$ 及 SWAT-CUP 软件自带的参数区间范围，手动调参，经过 50 次迭代、1000 次模拟，最终确定的参数取值如表 5 所示。
+
+模型率定及验证所得结果如表 6 所示，率定期与验证期模拟值与实测值拟合理想，Nash-Sutteliffe效率系数均大于 0.55 ，确定性系数也在 0.7 以上，相对误差绝对值均小于 $25 \%$ 。率定期与验证期模拟的径流量月平均模拟值与它的月平均实测值分别相差 0.54 和 $0.83 \mathrm{~m}^{3} \cdot \mathrm{~s}^{-1}$ ，相对误差在容许范围内。这一结果表明 SWAT 模型能很好地适用于壁南河流域的径流模拟。根据模拟结果绘制出率定期与验证期模拟径流与实测径流的拟合曲线与相关关系图如图4所示。
+
+
+图3 壁南河流域子流域的划分
+Fig. 3 The division of the sub-basin in Binau River Basin
+
+表 4 SWAT-CUP 敏感性分析结果
+Tab. 4 Sensitivity analysis results of SWAT-CUP
+
+| 参数名称 | 敏感性排序 | $t$-stat | $p$-value | 参数名称 | 敏感性排序 | $t$-stat | $p$-value |
+| :--: | :--: | :--: | :--: | :--: | :--: | :--: | :--: |
+| SCS 径流曲线数（CN2） | 1 | 4.99 | $<0.01$ | 主河道淤积层有效渗透系数（CH_K2） | 7 | $-0.72$ | 0.47 |
+| 土壤湿容重（SOL_BD） | 2 | 3.74 | 0.04 | 主河道曼宁系数（ $\mathrm{CH}_{4} \mathrm{~N} 2$ ） | 8 | 0.45 | 0.65 |
+| 浅层蓄水初始水深（GWQMN） | 3 | $-2.08$ | 0.04 | 地下水蒸发系数（GW_REVAP） | 9 | $-0.16$ | 0.87 |
+| 土壤有效含水量（SOL_AWC） | 4 | $-0.96$ | 0.34 | 浅层地下水再蒸发系数（REVAPMN） | 10 | 0.04 | 0.96 |
+| 土壤蒸发补偿系数（ESCO） | 5 | 0.83 | 0.40 | 鱼和水力传导率（SOL_K） | 11 | $-0.03$ | 0.98 |
+| 地下水时间延迟期（GW_DELAY） | 6 | 0.77 | 0.45 |  |  |  |  |
+
+表5模型参数率定取值
+Tab. 5 Model parameter calibration value
+
+| 序号 | 参数名称 | 取值范围 | 最优取值 | 序号 | 参数名称 | 取值范围 | 最优取值 |
+| :--: | :--: | :--: | :--: | :--: | :--: | :--: | :--: |
+| 1 | $\mathrm{R}_{2} \mathrm{CN} 2$ | $-0.05 \sim 0.04$ | $-0.04$ | 7 | $\mathrm{V}_{2} \mathrm{CH}_{4} \mathrm{~K} 2$ | $45.03 \sim 46.62$ | 46.48 |
+| 2 | $\mathrm{R}_{2} \mathrm{SOL}_{2} \mathrm{BD}$ | $0.14 \sim 0.14$ | 0.14 | 8 | $\mathrm{V}_{2} \mathrm{CH}_{4} \mathrm{~N} 2$ | $0.09 \sim 0.1$ | 0.09 |
+| 3 | $\mathrm{V}_{2}$ GWQMN | $3358.85 \sim 3433.53$ | 3389.47 | 9 | $\mathrm{V}_{2}$ GW_REVAP | $0.19 \sim 0.2$ | 0.19 |
+| 4 | $\mathrm{R}_{2} \mathrm{SOL}_{2} \mathrm{AWC}$ | $0.64 \sim 0.65$ | 0.64 | 10 | $\mathrm{V}_{2}$ REVAPMN | $118.99 \sim 127.55$ | 124.56 |
+| 5 | $\mathrm{V}_{2}$ ESCO | $0.44 \sim 0.45$ | 0.45 | 11 | $\mathrm{R}_{2}$ SOL_K | $-0.087045 \sim 0.078119$ | $-0.08303$ |
+| 6 | $\mathrm{V}_{2}$ GW_DELAY | $332.23 \sim 336.38$ | 333.27 |  |  |  |  |
+
+注：各参数名称的中文名见表 4 ，参数名称前缀"R_"和"V_"分别表示采用参数初始值乘以给定最优取值和用给定最优值替代模型参数当前值。
+
+表 6 模型模拟评价结果
+Tab. 6 Model simulation evaluation results
+
+| 时期 | 径流量 $/\left(\mathrm{m}^{2} \cdot \mathrm{~s}^{-1}\right)$ |  |  |  |  |
+| :--: | :--: | :--: | :--: | :--: | :--: |
+|  | 月平均实测值 | 月平均模拟值 | Nash-Suttcliffe 效率系数 | 确定性系数 | 相对误差 |
+| 率定期（2013-2016年） | 8.49 | 7.95 | 0.80 | 0.81 | $6.36 \%$ |
+| 验证期（2017-2020年） | 10.57 | 9.74 | 0.82 | 0.90 | $7.85 \%$ |
+
+# 2. 2 径流模拟结果分析 
+
+### 2.2.1 径流量估算
+
+根据模型输出结果文件，对壁南河流域各子流域水资源量进行估算，可知2013-2021年壁南河流域年平均径流总量为 $1.79 \times 10^{6} \mathrm{~m}^{2}$ ，其中：壁南河干流（ $1,2,3,4,7,9,19,20,21,23$ 号子流域）的年平均径流总量为 $11428.92 \times 10^{4} \mathrm{~m}^{3}$ ；梅江河（ $5,6,8,10,13,14,15,22$ 号子流域）的年平均径流总量为 $4563.82 \times 10^{4} \mathrm{~m}^{2}$ ；九龙河 （ $11,12,16$ 号子流域）的年平均径流总量为 $1376.75 \times 10^{4} \mathrm{~m}^{2}$ ；隆济溪（ $17,18$ 号子流域）的年平均径流总量为 $499.14 \times 10^{4} \mathrm{~m}^{2}$ 。同时，计算得出壁南河流域多年平均径流深为 346.04 mm ，壁南河干流、梅江河、九龙河和隆济溪的多年平均径流深分别为 $235.22 、 138.23 、 115.20$ 和 $59.23 \mathrm{~mm} 。$
+
+a 率定期月径流量模拟值与实测值
+
+c 验证期月径流量模拟值与实测值
+
+b 率定期月径流量模拟值与实测值拟合
+
+d 验证期月径流量模拟值与实测值拟合
+
+图4 青红站率定期（2013-2016年）和验证期（2017-2020年）月径流量模拟值与实测值及拟合精度
+Fig. 4 Monthly runoff simulation and measured value and fitting accuracy of Qinggang station in the periodic rate (from 2013 to 2016) and in the validation period (from 2017 to 2020)
+
+### 2.2.2 径流深时空变化特征分析
+
+2013-2021年壁南河流域各子流域月平均径流深变化特征如图 5 所示。从图 5 可以看出：产流主要集中在汛期（6-10月），该时期的产流量约占流域全年总产流量的 $86 \%$ ， 11 月一次年 5 月的产流量不足。这一结果说明降水是流域径流的主要影响因素。由于壁南河流域水资源年内分配不均，加之缺乏水利工程设施，故汛期存
+
+在区域性洪水的隐患。若在非汛期过度取水和进行不合理的农田灌溉，可能会产生河道干涸、区域地下水位下降、水环境污染、水资源短缺等问题。
+
+气候条件决定了流域水文要素季节分配不均匀。根据模型月尺度模拟结果（图6）和图3 可知：壁南河流域径流深季节变化特征整体表现为夏秋季节产流量高，春冬季节产流量低。壁南河流域春季产流分布比较均匀，径流深较低，产流量较低。壁南河流域夏季产流分布不均，产流量高值区主要集中在壁南河干流及支流梅江河中下游，在 7、21和 23 号子流域尤为明显；产流量低值区分布在流域中部及西岸支流九龙河与隆济溪所在子流域。总体来看，壁南河流域夏季径流深较高，产流量较大。壁南河流域秋季产流分布也比较均匀，产流量高值区位于干流下游 21 号子流域，产流量低值区分布在流域中部 6 号和 19 号子流域。此外，壁南河流域冬季产流分布与在春季时的情形一致，但产流量较后者略高。综合来看，壁南河流域夏季径流深空间分布与年平均径流深空间分布较为一致，而春季、秋季和冬季径的流深空间分布都比较均匀。
+
+
+图5 2013-2021 年壁南河流域月平均径流深占比动态
+Fig. 5 Dynamics of monthly average runoff depth ratio in Binan River Basin from 2013 to 2021
+
+
+图6 2013-2021 年壁南河流域径流深季均变化
+Fig. 6 Seasonal variation distribution of runoff depth in the Binan River Basin from 2013 to 2021
+由图7可知：2013-2021年壁南河流域季节产流量整体呈下降趋势，虽然个别子流域产流量增加但增加量较小，因而可忽略不计。在春季，九龙河与隆济溪交汇处产流量下降趋势较为明显，此外梅江河下游及干流中上游产流量下降趋势也较为明显。流域内夏季产流量变化在空间分布上比较均匀，产流量下降明显的区域集中在流域出水口所在子流域及梅江河与隆济溪交汇处，而九龙河及干流中下游子流域产流量略微增加。壁南河流域秋季产流量变化的空间分布与在夏季时的情形基本一致。此外，壁南河冬季产流量变化整体比较均匀且变幅不大，但产流量在南部出水口的下降趋势相对明显。
+
+2013-2021年壁南河流域各子流域年平均径流深如图 8a 所示，再结合图3可知：流域内多年平均径流深约为 346.04 mm ；多年平均径流深最大值位于壁南河干流所在的 21 号子流域，达 360.08 mm ；多年平均径流深最小值位于壁南河支流隆济溪所在的 18 号子流域，为 60.48 mm 。壁南河干流和西岸支流梅江河所在的几个子流域年平均径流深较高，径流深介于 $122.76 \sim 295.46 \mathrm{~mm}$ 之间，是流域的重点水源涵养地。流域中部和北部年平
+
+均径流深略低于九龙河所在的子流域，年平均径流深介于 60.48～103.87 mm 之间。总体上看，璧南河流域年平均径流深在空间上呈两侧高、中间低的分布特征。从图 8 b 可以看出，流域内径流深变化率在空间上大体呈现中间高、两侧低的分布特征，这与璧南河年平均径流深空间分布恰好相反。同时，璧南河流域中下游石岸径流深变化以下降趋势为主，上游左岸及流域中部径流深变化主要呈增加趋势。总之，2013-2021年璧南河流域径流深变化特征呈现出高产流量区域的产流量变化率低、低产流量区域的产流量变化率高的空间分布规律。
+
+结合图 8 c 及图 2d 分析上述现象的形成原因，可以看出径流深高值区是降水量大和大坡度共同作用下的结果，这与和继军等人 ${ }^{[452}$ 提出的临界值下坡面产流量与坡度成正相关的研究结果相符。璧南河流域内两侧是典型的低山丘陵区，坡度多在 $25^{\circ}$ 以上；流域内东西两侧降水量比中部降水量大，子流域径流深与降水量成正相关，径流深高值区与降水量高值区在空间上的分布呈现高度相似性（图 8a 和图 8c）。从土地利用的角度来看，通常认为林地具有涵养水源、保持水土的作用，也有不少研究指出经济林、纯林、未成林等人工林林地的水土流失仍然很严重 ${ }^{[45-47]}$ 。根据图 2b 可知，璧南河流域内林地主要分布在海拔高程较高、坡度较大、降水量较大的东西两侧边缘。安晨等人 ${ }^{[2]}$ 的研究成果显示，林地在上述类型区域减流作用明显下降。因此，璧南河流域内林地并未能起到很好的减流作用，区域内径流量大。璧南河流域中部则地势平坦，坡度小，耕地广布；农业生产引水灌溉、水利工程截流等人类活动对径流影响较大，因而该区域成为了流域产流量低值区。
+
+
+图7 2013-2021 年璧南河流域径流深季均变化率
+Fig. 7 Average seasonal variation rate of runoff depth in Binan River Basin from 2013 to 2021
+
+
+图8 2013-2021 年年平均径流深、径流深变化率及降水量空间分布
+Fig. 8 Spatial distribution of annual runoff depth. its change rate and rainfall from 2013 to 2021
+对 2013-2021年璧南河流域各年份径流深进行克里金空间插值，得到的结果如图9所示。从该图可以看出，2015年是模拟期内产流量最高的年份，高产流量区位于流域南部的吴滩、东南部的广善和健龙等镇，径流深介于 223.02～473.72 mm 之间；低产流量区均匀的分布在流域各支流处，径流深介于 52.67～113.21 mm 之间。
+
+2018 年是模拟期内产流量最低的年份，高产流量区位于油溪、吴滩、广谱、德感、来凤等镇（街道），径流深介于 132. $44 \sim 275.63 \mathrm{~mm}$ 之间；低产流量区均匀的分布在河流中上游，径流深介于 $50.79 \sim 84.12 \mathrm{~mm}$ 之间。总体来看，2013-2021年壁南河流域镇域尺度上的各年份径流深高值区主要集中在流域东部吴滩、三合、广普、建龙等镇（街道），该区域土地利用类型以林地为主，降水量大、坡度大；径流低值区主要位于流域西南部陈食以及流域中部丁家、正兴、来凤、青杜等镇（街道），该区域地势平坦，土地利用类型以耕地为主，降水量小、坡度小，农业活动强度大。
+
+# 2.3 气候变化下的水文响应分析 
+
+气温是气候变化的直接体现，降水则是形成径流的直接动力。本研究在探讨气候变化对径流的影响时主要考虑气温和降水两项因子，采用"增量情景"法，基于 IPCC 第 4 次评估报告关于中国未来 40 年气候变化趋势预测 ${ }^{[48]}$ ，在前文已率定好的模型基础上，设计壁南河流域未来气候变化情景，对流域内径流变化进行分析研究。对未来气候变化情景的具体设置如表 7 所示，共有 25 种不同情景，其中：S13、S23、S43 和 S53 是在降水量保持不变，气温上升或下降时的气候变化情景；S31、S32、S34 和 S35 是在气温保持不变，降水量增加或减少的气候变化情景；S33 为基准情景；其余情景则是气温和降水均有不同变化下的气候变化情景。
+
+表7同时显示了利用率定后的模型根据情景设置代入模型气象数据库后得到 25 种情景模拟下的壁南河流域径流量变化结果。当气温保持不变（S31、S32、S34 和 S35 情景）时，流域年平均径流量随着降水量的增加而增加，其中；当降水量增加 $20 \%$ 时，与基准情景相比年平均径流量增加了 $3.33 \mathrm{~m}^{3} \cdot \mathrm{~s}^{-1}$ ，增幅达 $21.18 \%$ ；当降水量降低 $20 \%$ 时，与基准情景相比年平均径流量减少了 $2.35 \mathrm{~m}^{3} \cdot \mathrm{~s}^{-1}$ ，降幅达 $23.42 \%$ 。当降水量保持不变（S31、 S32、S34 和 S35 情景）时，流域年平均径流量随着气温的上升而减小，其中：当气温下降 $2^{\circ} \mathrm{C}$ 时，与基准情景相比年平均径流量增加了 $0.16 \mathrm{~m}^{3} \cdot \mathrm{~s}^{-1}$ ，增幅达 $1.29 \%$ ；当气温上升 $2^{\circ} \mathrm{C}$ 时，与基准情景相比年平均径流量减少了 $0.16 \mathrm{~m}^{3} \cdot \mathrm{~s}^{-1}$ ，减幅达 $1.28 \%$ 。由此可见，当气温保持不变时，降水量变化与径流量变化呈正相关关系，且径流量的增加幅度随着降水量增加而增大；当降水量保持不变时，气温变化与径流量变化呈负相关关系，且径流量增加幅度随着气温增加而降低。与气温相比，降水量对径流量的影响更为明显。这是由于降水是形成径流的主要因素，是壁南河流域水资源的主要补给来源，故径流量随着降水量的增加而增加；而当降水量保持不变，随着气温的升高，流域内蒸发量也会增加，故径流量就会相应减少。
+
+不同的气温和降水量组合模拟出的流域径流量差异很大，在设置的 25 种情景中，径流量最大的是 S55 情景 （气温下降 $2^{\circ} \mathrm{C}$ 、降水增加 $20 \%$ ），年平均径流量达 $15.99 \mathrm{~m}^{3} \cdot \mathrm{~s}^{-1}$ ，与基准情景相比年平均径流量增加了 $3.59 \mathrm{~m}^{3} \cdot \mathrm{~s}^{-1}$ ，增幅达 $22.47 \%$ ；径流量最小的是 S11 情景（气温上升 $2^{\circ} \mathrm{C}$ 、降水量减少 $20 \%$ ），与基准情景相比年平均径流量为 $9.96 \mathrm{~m}^{3} \cdot \mathrm{~s}^{-1}$ ，年平均径流量减小了 $2.43 \mathrm{~m}^{3} \cdot \mathrm{~s}^{-1}$ ，降幅达 $24.42 \%$ 。比较 S13 与 S53 情景、S23与 S43 情景，可以发现在相同的温度变幅下，径流量对温度的升降变化不敏感；比较 S31 与 S35 情景、S32 与 S34情景，可以发现在相同的降水量变幅下，径流量变化对降水量减少更为敏感；比较 S33 与 S31 情景、S33 与 S53 情景，可以发现降水量减小 $20 \%$ 的径流量变化幅度远大于温度上升 $2^{\circ} \mathrm{C}$ 的径流量变化幅度；同样地分别让 S43、 S34 情景与 S33 情景比较，可知温度下降 $1^{\circ} \mathrm{C}$ 的径流量变化率远小于降水增加 $10 \%$ 的径流量变化率。总之，降水量是影响未来壁南河流域径流变化的主要因素，气温对该流域径流量的影响则相对不明显。
+
+根据 25 种情景模拟结果计算壁南河流域径流深，以此分析流域在各种气候条件下的水文过程。表 8 显示：各情景按径流深数值由低到高排序依次为：S11、S21、S31、S41、S51、S12、S22、S32、S42、S52、S13、S23、S43、S53、 S33、S14、S24、S34、S44、S54、S15、S25、S35、S45、S55。S55 情景（气温下降 $2^{\circ} \mathrm{C}$ 、降水量增加 $20 \%$ ）的年平均径流深最高，达 444.61 mm ，与基准情景相比年平均径流深增加了 $98.25 \mathrm{~mm} ； \mathrm{S} 11$ 情景（气温上升 $2^{\circ} \mathrm{C}$ 、降水量减少 $20 \%$ ）的年平均径流深最低，为 $276.88 \mathrm{~mm}$ ，与基准情景相比年平均径流深下降了 $69.48 \mathrm{~mm}$ 。比较 S13、S23、 S33、S43 和 S53 情景可知当降水量保持不变时：气温上升 $1^{\circ} \mathrm{C}$ ，年平均径流深下降 $6.62 \mathrm{~mm} ；$ 气温上升 $2^{\circ} \mathrm{C}$ ，流域气温每上升 $1^{\circ} \mathrm{C}$ ，径流深就下降 $4.39 \mathrm{~mm} ；$ 气温下降 $1^{\circ} \mathrm{C}$ ，年平均径流深增加 $4.54 \mathrm{~mm} ；$ 气温降低 $2^{\circ} \mathrm{C}$ ，流域气温每降低 $1^{\circ} \mathrm{C}$ ，年平均径流深就增加 $3.37 \mathrm{~mm}$ 。因此，气温上升对流域径流深的影响更为明显。同样地，比较 S31、S32、S33、S34 和 S35 情景可知当保持气温不变时；降水量减少 $10 \%$ ，年平均径流深减少 $37.37 \mathrm{~mm} ；$ 降水量减少 $20 \%$ ，年平均径流深减少 $67.33 \mathrm{~mm}$ ，且流域降水量每减少 $1 \%$ ，年平均径流深就减少 $6.73 \mathrm{~mm} ；$ 降水量增加 $10 \%$ ，年平均径流深增加 $45.33 \mathrm{~mm} ；$ 降水量增加 $20 \%$ 时，年平均径流深增加 $91.28 \mathrm{~mm}$ ，且流域降水量每增加 $1 \%$ ，年平均径流深就增加 $9.13 \mathrm{~mm}$ 。因此，降水量增加对流域径流深的影响更为明显。
+
+
+
+图9 2013-2021年璧南河流域径流深克里金插值
+Fig. 9 Kriging interpolation of runoff depth in Binan River Basin from 2013 to 2021
+
+表 7 基于 IPCC 报告的壁南河流域未来气候变化情景及径流量模拟预测结果
+Tab. 7 The future climate change scenarios and the results of runoff simulation in Binan River Basin based on the IPCC report
+
+| 参数 | 气温变化量 |  |  |  |  |  |  |  |  |  |  |
+| :--: | :--: | :--: | :--: | :--: | :--: | :--: | :--: | :--: | :--: | :--: | :--: |
+|  |  | 降水量减少 $20 \%$ |  | 降水量减少 $10 \%$ |  | 降水量保持不变 |  | 降水量增加 $10 \%$ |  | 降水量增加 $20 \%$ |  |
+|  |  | 情景 | 结果 | 情景 | 结果 | 情景 | 结果 | 情景 | 结果 | 情景 | 结果 |
+| 年平均径流量/ $\left(\mathrm{m}^{3} \cdot \mathrm{~s}^{-1}\right)$ | 气温上升 2 T | S11 | 9.96 | S12 | 11.07 | S13 | 12.24 | S14 | 13.77 | S15 | 15.46 |
+|  | 气温上升 1 T | S21 | 10.00 | S22 | 11.12 | S23 | 12.32 | S24 | 13.89 | S25 | 15.60 |
+|  | 气温保持不变 | S31 | 10.04 | S32 | 11.17 | S33 | 12.40 | S34 | 14.00 | S35 | 15.73 |
+|  | 气温下降 1 T | S41 | 10.08 | S42 | 11.21 | S43 | 12.47 | S44 | 14.12 | S45 | 15.86 |
+|  | 气温下降 2 T | S51 | 10.12 | S52 | 11.26 | S53 | 12.56 | S54 | 14.24 | S55 | 15.99 |
+| 年平均径流量变化量 $/\left(\mathrm{m}^{3} \cdot \mathrm{~s}^{-1}\right)$ | 气温上升 2 T | S11 | $-2.43$ | S12 | $-1.33$ | S13 | $-0.16$ | S14 | 1.37 | S15 | 3.06 |
+|  | 气温上升 1 T | S21 | $-2.39$ | S22 | $-1.28$ | S23 | $-0.08$ | S24 | 1.49 | S25 | 3.20 |
+|  | 气温保持不变 | S31 | $-2.35$ | S32 | $-1.23$ | S33 | 0.00 | S34 | 1.61 | S35 | 3.33 |
+|  | 气温下降 1 T | S41 | $-2.31$ | S42 | $-1.18$ | S43 | 0.08 | S44 | 1.72 | S45 | 3.46 |
+|  | 气温下降 2 T | S51 | $-2.27$ | S52 | $-1.13$ | S53 | 0.16 | S54 | 1.84 | S55 | 3.59 |
+| 年平均径流量变化率 | 气温上升 2 T | S11 | $-24.42 \%$ | S12 | $-12.00 \%$ | S13 | $-1.28 \%$ | S14 | 9. $95 \%$ | S15 | 19. $82 \%$ |
+|  | 气温上升 1 T | S21 | $-23.91 \%$ | S22 | $-11.48 \%$ | S23 | $-0.62 \%$ | S24 | 10. $76 \%$ | S25 | 20. $54 \%$ |
+|  | 气温保持不变 | S31 | $-23.42 \%$ | S32 | $-11.01 \%$ | S33 | 0 | S34 | 11. $49 \%$ | S35 | 21. $18 \%$ |
+|  | 气温下降 1 T | S41 | $-22.94 \%$ | S42 | $-10.53 \%$ | S43 | 0. $64 \%$ | S44 | 12. $20 \%$ | S45 | 21. $83 \%$ |
+|  | 气温下降 2 T | S51 | $-22.45 \%$ | S52 | $-10.04 \%$ | S53 | 1. $29 \%$ | S54 | 12. $94 \%$ | S55 | 22. $47 \%$ |
+
+注：年平均径流量变化量和年平均径流量变化率数据均为各情景与基准情景 S33 的年平均径流量的比较计算而得。
+
+# 3 结束语 
+
+本研究以壁南河流域为研究对象构建 SWAT 模型，进行了参数敏感性分析、模型的率定与验证，然后对流域径流过程进行了模拟，在此基础上进一步分析了流域水资源的时空变化特征，主要结果如下：
+
+1）SWAT 模型能够较好地模拟壁南河流域径流过程。流域内青杜水文站 2013-2020年月尺度上的模拟径流与实测径流拟合良好，率定期 Nash-Sutteliffe 效率系数，确定性系数和相对误差绝对值分别为 $0.80 、 0.81$ 和 $6.36 \%$ ，验证期上述 3 个参数分别为 $0.82 、 0.90$ 和 $7.85 \%$ ，表明 SWAT 模型在壁南河流域径流模拟上具有较好的适用性。
+
+2）2013-2021年壁南河流域年平均径流总量为 $1.79 \times 10^{8} \mathrm{~m}^{3}$ ，其中壁南河干流、梅江河、九龙河和隆济溪的年平均径流总量分别为 $11428.92 \times 10^{4} 、 4563.82 \times 10^{4} 、 1376.75 \times 10^{4}$ 和 $499.14 \times 10^{4} \mathrm{~m}^{3}$ 。流域多年平均径流深为 346.04 mm ，壁南河干流、梅江河、九龙河和的隆济溪的多年平均径流深分别为 $235.22 、 138.23 、 115.20$和 59.23 mm 。壁南河各子流域产流多集中在汛期（6-10月），该时期的产流量约占流域全年总产流量的 $86 \%$ ， 11 月一次年 5 月产流量不足。流域产流量在季节尺度上分配不均匀，表现为夏秋季节产流量高，春冬季节产流量低。流域夏季径流深分布与年平均径流深的空间分布较为一致，春、秋、冬季的径流深空间分布比较均匀。流域各季节产流量整体上呈下降趋势；个别子流域产流量呈增加趋势，但增加量可忽略不计。
+
+3）2013-2021年壁南河流域年平均径流深呈现东西两侧高、中部低的空间分布特征，这与流域地势两侧高中间低、坡度和降水量两侧大中间小的空间分布特征一致。此外，流域多年径流深变化率呈现出高产流量区域的产流量变化率低，低产流量区域的产流量变化率高的空间分布规律。流域内径流深高值区主要集中在吴滩、三合、广普、建龙等镇（街道），区域内降水量大、坡度大，土地利用类型以林地为主；径流深低值区主要位于陈食、丁家、正兴、来风、青杜等镇（街道），区域内降水量小、坡度小，地势平坦，土地利用类型以耕地为主，农业活动强度大。
+
+表 8 25 种气候情景下流域月平均径流深模拟结果
+
+|  | Tab. 8 | Simulation results of monthly mean runoff depth under 25 climate scenarios |  |  |  |  |  |  |  |  |  | mm |
+| :--: | :--: | :--: | :--: | :--: | :--: | :--: | :--: | :--: | :--: | :--: | :--: | :--: |
+| 情景 | 1 月 | 2 月 | 3 月 | 4 月 | 5 月 | 6 月 | 7 月 | 8月 | 9月 | 10月 | 11月 | 12 月 |
+| S11 | 4. 18 | 4. 13 | 15.60 | 17.35 | 32.02 | 37.61 | 54.10 | 28.85 | 27.80 | 22.28 | 17.55 | 15.41 |
+| S21 | 4. 19 | 4. 14 | 15.61 | 17.37 | 32.08 | 37.75 | 54.32 | 28.95 | 28.01 | 22.49 | 17.65 | 15.43 |
+| S31 | 4. 20 | 4. 15 | 15.62 | 17.40 | 32.15 | 37.90 | 54.52 | 29.03 | 28.20 | 22.70 | 17.72 | 15.44 |
+| S41 | 4. 20 | 4. 15 | 15.62 | 17.43 | 32.22 | 38.04 | 54.71 | 29.12 | 28.37 | 22.96 | 17.79 | 15.45 |
+| S51 | 4. 21 | 4. 16 | 15.63 | 17.47 | 32.30 | 38.17 | 54.88 | 29.21 | 28.55 | 23.19 | 17.93 | 15.47 |
+| S12 | 4. 27 | 4. 22 | 15.85 | 18.40 | 34.62 | 42.65 | 61.49 | 33.13 | 32.24 | 25.20 | 18.70 | 15.59 |
+| S22 | 4. 28 | 4. 23 | 15.86 | 18.42 | 34.71 | 42.83 | 61.72 | 33.23 | 32.49 | 25.49 | 18.85 | 15.62 |
+| S32 | 4. 29 | 4. 24 | 15.88 | 18.47 | 34.83 | 43.01 | 61.92 | 33.32 | 32.72 | 25.74 | 18.93 | 15.64 |
+| S42 | 4. 30 | 4. 24 | 15.90 | 18.51 | 34.93 | 43.17 | 62.10 | 33.42 | 32.93 | 26.06 | 19.05 | 15.66 |
+| S52 | 4. 32 | 4. 25 | 15.91 | 18.56 | 35.04 | 43.32 | 62.28 | 33.52 | 33.14 | 26.36 | 19.23 | 15.68 |
+| S13 | 4. 48 | 4. 41 | 16.19 | 19.57 | 37.51 | 47.96 | 68.84 | 37.64 | 36.89 | 28.28 | 19.96 | 15.85 |
+| S23 | 4. 52 | 4. 43 | 16.22 | 19.63 | 37.63 | 48.20 | 69.20 | 37.75 | 37.20 | 28.70 | 20.25 | 16.01 |
+| S33 | 4. 29 | 4. 25 | 16.17 | 19.54 | 29.06 | 40.34 | 84.81 | 42.60 | 39.47 | 30.62 | 19.47 | 15.74 |
+| S43 | 4. 69 | 4. 61 | 16.37 | 19.77 | 37.92 | 48.68 | 76.71 | 37.94 | 37.75 | 29.43 | 20.73 | 16.28 |
+| S53 | 4. 85 | 4. 68 | 16.43 | 19.86 | 38.05 | 48.94 | 76.95 | 38.05 | 38.02 | 29.79 | 21.06 | 16.44 |
+| S14 | 5. 48 | 5. 16 | 17.03 | 21.11 | 40.98 | 54.25 | 84.05 | 42.70 | 42.33 | 32.34 | 22.64 | 17.24 |
+| S24 | 5. 53 | 5. 34 | 17.19 | 21.23 | 41.17 | 54.65 | 84.48 | 42.86 | 42.87 | 32.93 | 23.04 | 17.37 |
+| S34 | 5. 79 | 5. 42 | 17.32 | 21.41 | 41.41 | 55.07 | 84.80 | 42.99 | 43.24 | 33.41 | 23.25 | 17.59 |
+| S44 | 5. 87 | 5. 62 | 17.42 | 21.56 | 41.63 | 55.34 | 85.10 | 43.11 | 43.61 | 34.10 | 23.62 | 17.76 |
+| S54 | 6. 10 | 5. 75 | 17.51 | 21.67 | 41.83 | 55.72 | 85.34 | 43.32 | 44.09 | 34.61 | 24.00 | 17.97 |
+| S15 | 6. 44 | 6. 15 | 18.18 | 23.11 | 45.18 | 61.32 | 92.49 | 48.13 | 48.38 | 37.07 | 25.47 | 18.58 |
+| S25 | 6. 72 | 6. 36 | 18.27 | 23.29 | 45.40 | 61.73 | 92.84 | 48.38 | 49.03 | 37.71 | 25.75 | 18.77 |
+| S35 | 6. 90 | 6. 49 | 18.46 | 23.46 | 45.66 | 62.08 | 93.18 | 48.60 | 49.53 | 38.10 | 26.05 | 19.13 |
+| S45 | 7. 01 | 6. 67 | 18.61 | 23.68 | 45.86 | 62.41 | 93.51 | 48.79 | 49.92 | 38.73 | 26.53 | 19.36 |
+| S55 | 7. 26 | 6. 84 | 18.72 | 23.85 | 46.14 | 62.66 | 93.79 | 49.00 | 50.38 | 39.45 | 26.98 | 19.54 |
+
+4）基于 IPCC 第 4 次评估报告设置的 25 种气候变化情景分析表明，暨南河流域降水量变化与径流量变化呈正相关关系，与气温变化呈负相关关系。在设置的 25 种情景中，当降水量保持不变，气温每上升 1 ℃时，流域年平均径流深将减小 4.39 mm ；当降水量保持不变，气温每下降 1 ℃时，流域年平均径流深将增加 3.37 mm ；当气温保持不变，降水量每减少 $1 \%$ 时，流域年平均径流深平均减少 6.73 mm ；当气温保持不变，流域降水量每增加 $1 \%$ 时，流域年平均径流深将增加 9.13 mm 。与气温相比，降水量对流域径流的影响更为明显，是影响未来暨南河流域径流变化的主要因素。
+
+基于上述结果，本研究认为，在未来气候变化背景下，可以考虑通过水土保持生态建设、水存储和调水基础设施建设、农田水利建设等措施提高流域水资源利用率，同时调整和优化流域土地利用结构，从而实现暨南河流域水资源的科学管理。
+
+# 参考文献： 
+
+[1] 陈铁，孙飞云，杨淑芳，等.基于 SWAT 模型的观测河流域城市面源污染负荷量化及影响效应评估[J].环境工程学报，2020，14
+
+(10) $; 2866-2875$.
+
+CHEN T, SUN F Y, YANG S F, et al, Load quantification and effect evaluation of urban non-point source pollution in the Guanlan river basin based on SWAT model[J].Chinese Journal of Environmental Engineering, 2020, 14(10), 2866-2875.
+[2] 安晨, 方海燕, 基于 SWAT 模型的轨水河流域径流空间分布特征[J].水文, 2021,41(4),81-87.
+AN C, FANG H Y, Spatial distribution characteristics of runoff in Guishui River Basin based on SWAT model[J].Journal of China Hydrology, 2021, 41(4), 81-87.
+[3] 杨环, 北峪河流域河川径流变化特征与影响因素分析[D].兰州: 兰州大学, 2018.
+YANG H, Analysis on the causes and characteristics of river runoff change in Beiyu River Basin[D]. Lanzhou: Lanzhou University, 2018.
+[4] 李靖, 河川径流特征及影响因素分析研究：以漳泽水库为例[D].太原：太原理工大学，2015.
+LI J, Analysis of characteristics and influencing factors for river runoff ${ }_{10}$ case study of Zhangze Reservoir[D]. Taiyuan: Taiyuan University of Technology, 2015.
+[5] 同瑞, 黄土高原北洛河上游流域退耕还林草的水文响应模拟[D].咸阳：西北农林科技大学，2017.
+YAN R, Modeling hydrological responses to ecological restoration in the upper reaches of Beiluo River Basin on the Loess Plateau, China[D].Xianyang: Northwest AÆ F University, 2017.
+[6] 宋一凡, 郭中小, 卢亚静, 等, 一种基于 SWAT 模型的干旱致区生态框弱性评价方法：以发布盖河流域为例[J].生态学报, 2017, 37(11),3805-3815.
+SONG Y F, GUO Z X, LU Y J, et al, An ecological vulnerability evaluation method for arid pasturing areas based on the SWAT model ${ }_{10}$ case study in the Aibogai Basin[J]. Acta Ecologica Sinica, 2017,37(11),3805-3815.
+[7] 白江涛, SWAT 模型在宝鸡峡灌区的改进的及应用[D].西安：陕西师范大学，2012.
+BAI J T, Improvement and application of SWAT model in Baojixia Irrigation District[D].Xi'an: Shaanxi Normal University, 2012.
+[8] 朱雪梅, 晏巧伦, 邵继荣, 等, 基于 CREAMS 模型的川北低山深丘区降雨侵蚀力 R 简易算法研究[J]. 江苏农业科学, 2011,39 (4),428-430.
+
+ZHU X M, YAN Q L, SHAO J R,et al,A simple algorithm for rainfall erosivity R based on CREAMS model in low mountain and deep hill area of Northern Sichuan[J].Jiangsu Agricultural Sciences, 2011,39(4),428-430.
+[9] LEONARD R A, KNISEL W G, STILL D A,GLEAMS: groundwater loading effects of agricultural management systems[J]. Transactions of the American Society of Agricultural Engineers, 1987,30(5), 1403-1418.
+[10] SHARHEED B R, AL-MARAWYI J, AL-BAYATI A H,Determining the relationship between soil test of the physiological units at al-wahda project of the npk and the extent of the response of barley crop to fertilization[J].Biochemical and Cellular Archives, 2019, 19(2), 3067-3079.
+[11] ARNOLD J G, WILLIAMS J R, MAIDMENT D R,Continuous-time water and sediment-routing model for large basins[J]. Journal of Hydraulic Engineering, 1995, 121(2), 171-183.
+[12] 吴春蕾, 马友华, 李英杰, 等, SWAT 模型在巢湖流域农业面源污染研究中应用前景与方法[J].中国农学通报, 2010, 26(18): $324-328$.
+WU C L, MA Y H, LI Y J,et al,Prospect and method on agricultural non-point source pollution of SWAT model in Chao Lake Basin[J].Chinese Agricultural Science Bulletin, 2010, 26(18),324-328.
+[13] UNIYAL B,JHA M K,VERMA A K, et al,Identification of critical areas and evaluation of best management practices using SWAT for sustainable watershed management[J]. Science of the Total Environment, 2020,744:140737.
+[14] ZHANG H, WANG B, LIU D L, et al,Using an improved SWAT model to simulate hydrological responses to land use change: A case study of a catchment in tropical Australia[J].Journal of Hydrology, 2020,585:124822.
+[15] NEUPANE P, BAILEY R T, TAVAKOLI-KIVI S, Assessing controls on selenium fate and transport in watersheds using the SWAT model[J].Science of the Total Environment, 2020,738:140318.
+[16] FOHRER N, MÖLLER D, STEINER N, An interdisciplinary modelling approach to evaluate the effects of land use change[J]. Physics and Chemistry of the Earth:Parts A/B/C, 2002, 27(9/10),655-662.
+[17] BOSCH D D, ARNOLD J G, VOLK M,et al, Simulation of a low-gradient coastal plain watershed using the SWAT landscape model[J].Transactions of the ASABE (American Society of Agricultural and Biological Engineers), 2010,53(5), 1445-1456.
+[18] HERNANDEZ M, MILLER S N, GOODRICH D C, et al, Modeling runoff response to land cover and rainfall spatial variability in semi-arid watersheds[J].Environmental Monitoring \& Assessment, 2000,64:285-298.
+
+[19] 左德鹏,徐宗学,李福林,等.基于 SWAT 模型的母猪河流域水资源时空变化特征研究[J].北京师范大学学报(自然科学版), 2014.50(5) :461-466.
+
+ZUO D P, XU Z X, LI F L, et al. Spatiotemporal variation of available water resources in the Muzhu River Basin[J].Journal of Beijing Normal University (Natural Science Edition), 2014, 50(5):461-466.
+[20] 宋增芳,曾建军,金彦亮,等.基于 SWAT 模型和 SUFI-2 算法的石羊河流域月径流分布式模拟[J].水土保持通报, 2016,36(5): $172-177$.
+SONG Z F, ZENG J J, JIN Y Z, et al.Distributed Simulation of monthly runoff using SWAT and SUFI-2 algorithmin Shiyang River Basin[J].Bulletin of Soil and Water Conservation, 2016,36(5):172-177.
+[21] 曹灿,孙瑞,吴志祥,等.基于 SWAT 模型的南渡江流域土地利用/覆被变化的径流响应[J].水土保持研究, 2022, 29(4):167175.
+
+CAO C, SUN R, WU Z X, et al. Responses of streamflow to land use/cover changes in Nandujiaang River Basin based on SWAT model [J]. Research of Soil and Water Conservation, 2022, 29(4):167-175.
+[22] 徐宗学,姜瑶.变化环境下的径流演变与影响研究, 问题与展望[J].水利水运工程学报, 2022(1):9-18.
+XU Z X, JIANG Y.Studies on runoff evolution mechanism under changing environment: a state-of-art review[J].Hydro-Science and Engineering, 2022(1):9-18.
+[23] 焦丽君,刘瑞民,王林芳,等.基于 SWAT 模型的汾河流域生态补水研究[J].生态学报, 2022,42(14):5778-5788.
+JIAO L J, LIU R M, WANG L F, et al.Study on ecological water supplement in Fenhe River Basin based on SWAT model[J]. Acta Ecologica Sinica, 2022,42(14):5778-5788.
+[24] 谢培,方源,张雷,等.基于 SWAT 模型的潘渡河生态流量计算方法[J].环境工程技术学报, 2022, 12(2):443-448.
+XIE P, FANG Y, ZHANG L, et al.Research on calculation method of ecological flow of Rangdu River based on SWAT model [J].Journal of Environmental Engineering Technology, 2022, 12(2):443-448.
+[25] 卢飞, 莘小花, 陈双和, 等.璧南河流域水质评价与污染源解析[J].重庆科技学院学报(自然科学版), 2021,23(6):101-106.
+LU F, GU X H, CHEN S K, et al. Water quality evaluation and pollution source analysis in Binan River Basin[J].Journal of Chongqing University of Science and Technology (Natural Sciences Edition), 2021, 23(6):101-106.
+[26] 罗倩.小流域非点源污染关键源区识别及情景模拟研究：以重庆市璧南河为例[D].重庆：重庆师范大学，2021.
+
+LUO Q. Study on the identification and scenario simulation of key sources areas of non-point source pollution in small watersheds: a case study of Binan River Basin in Chongqing[D].Chongqing: Chongqing Normal University, 2021.
+[27] 陈晓艳,张波,付婷.重庆市璧南河"一河一策"方案浅析[J].节能与环保, 2019(6):43-44.
+CHEN X Y, ZHANG B, FU T.A brief analysis of the "one river one policy" scheme of Binan River in Chongqing[J].Energy Conservation \& Environmental Protection, 2019(6):43-44.
+[28] 王中根,刘昌明.SWAT 模型的原理,结构及应用研究[J].地理科学进展, 2003, 22(1):79-86.
+WANG Z G, LIU C M.The theory of SWAT model and its application in Heihe Basin[J].Progress in Geography, 2003, 22(1): 79-86.
+[29] WISE S.Assessing the quality for hydrological applications of digital elevation models derived from contours[J].Hydrological Processes, 2015, 14(11/12):1909-1929.
+[30] 赵韦.输入数据不确定性对水文模型模拟结果的影响研究：以 SWAT 模型为例[D].北京：中国地质大学，2017.
+ZHAO W.Study on the influence of input data uncertainty on hydrological model simulation results: a case study of SWAT model[D].Beijing: China University of Geosciences, 2017.
+[31] 吴江,胡胜.DEM 分辨率对 SWAT 模型水文模拟的影响研究[J].灌溉排水学报, 2016,35(11):18-23.
+WU J, HU S.Response of DEM scale effect and hydrological simulation of SWAT model[J].Journal of Irrigation and Drainage, 2016,35(11):18-23.
+[32] 张余庆,陈昌春,杨绪红, 等.基于 SUFI-2 算法的 SWAT 模型在修水流域径流模拟中的应用[J].水电能源科学, 2013,31(9): 24-28.
+ZHANG Y Q, CHEN C C, YANG X H, et al.Application of SWAT model based on SUFI-2 algorithm to runoff simulation of Xiushui Basin[J]. Water Resources and Power, 2013,31(9):24-28.
+[33] 连翩,黄峰.伊洛河上游流域退耕还林/还草对监水绿水分配的影响[J].中国生态农业学报(中英文), 2019, 27(9):1409-1420.
+LIAN X, HUANG F.Green/blue water allocation as affected by grain-for-green practices in the upper reaches of the Yiluo River [J].Chinese Journal of Eco-Agriculture, 2019, 27(9):1409-1420.
+[34] 蒏伟,陈兴伟,林炳青.SWAT 模型参数对土地利用变化的响应及其对不同时间尺度径流模拟的影响[J].生态学报, 2021,41
+
+（16），6373-6383.
+GUO W. CHEN X W. LIN B Q.Response of SWAT model parameters to land use change and its effects on the simulation of runoff with different time scales[J].Acta Ecologica Sinica，2021，41（16）：6373-6383.
+［35］冯畅，变化环境下流水流域流水绿水资源的响应特征分析[D].长沙：湖南师范大学，2018.
+FENG C.Impacts of changing environment on blue and green water resources and their response characteristics in the Lianshui River Basin[D].Changsha: Hunan Normal University, 2018.
+［36］郝芳华，张雪松，程红光，等. 分布式水文模型亚流域合理划分水平刍议[J].水土保持学报，2003，17（4）：75-78.
+HAO F H.ZHANG X S.CHENG H G.et al.Discussion on Reasonable subdivision level of watershed for distributed hydrologic model[J].Journal of Soil and Water Conservation, 2003, 17(4):75-78.
+［37］李曼曼. SWAT 模型在洱海流域的径流模拟研究[D].保定：河北农业大学，2012.
+LI M M.Runoff simulation in Erhai River Watershed based on SWAT model[D].Baoding: Agricultural University of Hebei， 2012.
+［38］杨丽. 焉耆盆地水文气象要素变化对博斯腾湖水位的影响[D].兰州：兰州大学，2019.
+YANG L. Effect of hydrometeorological elements change on water level of Bosten Lake in Yanqii Basin[D].Lanzhou:Lanzhou University, 2019.
+［39］孙占东，黄群. 洞庭湖流域分布式水文模型[J].长江流域资源与环境，2015，24（8）：1299-1304.
+SUN Z D. HUANG Q. Parameter optimization for SWAT model and its extended application in the Dongting Lake Basin， Yangtze River[J].Resources and Environment in the Yangtze Basin, 2015, 24(8):1299-1304.
+［40］李景，马天骕，陆新如，等. SWAT 模型多目标率定与评价：以梅川江流域为例[J].中国科学院大学学报，2021，38（5）：590-600.
+LI J.MA T X.LU Y R.et al.Multi-objective calibration and evaluation of SWAT model: a case study in Meichuan River Basin [J].Journal of University of Chinese Academy of Sciences, 2021, 38(5):590-600.
+［41］刘林，李金峰，李泽利，等. 治河上游流域 SWAT 模型构建及适用性评价[J].人民黄河，2020，42（11）：58-62.
+LIU L.LI J F.LI Z L.et al.Construction of SWAT model and its applicability evaluation in upper basin of Fenhe River[J]. People's Yellow River, 2020, 42（11）：58-62.
+［42］陈海涛，曹向真。基于 SUFI-2 参数最适置信区间的参数优化方法结果对比分析[J].节水灌溉，2021（6）：24-30.
+CHEN H T.CAO X Z.Comparative analysis of the results of parameter optimization methods based on the optimal confidence interval of SUFI-2 parameters[J]. Water Saving Irrigation, 2021（6）：24-30.
+［43］李信缩，张静，宫辉力。基于 SWAT 模型多站点不确定性评价方法的比较[J].人民黄河，2017，39（1）：24-29.
+LI Q N.ZHANG J.GONG H L.Comparative study of multi-site uncertainty evaluation methods based on SWAT model[J]. Yellow River, 2017,39(1):24-29.
+［44］崔兴齐，滕建标，姚晓磊，等. 流量数据量对分布式水文模型参数率定结果的影响分析：以黑河流域上游为例[J]. 北京师范大学学报（自然科学版），2014，50（5）：570-575.
+CUI X Q.TENG J B.YAO X L.et al.Impact of discharge data on the calibration of a distributed hydrological model:a case study in the Heihe River Basin[J].Journal of Beijing Normal University (Natural Science), 2014,50(5):570-575.
+［45］和继军，蔡强国，刘松波。次降雨条件下坡度对坡面产流产沙的影响[J].应用生态学报，2012，23（5）：1263-1268.
+HE J J.CAI Q G.LIU S B.Effects of slope gradient on slope runoff and sediment yeild under different single rainfall conditions [J].Chinese Journal of Applied Ecology, 2012,23(5):1263-1268.
+［46］毛军，田箫，谢军平，等. 北京市 4 种城市功能区森林植被涵养水源功能评价及价值估算[J].生态学报，2021，41（22）：90209028.
+
+MAO J.TIAN Y.XIE J P.et al.Evaluation and value estimation of water conservation function of forest vegetation of four urban functional areas in Beijing[J].Journal of Ecology, 2021,41（22）：9020-9028.
+［47］宋月君，黄炎和，杨洁，等. 蹭中第四纪红壤区马尾松林下水土流失特征及防治成效分析[J]. 干旱区资源与环境，2018，32（4）： 119-125.
+SONG Y J.HUANG Y H.YANG J.et al. Analysis on characteristics and control effects of soil and water loss under Pinus massoniana forest in the Quaternary red soil region of central Jiangxi [J].Journal of Arid Land Resources and Environment, 2018,32(4):119-125.
+［48］戴晓苏. IPCC 第一工作组第四次评估报告的基本结论[J]. 气象软科学, 2008(1):6.
+DAI X S.Basic conclusions of the fourth assessment report of IPCC working group I[J]. Meteorology Soft Sciences, 2008(1):6.
+
+# Resources. Environment and Ecology in Three Gorges Area 
+
+## Simulation Analysis of Runoff in Binan River Basin Based on SWAT Model
+
+ZHENG Liping ${ }^{1}$, HU Yujia ${ }^{1}$, ZHANG Senlin ${ }^{1}$, SHAO Jingan ${ }^{1,2}$, GUO Yue ${ }^{1}$<br>(1. School of Geography and Tourism, Chongqing Normal University, Chongqing 401331; 2. Chongqing Key Laboratory of<br>Surface Processes and Environment Remote Sensing in the Three Gorges Reservoir Area, Chongqing 401331, China)
+
+Abstract: [Purposes]In order to apply SWAT model to the study of runoff process in Binan River Basin and provide theoretical basis for the rational regulation of water resources in the basin. [Methods] Taking the Binan River Basin, a primary tributary of the Yangtze River on the left bank as an example, the SWAT model was constructed to simulate the runoff process of the basin. [Results]1) The simulated value of monthly runoff in the validation period and the validation period is in good agreement with the measured value, with the validation period $R^{2}=0.81, E_{\infty}=0.80,|R_{s}|=6.36 \%$, the validation period $R^{2}=0.90, E_{\infty}=0.82$, $\left|R_{s}\right|=7.85 \%$, which shows that the SWAT model has good applicability in the Binan River basin. 2) The total annual average runoff of the basin from 2013 to 2021 is $1.79 \times 10^{6} \mathrm{~m}^{3}$, multi-year average runoff depth is 346.04 mm , and the runoff of each subbasin is mainly concentrated in the flood season from June to October. The runoff in non-flood season is insufficient, and the distribution of seasonal runoff is uneven. The runoff in summer and autumn is high, while the runoff in spring and winter is low, and the overall runoff is in a downward trend. 3) the runoff depth of the basin is characterized by high in the east and west and low in the middle in space. The change rate of the runoff depth over the years shows the spatial distribution pattern of low change in the high-yield flow area and high change in the low-yield flow area. The high-yield area is mainly concentrated in Wutan, Sanhe, Guangpu Jianlong and other towns or subdistricts. The low-yield area is mainly located in Chenshi, Dingjia, Zhengxing, Laifeng, Qinggang and other towns or subdistricts, which is related to the low, middle and high gradient on both sides of the basin terrain. The distribution characteristics of large precipitation on both sides and small precipitation in the middle are consistent. 4) Under the background of future climate change, the sensitivity of runoff to precipitation change is higher than that of temperature change. When the precipitation remains unchanged, the average annual runoff depth decreases by 4.39 mm every time the temperature increases by $1 \%$. When the temperature decreased by $1 \%$, the average annual runoff depth increased by 3.37 mm . When the temperature remained unchanged, the annual runoff depth decreased by 6.73 mm for every $1 \%$ decrease in precipitation. Watershed precipitation increases by $1 \%$, the average annual runoff depth increases by 9.13 mm , precipitation is the main factor affecting the future runoff change in Binan River basin, so it can carry out related soil and water conservation projects, optimize the land use structure, improve the utilization rate of water resources to achieve the future climate change under the scientific management of water resources in the basin. [Conclusions] The distributed hydrological model SWAT can be used to simulate the hydrological process of the Binan River basin, and the research results can provide certain theoretical guidance for the management and control of basin water resources.
+
+Keywords: Binan River Basin; SWAT model; simulation of runoff; runoff depth; water resource; the Three Gorges Reservoir Area
+（责任编辑 方 马）

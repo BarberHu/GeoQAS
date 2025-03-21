@@ -1,0 +1,150 @@
+# 基于 SWAT 模型的章江流域径流模拟 
+
+刘德翔<br>(江西理工大学土木与测绘工程学院, 江西辖可 341000 )
+
+摘要：径流模拟对流域的水情监测、洪峰模拟、水资源管理和保护等工作有着重要意义，并为水资源问题的理解提供科学的参考和决策依据。实现径流模拟虽有效的方式是结合土壤、气象和水文数据等多种数据构建流域水文模型。文章运用宽展较为完善的 SWAT 水文模型，利用收集到的 DEM、土地利用、土壤数据和气象数据建立基础数据库并构建章江流域 SWAT 模型，完成模型的参数率定过程并进行径流模拟，最终得到精度较高的章江流域径流模拟结果。
+关键词：径流模拟；SWAT 模型；参数率定；章江流域
+中国分类号: P333.1 文献标识码: A 文章编号: 2096-9759/2023 304-0029-03
+
+## Runoff simulation in Zhangjiang River Basin based on SWAT model
+
+## LIU Dexiang
+
+〈School of Civil and Surveying\&Mapping Engineering, Jiangxi University of Science and Technology, Jiangxi Ganzhou, 341000, China〉
+Abstract: Runoff simulation plays an important role in water situation monitoring, flood peak simulation, water resources management and protection, and provides scientific reference and decision-making basis for water resources mitigation. The most effective way to simulate runoff is to construct watershed hydrological model by combining soil, meteorological and hydrological data. In this paper, a well-developed SWAT hydrological model was used to build a basic database and a SWAT model for Zhangjiang River Basin by using the collected DEM, land use, soil data and meteorological data. The parameter calibration process of the model was completed and runoff simulation was carried out. Finally, the runoff simulation results of Zhangjiang River Basin with high precision were obtained.
+Key words: runoff simulation; SWAT model; Parameter calibration; Zhangjiang river basin
+
+## 0 引言
+
+水资源短缺、洪清灾害频发已经成为日益严重的环境问题，为了调节水资源，应对突发洪涝和干旱等问题，运用科学手段进行径流模拟变得尤为重要 ${ }^{[1-3]}$ ，合理的径流模型是流域水文研究的基础，它不仅可以为水资源有效利用提供科学参考，还可以为流域治理提供决策依据。
+
+目前主流的径流模型包括集总式模型和分布式模型〈MIKE-SHE、VIC、SWAT 等〉，集总式模型的代表有新安江模型、SCS模型，该类模型由描述降水的产汇流机理的公式组成，充分考虑了降雨因素却忽略了水文现象。降雨时空分布和下垒面差异的影响。例如新安江模型 ${ }^{[4]}$ 未考虑水文循环基本要素的空间分布差异的影响，尤其是在广大无管料地区径流模拟效果不理想 ${ }^{[5-8]}$ ；牟凤云等 ${ }^{[7]}$ 人则利用了 SCS 模型模拟巫山县降雨径流，但其模型的初损系数是根据经验设定，难以对曲线
+
+数值 CN 和初损系数 $\Delta$ 进行修正率定。
+分布式模型基于产汇流的动力学机制模拟水文过程，且充分考虑了降雨分布不均与下垒面差异对水文过程的影响。例如 VIC 模型以具有两种产流机制的优势，被用来对较大流域的水文响应进行研究 ${ }^{[8,9]}$ ，但该模型各项参数获取困难。相比之下 SWAT 模型更注重水文模拟，它基于大量的水文参数构成，具有很强的物理基础 ${ }^{[10]}$ ，并以模块化的方式引入了天气、土壤、土地覆盖和水资源管理等，降低了空间差异性 ${ }^{[11-13]}$ 。如 Melaku 等 ${ }^{[13]}$ 通过对 SWAT 进行修正，使其能够很好地预测地下水位的高度，Bekiaris 等 ${ }^{[14]}$ 则证明了 SWAT 模型流域面积大小的不同会导致模拟精度不同，吴梦莹等 ${ }^{[15]}$ 因 SWAT 模型在黑河鹰落峡以上流域进行模拟，NSE 达到 0.83 ，证明 SWAT 模型同样适用于中国，众多研究表明 SWAT 模型已然成为应用最为普遍的分布式流域水文模型。
+
+## 收摘日期: 2023-02-06
+
+作者简介：刘德翔（1998-），男，江西吉安人，硕士研究生，研究方向，道德影像处理与分析、水文水资源。
+
+## 参考文献:
+
+[1] 钱冬磊.基于区块链的互联网金融监管沙盘系统设计与实现[D].浙江大学.
+[2] 张景智."监管沙盘"的国际模式和中国内地的发展路径[J].金融监管研究,2017,(5).
+[3] 陈晓静.基于沙盘模式的区块链+政务应用浅谈[J].通讯世界,2020.
+[4] 吴创南.浅谈区块链技术在政务信息资源共享和使用中的
+
+应用.[J]信息技术与信息化,2020(03)
+[5] 蔡维德，姜晓芳.基于科技视角的区块链监管沙盘模式构建研究[J].2021(2020-8).
+[6] 高霖."区块链+保险"发展模式分析[J].河北金融,2019.
+[7] 程清. 区块链技术在金融科技监管沙盘中的应用研究[J].研究生法学,2021,036(003):P.45-54.
+[8] 陈志峰.钱如锦.践国区块链金融监管机制探究以构建"中国式沙箱监管"机制为制度进路[J].上海金融,2018(1):9.
+
+## 1 研究区概况与数据来源
+
+(1)研究区域概况
+
+章江（图1）是赣江的主要支流，位于东经 $113.8^{\circ} \sim 115^{\circ}$ 北纬 $25.2^{\circ} \sim 26^{\circ}$ 的区域内，水系流域总面积 $7683 \mathrm{~km}^{2}$ 。干流长 176.85 km ，主要支流为章水和上犹江水系，该流域属于亚热带季风 ${ }^{\mathrm{a}}$ 气候，雨量充沛，多年来频发洪涝灾害，模拟河道产流、支时监测江河水情、动态调度水资源等防汛预报工作显得尤为重要。
+
+
+图1章江流域地理位置
+(2) 数据来源
+
+本文的基础数据收集了研究区DEM、土地利用、土壤图等空间资料，各种土地利用植被属性等文本资料，同时还有研究区的气象、水文资料，具体数据来源及其格式和描述见表 1。
+
+表 1 基础数据及其来源
+
+| 数据类型 | 尺度 | 数据格式 | 数据描述 | 数据来源 <br> 与产品名称 |
+| :--: | :--: | :--: | :--: | :--: |
+| 地形图 | 30m | ESRI GRID |  | 地质空间数据云 <br> (ASTER GDEM <br> 数据) |
+| 土地利用图 | 30m | ESRI GRID | 土地利用类型 | Landsat 与 HJ-1等多光谱影像 (GlebeLan30) |
+| 土壤图 | 1 km | ESRI GRID |  | 国家青藏高原科学 <br> 数据中心(HWSD <br> 数据 V1.1) |
+| 气象 | 日观测数据 | dBase Table |  | 国家青藏高原科学数据中心 <br> (CMADS 数据集 V1.1) |
+| 水文 | 观测数据 | dBase Table | 月平均径流量 | 赣州市水文局 |
+
+## 2 径流模拟实验
+
+## 2.1 模型设置
+
+在对研究区进行资料收集和基础数据处理后，即可开始构建流域的 SWAT 模型。利用收集到的 DEM 数据、土地利用数据、土壤数据、气象以及水文径流数据构建流域数据库。首先根据 DEM 数据生成流域河网，依据设定的阈值进行空间离散化、进行子流域划分，结合土地利用和土壤数据，划分 HRU，即将流域划分成模型所需要的最小水文响应单元，并把已建立好的气象数据加载到模型当中，生成模型所需的所有输入与输出文件，设定时间尺度后即可运行模型。本次实验以月为时间单位进行章江流域径流模拟实验。
+
+## 2.2 参数敏感性分析与参数率定
+
+参数敏感性体现了模型模拟结果随参数微调而发生变化
+
+的程度，是一种无量纲的指标，SWAT 模型包含了 200 多个参数，本文利用 SWAT-CUP 进行参数率定和参数敏感性分析。选用全局性敏感性参数分析，利用 t -Stat 和 p -Value 来确定参数的敏感程度。最终选取 12 个较为敏感的参数作为模型待率定参数，并通过 SUFI-2 进行参数率定，最终选取的 12 个敏感参数最佳取值统计结果如表 2 所示。
+
+表2 率定后各铭感参数最优取值
+
+| 参数 | 输入文件 | 最适应值 | 取值范围 |
+| :--: | :--: | :--: | :--: |
+| CN2 | .mgt | 0.076 | $[-0.2,0.2]$ |
+| ALPHA_BANK | .rte | 0.11 | $[0,1]$ |
+| GWQMN | .gw | 1.1 | $[0,2]$ |
+| GW_DELAY | .gw | 395.39 | $[30,450]$ |
+| ESCO | .hru | 0.83 | $[0.8,1]$ |
+| SOL_BD | .sol | -0.291 | $[-0.5,0.6]$ |
+| ALPHA_BF | .gw | 0.85 | $[0,1]$ |
+| SOL_K | .sol | 0.336 | $[-0.8,0.8]$ |
+| $\mathrm{CH}_{2} \mathrm{~N} 2$ | .rte | 0.273 | $[0,0.3]$ |
+| GW_REVAP | .gw | 0.074 | $[0,0.2]$ |
+| $\mathrm{CH}_{2} \mathrm{~K} 2$ | .rte | 33.75 | $[5,130]$ |
+| SOL_AWC | .sol | 0.058 | $[-0.2,0.4]$ |
+
+## 2.3 径流模拟结果与精度评定
+
+本文最终选取了章江流域的纲上站，剪下纲站两个水文站点作为研究站点，其中田头站距离上游水库较近，因本实验缺乏上游水库出水量数据，导致田头站模拟精度并不理想，其精度并不代表模型的市级精度，故本次实验不对论该水文站点，主要对比纲上与剪下纲站的径流量模拟结果。
+
+最终把 2010 年至 2013 年四年作为率定期，2014年至2016年三年作为验证期，通过 2.2 章节表 2 率定得到的最优参数取值，把参数代入到模型，以验证期的模拟结果来验证模型的精度与可靠性。图2为纲上站模拟结果，图3为剪下纲站的径流模拟结果。从图中可以看出率定期与验证期的径流模拟值与实际值差异不大，纲上站模拟效果优于剪下纲站，但总体上模拟效果都较佳，说明此模型在章江流域进行径流模拟具有很好的适用性。
+
+
+图2 纲上站径流模拟结果
+
+
+
+图3 营下坝站径流模拟结果
+率定后模型的适用性通过纳什效率系数NSE 和决定系数 R2 来评定。纳什系数 NSE 是一个描述模型模拟值和实测值的拟合精度的无量纲综合评价指标，可以用来评价实测值和模拟结果之间的匹配度，NSE 计算方法为公式（1），一般取值范围在 0-1 之间。决定系数 R2 用于表征模型模拟值和实测值数据两者之间的吻合程度，以及两者在趋势变化上的统计特征，具体计算为公式（2）。当 R2 的值接近于 1 时，表示模拟值与实测值相关性极高，并且两者的取值非常吻合，而当 R2越小则表示两组值相关性不高，吻合程度越低，模型模拟效果不好。
+
+$$
+\begin{gathered}
+N S E=1-\frac{\sum_{i=1}^{n}\left(\varphi_{m_{i}}-\varphi_{e}\right)^{2}}{\sum_{i=1}^{n}\left(\varphi_{m_{i}}-\bar{\varphi}_{m}\right)^{2}} \\
+R^{2}=\frac{\left(\sum_{i=1}^{n}\left(\varphi_{m_{i}}-\bar{\varphi}_{m}\right)\left(\varphi_{e_{i}}-\bar{\varphi}_{e}\right)\right)^{2}}{\sum_{i=1}^{n}\left(\varphi_{m_{i}}-\bar{\varphi}_{m}\right)^{2} \sum_{i=1}^{n}\left(\varphi_{e_{i}}-\bar{\varphi}_{e}\right)^{2}}
+\end{gathered}
+$$
+
+式中： $Q_{n}$ 表示实测流量， $Q_{e}$ 表示模拟流量， $\bar{\varphi}_{m}$ 表示实测流量平均值， $\bar{\varphi}_{e}$ 表示模拟流量平均值， $n$ 表示观测次数。
+
+根据国家《水文情报预报规范》中的等级定义，NSE $\geq 0.9$时为甲等方案，表明模型模拟效果最佳。在 $0.9>$ NSE $\geq 0.7$时为乙等方案，在 $0.7>$ NSE $\geq 0.5$ 时为丙等方案 ${ }^{(11)}$ 。本文的研究区两个水文站点的径流模拟精度评定结果如表 3 所示。
+
+表3 各水文站点模拟结果评价系数
+
+| 水文站点 | 纳什系数 NSE |  | 决定系数 R2 |  |
+| :--: | :--: | :--: | :--: | :--: |
+|  | 率定期 | 验证期 | 率定期 | 验证期 |
+| 别上站 | 0.86 | 0.87 | 0.93 | 0.94 |
+| 营下坝站 | 0.86 | 0.76 | 0.93 | 0.90 |
+
+从表中可以看出坝上站与萤下坝站的精度均符合乙级标准，其中坝上站的模拟效果比萤下坝站的略好些，这也与我们在径流模拟对比图中的结论一致。说明本文构建的 SWAT 模型章江流域径流模拟效果较好。
+
+## 3 结语
+
+本文基于 DEM 数据、土地利用数据、土壤数据和气象数据建立了章江流域 SWAT 模型的基础数据库，并成功构建了本地 SWAT 模型用于对章江流域进行径流量的模拟，通过对比实际径流量数据与两种精度评价系数，结果表明本文构建的章江流域SWAT 模型可以很好地完成对章江流域径流量的模拟，为水资源保护与合理利用提供了有力支撑。
+
+## 参考文献:
+
+[1] Aouissi J, Benabdallah S, Lili Chabaane Z, Cudennec C. Valuing scarce observation of rainfall variability with flexible semi-distributed hydrological modelling-mountainous Mediterranean context. Science of the Totalal Environment, 2018, 643:346-356.
+[2] Li D, Christakos G, Ding X X, \& Wu J P. Adequacy of TRMM satellite rainfall data in driving the SWAT modeling of Tiaoxi catchment (Taihu Lake Basin, China). Journal of Hydrolo-gy,2018,556:1139-1152.
+[3] Worqlul A W, Ayana E K, Maathuis B H P, MacAlister C, Philpot W D, Osorio Leyton J M, Steenhuis T S. Performance of bias corrected MPEG rainfall estimate for rainfallrunoff sim-ulation in the Upper Blue Nile Basin, Ethiopia. Journal of Hydrology,2018, 556:1182-1191.
+[4] 陆旻晈.新安江模型研究的回顾和展望[J].水利学报,2021,52 (4):432-441.
+[5] 姚成,邱裕毅,李敦案,等.API 模型和新安江模型的参数区域化研究与应用[J]. 河海大学学报（自然科学版），2019，47 (3): 189-194.
+[6] Shi P, Chen C, Srinivasan R, et al. Evaluating the SWAT Model for Hydrological Modeling in the Xixian Watershed and a Comparison with the XAJ Modell[J].Water Resources Management. 2011, 25(10): 2595-2612.
+[7] 牟风云,龙秋月,余情,等.基于 SCS 模型的哥山县降雨径流多情景模拟[J]. 重庆交通大学学报（自然科学版），2020，39 (2): 118-125.
+[8] 朱悦璐,杨建霞. 基于 VIC 模型构建的综合干旱指数在黄河流域的应用[J].西北农林科技大学学报:自然科学版. 2017, 45(2): 203-212.
+[9] 朱悦璐,杨建霞.基于均匀设计法的 VIC 模型参数率定[J].西北农林科技大学学报(自然科学版),2015,(12): 217-224.
+[10] 王中根,刘昌明,黄友波.SWAT 模型的原理、结构及应用研究[J].地理科学进展,2003,(1):79-86.
+[11] Govender M, Everson C S. Modelling stream-flow from two small South African experimental catchments using the SWAT model. Hydrological Processes, 2010, 19(3):76-85.
+[12] Thavhana M P, Savage M J, Moeletsi M E. SWAT model uncertainty analysis,calibration and validation for runoff simulation in the Luvuvhu River catchment, South Africa. Physics and Che-mistry of the Earth,Parts A/B/C,2018,105: 115-124.
+[13] Melaku N D, Wang J Y. A modified SWAT module for estimating groundwater table at Leth-bridge and Barons, Alberta, Canada[J]. Journal of Hydrology,2019,575:420-431.
+[14] Bekiaris I g, Panagopoulos I n, Mimikou M a. Application of the SWAT (Soil and Water Assess-ment Tool) Model in the Ronnea Catchment of Sweden[J]. Global Nest,2005,7(3): 252.
+[15] 吴梦莹,王中根,党素珍.基于 HIMS 的黑河上游山区径流模拟与分析[J].资源科学,2012,(10): 1913-1921.
+[16] 中华人民共和国水利部.GB/T 22482-2008.水文情报预报规范[S].2008.

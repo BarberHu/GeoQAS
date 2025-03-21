@@ -1,0 +1,267 @@
+徐阳，曾奏忠，汪玉成，等. CMADS 在霍童流流域 SWAT 模型径流模拟中的应用研究[J]. 人民珠江，2021，42（10）：1～9.
+
+# CMADS 在霍童溪流域 SWAT 模型径流模拟中的应用研究 
+
+徐 阳，曾奏忠，汪玉成，李新通*<br>(福建得范大学 地理科学学院，福建 福州 350007)
+
+
+#### Abstract
+
+摘 要：中国东南沿海山区中小流域司样存在气象数据梯缺问题，导致流域水文模型研究受限。中国大气司化驱动数据集（CMADS）是一类可获得再分析气象数据集，用于填补水文模型数据空缺，研究其在 SWAT 径流模拟中的连用性显得尤为重要。以编建霍童流流域为研究区，以测站数据为参照，通过数据一致性评价、SWAT 模型径流模拟的检验系数以及水文要素空间分布对 CMADS 进行连用性评价。研究结果表明：两类数据降水空间分布一致，温度数据相关性较高；CMADS 和测站数据在月、日尺度 SWAT 模型径流模拟中 $R^{2}$ 和 NSE 系数均达到了较好的结果； CMADS 模式水文相关分量与测站模式偏差较小且空间分布一致，CMADS 数据集在东南沿海代表性流域径流模拟有较好的连用性。
+
+
+关键字: CMADS; SWAT; 径流模拟; 连用性; 霍童流流域
+中国分类号: TV121 文献标识码: A 文章编号:1001-9235(2021)10-0001-09
+
+## Applicability of CMADS in Runoff Simulation of Huotong River Basin Based on SWAT Model
+
+XU Yang, ZENG Yaozhong, WANG Yucheng, LI Xintong*<br>(School of Geographical Sciences, Fujian Normal University, Fuzhou 350007, China)
+
+
+#### Abstract
+
+The scarcity of meteorological data leads to the limitation of hydrological model research, which also exists in small and medium-sized rive basins along the southeastern coastal areas of China. The China meteorological assimilation dataset (CMADS) is the available meteorological dataset, which aims to filling the gap of data scarcity in hydrological model. Therefore, it is particularly important to verify the applicability of this dataset in runoff simulation based on SWAT model. Taking the Fujian Huotong River basin as the object, and the data of the survey station as the reference, this paper evaluates the applicability of CMADS by using the data consistency evaluation, the test coefficient of runoff simulation based on SWAT model and the spatial distribution of hydrological elements. The results show that: The spatial distribution of precipitation in the two types of data is consistent, and the correlation of temperature data is high. The $R^{2}$ and NSE coefficients of the monthly and daily runoff simulation results based on SWAT model obtained from the CMADS and the survey stations are satisfactory. The hydrological components of the CMADS model have little deviation from that of the survey station with consistent spatial distribution. Therefore, it can be concluded that the CMADS has good applicability in the runoff simulation of representative river basins along the southeast coastal area of China.
+
+
+Keywords: CMADS; SWAT; runoff simulation; applicability; Huotongxi River basin
+
+[^0]
+[^0]:    基金项目：福建省水利厅科技重点项目（[3500]FJTH[DY]2018012(1)）
+    收购日期:2021-05-06
+    作者简介：徐阳，男，从事水文时空大数据、数据挖掘方面研究。E-mail:XY19960911@163.com
+    通讯作者：李新通，男，研究方向为地理信息模型、互操作、标准等。E-mail:list@lreis.ac.cn
+
+中国国土辽阔，水资源空间分布不均，利用水文模型进行长时间水量研究有利于水资源的合理利用。众多水文模型中，半分布式水文模型 SWAT 具备流域尺度水量、泥沙和非点源污染模拟和预报功能。输入数据对 SWAT 模型的运行起到了关键的作用，气象数据对模拟结果影响最大，而降水数据尤为明显 ${ }^{[1]}$ 。总体上来看，东南沿海较西部地区气象水文站点数量多，分布密集，但地形崎岖的山区中小型流域处于少资料或无资料的状态，制约着 SWAT模型在此类地区的应用。目前，众多学者将气候模式数据集及再分析产品应用于水文模型成为该领域的热点。
+
+CMADS 作为东亚水文研究生产的新一代再分析数据集，相比于其他再分析数据，CMADS 驱动 SWAT 模型进行径流模拟效果更好 ${ }^{[2-6]}$ 。其中，孟现勇、王浩 ${ }^{[7]}$ 作为 CMADS 数据集的提出者，在西北黑河流域 ${ }^{[8-9]}$ 和新疆精博河流域 ${ }^{[10]}$ 日、月尺度上验证了 CMADS 数据集的适用性。张春辉等 ${ }^{[6]}$ 在宁夏苦水河流域月尺度上，验证了 CMADS 在径流模拟中的适用性。在其他地区，张利敏等 ${ }^{[11-12]}$ 对东北高山寒区浑河流域利用 CMADS 数据集成功驱动了 SWAT 模型。陈吴荣等 ${ }^{[13]}$ 在华中期北汉江流域利用了 CMADS 数据集进行 SWAT 模型的径流模拟。洪梅等 ${ }^{[14]}$ 对河北潮白河流域进行水库控制下月尺度模拟，也验证了 CMADS 数据集的适用性。目前， CMADS 数据集大多数运用于中国西北、中部和东北
+
+地区，在中国东南沿海小型流域的应用还很少见 ${ }^{[15]}$ 。
+曾要忠 ${ }^{[16]}$ 利用气象测站数据进行霍童溪流域 SWAT 模型初步研究，由于气象数据质量和数据空缺问题的存在，制约流域长时间序列的水资源分析。针对以上问题，本文从 CMADS 数据质量、驱动 SWAT 模型径流模拟结果和流域水文相关分量空间分布三方面进行分析评价，探究 CMADS 数据集在中国东南沿海代表性小流域的适用性，为霍童溪流域长时段水资源分析奠定基础，同时为相似流域的 SWAT 水文研究提供经验与借鉴。
+
+## 1 研究区概况
+
+霍童溪流域位于福建省东部，流域总面积2244 $\mathrm{km}^{2}$ ，平均海拔 773.34 m ，中上游两岸为中山和低山区，中下游以低山丘陵为主。林地占流域总面积 $70 \%$ 以上，土壤类型以红壤为主。流域气候为典型的亚热带海洋性季风气候，多年平均气温为 $17.5^{\circ} \mathrm{C}$ ，多年平均降水量 2350 mm 且突发性降雨较多，多年平均径流量 $28.53 \mathrm{亿} \mathrm{m}^{3}$ 。
+
+研究区位于洋中坂水文站上游，集水控制范围 2029 km$^{3}$ ，占霍童溪流域的 $90.42 \%$ （图1）。干流上洪口水库控制流域面积 1701 km$^{2}$ ，总库容 4.5 亿 $\mathrm{m}^{3}$ ，调节库容 2.4 亿 $\mathrm{m}^{3}$ 。洪口水库的运行对流域下游的水文过程起到了关键的调节作用。研究区内设有屏南气象站，流域周边分布宁德、建欧和寿宁气象站，流域气象数据相对稀缺。
+
+
+图1 霍童溪流域及其气象站与水文站点分布
+
+## 2 数据来源
+
+2.1 DEM 数据、土地利用数据和土壤数据
+
+DEM 数据作为流域研究的基础数据，选用 ASTER GDEM V2 $30 \mathrm{~m} \times 30 \mathrm{~m}$ 栅格数据。土地利用数据选用国土部门2016年1:10 000 的土地利用调查数据，该数据包含的主要土地利用类型有水体、耕地、建设用地、林地、果园、耧地和草地共 7 类。土壤空间数据来自霍童溪流域 1:50 000 土壤类型分布图，通过数字化获得 64 种土壤类型，其中土壤属性来自研究区土种志。
+
+## 2.2 水文数据
+
+水文数据对 SWAT 模型的率定和验证起重要作用。研究区出水口数据以洋中坂水文站的日观测数据为准，洪口水库入库的天然流量/出库的调蓄流量来源于电站日调度数据。水文数据的时间尺度为 2008 年 1 月 1 日至 2016 年 12 月 31 日。
+2.3 气象数据
+
+### 2.3.1 测站数据
+
+本文使用的测站数据为霍童溪流域及其邻近区域 4 个气象观测站的实测数据，降雨数据补充了流域内 9 个雨量站的实测数据，站点信息见表 1 ，站点分布见图1，时间尺度为2008年1月1日至2016年 12 月 31 日。
+
+表1 霍童溪流域气象站和雨量站站点信息
+
+| 站点名 | 性质 | 北纬/ <br> $\left({ }^{\circ}\right)$ | 东经/ <br> $\left({ }^{\circ}\right)$ | 高棁/m |
+| :--: | :--: | :--: | :--: | :--: |
+| 宁德 |  | 26.67 | 119.53 | 32.40 |
+| 建瓯 | 国家基本 | 27.05 | 118.32 | 154.90 |
+| 寿宁 | 气象站 | 27.45 | 119.42 | 815.90 |
+| 屏南 |  | 26.92 | 118.98 | 869.50 |
+| 洋中坂 |  | 26.82 | 119.47 | 25.00 |
+| 粟口 |  | 26.95 | 119.02 | 765.00 |
+| 箁溪 |  | 26.82 | 119.12 | 580.00 |
+| 甘棠 |  | 26.80 | 118.93 | 855.00 |
+| 昑下 | 雨量站 | 27.08 | 118.97 | 885.00 |
+| 双溪 |  | 27.02 | 119.03 | 835.00 |
+| 礼门 |  | 27.05 | 119.20 | 864.00 |
+| 玛坑 |  | 26.98 | 119.43 | 428.00 |
+| 杨源 |  | 27.15 | 119.02 | 840.00 |
+
+### 2.3.2 CMADS 数据
+
+CMADS 数据集基于数据循环嵌套、重采样及双线性插值等多种科学技术手段建立，具有多来源、多尺度和多分辨率的特点 ${ }^{[17]}$ 。本文使用 CMADS （V1.1）10 个站点数据（108-236、108-237、108- 238、108 - 239 、109 - 236 、109 - 237 、109 - 238、 109 - 239 、110 - 236 、110 - 237 )，站点分布见图 1，时间序列为2008年1月1日至2016年12月31日，空间分辨率为 $0.25^{\circ} \times 0.25^{\circ}$ 。
+
+两类气象数据主要存在两方面差异：(1)传统气象数据记录有缺失，SWAT 模型运行需利用天气发生器进行数值插补，而 CMADS 数据集日尺度数据完善；(2)测站数据以地面实测值作为唯一数据源，而 CMADS 来源于卫星观测、地面观测及数值模式产品等多源数据的融合同化。
+
+## 3 SWAT 模型方案设置
+
+3.1 模型设置
+
+模型设置基于 ArcGIS10.4平台的 SWAT 2012版本，依据 DEM 与参照水系进行流域河网信息提取。最小集水区面积影响子流域的划分以及水文响应单元的划分，在给定参考值的基础上设置 $4600 \mathrm{~hm}^{2}$ ，加载洋中坂出水口后研究区被划分为 38 个子流域。利用土地利用和土壤数据，结合坡度信息进行水文响应单元的划分，小斑块对模型水文单元有干扰，设置土地利用、土壤、坡度阈值为 $5 \% 、 10 \% 、 15 \%$ ，最终划分 619 个水文响应单元后设置洪口水库日尺度出库流量运行模型。
+
+### 3.2 模型校准
+
+模型校准基于 SWAT-CUP 2019，将 SWAT 模型结果导入 SWAT-CUP 进行参数敏感性分析和径流模拟。设置2008年作为预热期，2009-2013 年为率定期，2014-2016年为验证期。采用 SUFI2 算法 ${ }^{[18]}$ ，进行月尺度径流模拟，对敏感性较高的前 18个参数进行率定。表 2 显示，测站和 CMADS 驱动 SWAT 模型所得最佳参数有异同，其中 CN2、 GWQMN 和 ALPHA_BF 在两类模式敏感性都排在前三。排名靠前的参数，如 GWQMN、GW_DELAY和 CANMX，两类模式最佳值有差异，可能是因为测
+
+站数据以地面实测值作为唯一数据源，而 CMADS 进行同区域径流模拟的差异。
+来自多源数据的融合同化，导致了驱动 SWAT 模型
+
+表 2 SWAT 模型月尺度参数敏感性排序及参数最终取值
+
+| 变量名 | 参数定义 | 传统测站结果 |  | CMADS 数据集结果 |  |
+| :--: | :--: | :--: | :--: | :--: | :--: |
+|  |  | 参数最终值 |  | 参数最终值 |  |
+|  |  |  |  |  | 排序 |
+| CN2 | SCS 径流曲线数 | 0.24 | 1 | 0.24 | 2 |
+| GWQMN | 回归流所需浅层含水层水位阈值 | 27.4 | 2 | 185.63 | 1 |
+| ALPHA_BF | 基流 $\alpha$ 因子 | 0.18 | 3 | 0.55 | 3 |
+| GW_DELAY | 地下水时间延迟 | 2.68 | 4 | 38.41 | 6 |
+| CANMX | 冠层最大蓄水量 | 58.92 | 5 | 2.23 | 4 |
+| $\mathrm{CH}_{2} \mathrm{~K} 2$ | 主河道冲积物有效渗透系数 | 133.40 | 6 | 36.86 | 7 |
+| SOL_AWC | 土壤有效含水量 | 0.34 | 7 | 0.10 | 8 |
+| ESCO | 土壤蒸发补偿因子 | 0.86 | 8 | 0.62 | 5 |
+| OV_N | 增面漫流的曼宁系数 | 22.31 | 9 | 13.86 | 9 |
+| GW_REVAP | 地下水 revap 系数 | 0.17 | 10 | 0.14 | 15 |
+| SOL_K | 饱和渗透系数 | 0.48 | 11 | 0.73 | 11 |
+| REVAPMN | 发生 revap 所需浅层含水层的水位阈值 | 353.63 | 12 | 412.38 | 10 |
+| SLSUBBSN | 平均坡长 | 77.51 | 13 | 97.75 | 12 |
+| RCHRG_DP | 深层含水层渗透系数 | 0.28 | 14 | 0.14 | 18 |
+| SURLAG | 地表径流滞后时间 | 3.28 | 15 | 9.55 | 16 |
+| SOL_BD | 土壤湿容重 | 0.02 | 16 | 0.35 | 17 |
+| EPCO | 植物蒸发补偿系数 | 0.35 | 17 | 0.43 | 13 |
+| $\mathrm{CH}_{2} \mathrm{~N} 2$ | 主河道曼宁系数 | 0.01 | 18 | 0.05 | 14 |
+
+# 3.3 模拟精度评估 
+
+采用 $R^{2}$ 和 NSE 作为定量指标用于评估模型的性能 ${ }^{[19-20]}$ 。其中 $R^{2}$ 为决定性系数，代表测定变量间的相关程度，用来衡量模拟数据和实测数据走向是否一致，用式（1）表示；NSE 为效率系数，用来衡量模拟值和观测值的拟合程度，用式（2）表示。 $R^{2}$与 NSE 越趋近于 1 ，说明模拟效果越好，且当 $R^{2}>$ 0.6 且 NSE $>0.6$ 时模型的模拟结果可被接受。
+
+$$
+\begin{aligned}
+& R^{2}=\frac{\left[\sum\left(Q_{\alpha i}-\bar{Q}_{\alpha}\right)\left(Q_{\alpha i}-\bar{Q}_{\alpha i}\right)\right]^{2}}{\sum\left(Q_{\alpha i}-\bar{Q}_{\alpha}\right)^{2}\left(Q_{\alpha i}-\bar{Q}_{\alpha i}\right)^{2}} \\
+& \text { NSE }=1-\frac{\sum\left(Q_{\alpha i}-Q_{\alpha i}\right)^{2}}{\sum\left(Q_{\alpha i}-\bar{Q}_{\alpha}\right)^{2}}
+\end{aligned}
+$$
+
+式中 $Q_{\alpha i}$ ——第 $i$ 个观测值； $\bar{Q}_{\alpha}$ ——观测值的总平
+
+均值； $Q_{\text {ax }}$ ——第 $i$ 个模拟值； $\bar{Q}_{\text {ax }}$ ——模拟平均值。
+
+## 4 结果分析
+
+4.1 CMDAS 数据质量评价
+
+利用插值方法进行降水数据的对比，使用 ANUSPLIN 对测站和 CMADS 多年平均降水进行插值 ${ }^{[21-23]}$ ，结果见图2a_b。测站和 CMADS 降水量在流域内空间分布一致，流域北部和南部降水偏多，流域西部稍有差异，CMADS 在流域西部降水插值结果在整个流域偏高（红色区域明显）。CMADS 插值结果（ $1681 \sim 2007 \mathrm{~mm}$ ）相对测站插值结果（ $1686 \sim$ 3044 mm ）偏小，降水量插值结果的最小值相近， CMADS 比测站插值结果的最大值低，CMADS 多年平均降水量在霍童溪流域偏少。CMORPH 卫星降
+
+水产品作为 CMADS 的背景场，受地表反射率的干扰，可能导致其在中国地区降水量相对偏低，霍童溪流域研究结果与学者张利敏在浑河流域的研究结果一致 ${ }^{[22]}$ 。
+
+霍童溪流域受春季梅雨和夏季台风影响，各月降水量分布不均， $80 \%$ 的降水量集中在 3-9 月，将 3-9 月定为雨季， 10 月至次年 2 月定为非雨季进行插值，结果见图 2c-f。两类数据 CMADS 插值结果 （雨季 $1328 \sim 1583 \mathrm{~mm}$ ，非雨季 $352 \sim 424 \mathrm{~mm}$ ）比测
+
+站插值结果（雨季 $1365 \sim 2328 \mathrm{~mm}$ 、非雨季 $303 \sim$ 754 mm ）偏小。两类数据插值结果的最小值相近， CMADS 插值结果最大值比测站偏低，CMADS 多年雨季/非雨季平均降水量在霍童溪流域偏少。其中 CMADS 多年雨季平均降水在流域西部插值结果偏高（红色区域明显），与多年平均降水插值结果类似，而非雨季降雨量两类数据插值的空间分布相似。 CMADS 降水量存在一定低估现象，但在流域整体空间分布上数据评价较好。
+
+a) 测站多年平均降水插值结果
+
+d) CMADS 多年雨季平均降水插值结果
+
+b) CMADS 多年平均降水插值结果
+
+e) 测站多年非雨季平均降水插值结果
+
+c) 测站多年雨季平均降水插值结果
+
+图2 两类降水数据 ANUSPLIN 插值结果
+
+对研究区内 CMADS 数据集的 109 237 站点和传统测站（屏南站）月和日尺度温度数据进行比较。图3显示月尺度两类站点月平均最高/低温度随时间的变化趋势相同，散点图显示月数据截距为 0 的拟合直线斜率为 0.952 3（最高温度），0.965 2 （最低温度），数值低于 1 ，说明 CMADS 数据集月均
+
+最高气温和月均最低气温相对于测站数据总体上存在较小低估现象。月平均最高气温相关系数 0.998 4、月平均最低气温相关系数 0.9983 ，在月尺度上，两类数据的变化趋势相近且数据相关系数较高，CMADS 温度数据评价较好。
+
+
+图3 CMADS 数据集（109～237 站）与邻近屏南气象站月尺度温度数据比较
+
+
+
+图4 显示日尺度温度数据截距为 0 的拟合直线斜率 0.9526 （最高温度），0.9584（最低温度），数值偏低于 1 ，温度存在较小的低估，相比月平均最高气温（ 0.952 3）和月平均最低气温（ 0.965 2）斜率变化不明显。日最高气温相关系数 0.9896 、日最低气温相关系数 0.9637 ，相比月尺度相关系数稍低，但相关系数数值较高，日尺度数据评价较好。
+
+a) 日最高温度
+
+b) 日最低温度
+
+图4 CMADS 数据集（109～237 站）与邻近屏南气象站日尺度温度数据比较
+4.2 SWAT 月、日尺度径流模拟结果
+
+利用两类气象数据驱动霍童溪 SWAT 模型进行月和日尺度径流模拟，图5为月尺度径流模拟曲线，图6为日尺度径流模拟曲线，表3为径流模拟结果。月尺度结果显示，CMADS 模式在洋中坂率定期 $R^{2}$ 和 NSE 都为 0.98 ，优于测站模式的 0.97 与 0.96 ，洪口与洋中坂验证期模拟精度偏低于测站结
+
+果，除了洪口率定期 $R^{2}$ 和 NSE 结果为 0.86 与 0.85 ，其余都大于 0.90 ；图 5 显示洋中坂 CMADS 和测站拟合结果都优于洪口站，月尺度上 CMADS 模式有较好的效果。
+
+
+图5 SWAT 模型月尺度径流模拟
+日尺度结果显示，CMADS 模式在洋中坂验证期 $R^{2}$ 和 NSE 以 0.83 和 0.82 稍低于测站模式的 0.84和 0.83 ，其余模拟精度都优于测站结果或达到相同模拟水平；CMADS 模式除了洪口验证期模拟精度 $R^{2}$ 和 NSE 都为 0.62 ，其余模拟精度水平都达到 0.7以上；图6显示日模拟折线效果有一定偏差，效果不如月尺度好。日尺度模拟受极端天气影响，存在一定程度上的不确定性，但 CMADS 在霍童溪 SWAT径流模拟中 $R^{2}$ 和 NSE 都达到 0.6 评价标准，存在
+
+$R^{2}$ 和 NSE 大于 0.8 情况。日尺度 CMADS 模式进行径流模拟有效且效果良好。
+
+a) 淇口日尺度
+
+b) 洋中坂日尺度
+
+图6 SWAT 模型日尺度径流模拟
+
+表3 SWAT 模型径流模拟结果
+
+| 尺度 | 气象数据 | 洪口站 |  |  |  | 洋中坂站 |  |  |  |
+| :--: | :--: | :--: | :--: | :--: | :--: | :--: | :--: | :--: | :--: |
+|  |  | 率定期 | 率定期 | 验证期 | 验证期 | 率定期 | 率定期 | 验证期 | 验证期 |
+|  |  | $R^{2}$ | NSE | $R^{2}$ | NSE | $R^{2}$ | NSE | $R^{2}$ | NSE |
+| 月尺度 | 测站 | 0.92 | 0.92 | 0.97 | 0.96 | 0.97 | 0.96 | 0.99 | 0.98 |
+|  | CMADS | 0.86 | 0.85 | 0.93 | 0.92 | 0.98 | 0.98 | 0.96 | 0.95 |
+|  | 测站 | 0.70 | 0.70 | 0.60 | 0.60 | 0.86 | 0.86 | 0.84 | 0.83 |
+|  | CMADS | 0.71 | 0.69 | 0.62 | 0.62 | 0.88 | 0.87 | 0.83 | 0.82 |
+
+4.3 月尺度水文相关分量结果
+
+洋中坂站位于霍童溪 37 号子流域，作为流域出水口，相关水文分量研究具有重要意义。利用 CMADS 和测站数据驱动 SWAT 模型，进行 37 号子流域月均水文分量统计，图7显示两类数据输出结果潜在蒸散发量（PET）、土壤含水量（SW）、根区渗透水量（PERC）和汇入河流地下水量（GW_Q）偏差不大，可以代表同一输出水平；CMADS 模式在实际蒸散发量（ET）相对测站结果偏少，而汇入河流地表径流（SURQ）和产水量（WYLD）相对测站结果偏多，但变化幅度不大，总体上 CMADS 模式相关水文分量能有效代表测站模式结果。
+
+
+图7 37 号子流域相关水文分量统计
+选择具有代表性的水文相关要素 - 产水量 （WYLD）进行流域空间分析，图8显示，CMADS 模式多年月均产水量在霍童溪流域空间分布与测站模式相同，其中在流域北部和西北地区子流域产水量相对较多；15、17号子流域与 18、21号子流域产水
+
+量相对较少。从图8中可以看出，流域上游 1.2 号子流域产水量几乎无差异，流域中游差异变大，流域下游地区差异进一步扩大，整体呈现从上游到下游
+
+产水量差异递增的趋势。这很可能是因为流域中上游，山区地带坡度大，产水模式相近，导致 CMADS和测站驱动 SWAT 模型结果差异不大。
+
+a) 多年月平均产水量
+
+b) CMADS 多年月平均产水量
+
+图8 产水量空间分布和差异
+
+## 5 结论
+
+本文比较了霍童溪流域 CMADS 和测站气象数据，对驱动 SWAT 径流模拟的结果进行定量分析，结论如下。
+a）降水数据插值结果显示两类气象数据降水空间分布一致，最高降水 CMADS 偏低于测站插值结果；CMADS 与测站相邻站点温度数据趋势一致且相关性较高，CMADS 数据质量良好。
+b) CMADS 在月尺度 $R^{2}$ 和 NSE 系数较高，径流模拟效果较好；日尺度 CMADS 模式精度 $R^{2}$ 和 NSE大于 0.6 的标准，日尺度 CMADS 模式进行径流模拟有效且效果良好。
+c) CMADS 模式水文相关分量与测站模式偏差较小；流域内 CMADS 模式产水量与测站模式空间分布一致，流域北部和西北产水量偏多，CMADS 与测站模式产水量差异由上游向下游递增，产水量总体差异较小，CMADS 模式水文分量能有效代表测站模式水平。
+
+综上所述，CMADS 在福建霍童溪流域内数据质量，驱动 SWAT 模型结果和相关水文分量表现良好，CMADS 数据集在中国东南沿海小流域适用性较好。后续研究考虑利用 1979—2018年CMADS 数据集进行霍童溪长时间序列水量分析，为水资源管理利用提供依据。
+
+## 参考文献:
+
+[1] 廖家一，吕海深，李占玲. 气象数据不确定性对 SWAT 模型径流模拟影响[J]. 人民长江,2014,45(9):34-38.
+[2] GUO D D, WANG H T, ZHANG X X, et al. Evaluation and Analysis of Grid Precipitation Fusion Products in Jinsha River Basin Based on China Meteorological Assimilation Datasets for the SWAT Model[J]. Water, 2019, 11(2):253-277.
+[3] THOM T V, LI L, KYUNG S J. Evaluation of Multi-Satellite Precipitation Products for Streamflow Simulations: A Case Study for the Han River Basin in the Korean Peninsula, East Asia[J]. Water, 2018, 10(5):642-665.
+[4] ZHANG L M, MENG X Y, WANG H, et al. Investigate the Applicability of CMADS and CFSR Reanalysis in Northeast China [J]. Water, 2020, 12(4):996-1014.
+[5]刘俊, 刘时银, 上官冬辉, 等. CMADS, ITPCAS 和 TRMM 3B42 3套降水数据集在玉龙喀什河流域的适用性评价[J]. 华北水利水电学院学报（自然科学版），2017，38(5)：28-37.
+[6] 菲春辉，王炳亮. CMADS 与传统气象站数据驱动下的 SWAT 模型模拟效果评价——以苦水河流域为例[J]. 中国农村水利水电, 2018(6):52-57.
+[7] MENG X Y, WANG H. Significance of the China Meteorological Assimilation Driving Datasets for the SWAT Model (CMADS) of East Asia[J]. Water, 2017, 9(10): 765 - 770.
+[8] MENG X Y, ZHANG X S, YANG M X, et al. Application and Evaluation of the China Meteorological Assimilation Driving Datasets for the SWAT Model (CMADS) in Poorly Gauged Regions in Western China[J]. Water, 2019, 11(10):2171-2199.
+[9] 孟现甫，柳春香，刘时银，等. CMADS 数据集及其在流域水文模
+
+型中的驱动作用——以黑河流域为例[J]. 人民珠江, 2016, $37(7) ; 1-19$.
+[10]孟现勇, 王浩, 雷晓辉, 等. 基于 CMDAS 驱动 SWAT 模式的精博河流域水文相关分量模拟、验证及分析 [J]. 生态学报, 2017, $37(21) ; 7114-7127$.
+[11] ZHANG L M, MENG X Y, WANG H, et al. Simulated Runoff and Sediment Yield Responses to Land-Use Change Using the SWAT Model in Northeast China[J]. Water, 2019, 11(5):915-939.
+[12]张利敏, 王浩, 孟现勇. 基于 CMADS 驱动的 SWAT 模型在辽宁浑河流域的应用研究[J]. 华北水利水电学院学报（自然科学版），2017，38(5):1-9.
+[13]陈吴荣, 金生. 基于 SWAT 模型的汉江流域径流模拟[J]. 水利与建筑工程学报, 2020, 18(1):245-250.
+[14]洪梅, 林蒙栋. CMADS 降水数据在温带东亚季风气候区水库控制流域适用性——以澳白河、东洋河流域为例[J]. 吉林大学学报（地球科学版），2021，51（3）：833-842.
+[15]骆月珍, 顾婷婷, 潘婷英, 等. 基于 CMADS 驱动 SWAT 模型的富春江水库控制流域水量平衡模拟[J]. 气象与环境学报, 2019, $35(4) ; 106-112$.
+[16] 曾要忠. 分布式水文模型 SWAT 在霍亜溪流域径流模拟中的应用研究[D]. 福州：福建师范大学，2020.
+[17]MENG X Y, WANG H, SHI C X, et al. Establishment and
+
+Evaluation of the China Meteorological Assimilation Driving Datasets for the SWAT Model (CMADS) [J]. Water, 2018, 10(11): 1555 1573.
+[18]刘春耐, 蒋艾迪, CHEN X H, 等. 基于 SUFI-2 算法的 SWAT 模型在陕西黑河流域径流模拟中的应用[J]. 干旱地区农业研究, 2014,32(5):213-217,222.
+[19] NASH J E, SUTCLIFFE J V. River flow forecasting through conceptual models part I - A discussion of principles[J]. Journal of Hydrology, 1970, 10(3): 282 - 290.
+[20] SCHAEFLI B, GUPTA H V. Do Nash values have value? [J]. Hydrological Processes, 2007, 21(15): 2075 - 2080.
+[21]刘志红,MCVICAR T R, VAN NIEL T G, 等. 专用气候数据空间插值软件 ANUSPLIN 及其应用[J]. 气象, 2008(2):92-100.
+[22]张利敏, 杨明祥, 王浩. CMADS, CFSR 与实测气象数据在浑河流域的适用性评价[J]. 中国农村水利水电, 2020(9):132-137.
+[23] LIU J, SHANGUAN D H, LIU S Y, et al. Evaluation and Hydrological Simulation of CMADS and CFSR Reanalysis Datasets in the Qinghai-Tibet Plateau[J]. Water, 2018, 10(4):513-531.
+(责任编辑: 李泽华)

@@ -29,10 +29,17 @@ def index(request):
         end = request.GET.get("end", "")
         all_datas = get_all_relation(start, relation, end)
         
-        # 确保节点数据包含 source_article 属性
+        # 确保节点数据包含 source_article 属性（只有地理问题类型才有）
         for node in all_datas.get("datas", []):
-            if "source_article" not in node:
-                node["source_article"] = ""  # 设置默认值
+            # 检查节点是否有标签信息并且是地理问题类型
+            categories = node.get("categories", [])
+            is_geo_problem = any(cat == "地理问题" for cat in categories)
+            
+            # 只有地理问题类型才需要source_article
+            if not is_geo_problem and "source_article" in node:
+                del node["source_article"]  # 删除非地理问题节点的source_article
+            elif is_geo_problem and "source_article" not in node:
+                node["source_article"] = ""  # 为地理问题类型节点添加默认值
         
         links = json.dumps(all_datas.get("links", []))
         datas = json.dumps(all_datas.get("datas", []))

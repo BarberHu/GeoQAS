@@ -368,71 +368,63 @@ class DialogueManager:
             linked_entities_dict = self.entity_linker.rank_entities_batch_gpu("", entities, top_k=3)
             print(f"[DialogueManager] 实体链接结果: {linked_entities_dict}")
             
-            # 整理知识图谱结果
+            # 检查第一个实体的节点标签（调试用）
+            if linked_entities_dict and len(linked_entities_dict) > 0:
+                first_entity = next(iter(linked_entities_dict))
+                if linked_entities_dict[first_entity] and len(linked_entities_dict[first_entity]) > 0:
+                    first_linked_entity = linked_entities_dict[first_entity][0]['name']
+                    print(f"[DialogueManager] 检查Neo4j节点 '{first_linked_entity}' 的标签")
+                    node_info = self.entity_linker.check_node_labels(first_linked_entity)
+                    print(f"[DialogueManager] 节点标签检查结果: {node_info}")
+            
+            # 整理知识图谱结果时考虑source_article只存在于地理问题类型
             kg_data = []
-            processed_entities = set()  # 用于跟踪已处理的实体
+            processed_entities = set()
             
             for source_entity, entity_results in linked_entities_dict.items():
-                print(f"[DialogueManager] 处理源实体: {source_entity}")
-                
                 for entity_info in entity_results:
-                    try:
-                        entity_name = entity_info['name']  # 使用 'name' 而不是 'entity'
-                        
-                        # 避免重复处理相同的实体
-                        if entity_name in processed_entities:
-                            continue
-                        processed_entities.add(entity_name)
-                        
-                        print(f"[DialogueManager] 获取实体 {entity_name} 的相关实体")
-                        
-                        # 获取相关实体（最多3个）
-                        try:
-                            related_entities = self.entity_linker.get_related_entities(entity_name, limit=3)
-                            print(f"[DialogueManager] 找到 {len(related_entities)} 个相关实体")
-                        except Exception as rel_e:
-                            print(f"[DialogueManager] 获取相关实体失败: {rel_e}")
-                            related_entities = []
-                        
-                        # 构建知识路径
-                        path = f"{source_entity} → {entity_name}"
-                        if related_entities:
-                            # 添加相关实体到路径
-                            related_names = [rel['entity'] for rel in related_entities]
-                            path += f" → [{', '.join(related_names)}]"
-                        
-                        # 添加到结果中
-                        kg_item = {
-                            'path': path,
-                            'summary': entity_info.get('desc', ''),
-                            'source': source_entity,
-                            'target': entity_name,
-                            'score': entity_info.get('score', 0),
-                            'category': entity_info.get('category', 'Unknown'),
-                            'reference': entity_info.get('reference', ''),
-                            'related_entities': [
-                                {
-                                    'name': rel['entity'],
-                                    'relation': rel['relation'],
-                                    'direction': rel['direction'],
-                                    'desc': rel.get('desc', ''),
-                                    'category': rel.get('category', 'Unknown')
-                                }
-                                for rel in related_entities
-                            ]
-                        }
-                        
-                        # 确保所有必要字段都有值
-                        for key in ['summary', 'category', 'reference']:
-                            if not kg_item[key]:
-                                kg_item[key] = '未知'
-                        
-                        kg_data.append(kg_item)
-                        print(f"[DialogueManager] 成功添加实体 {entity_name} 的知识图谱项")
-                        
-                    except Exception as inner_e:
-                        print(f"[DialogueManager] 处理实体信息时出错: {inner_e}")
+                    entity_name = entity_info['name']
+                    
+                    # 避免重复处理
+                    if entity_name in processed_entities:
                         continue
+                    processed_entities.add(entity_name)
+                    
+                    # 获取相关实体
+                    related_entities = self.entity_linker.get_related_entities(entity_name, limit=3)
+                    
+                    # 确定实体类别
+                    category = entity_info.get('category', 'Unknown')
+                    
+                    # 只有地理问题类型才有reference（来自source_article）
+                    reference = ""
+                    if category == "地理问题":
+                        reference = entity_info.get('reference', '')
+                    
+                    # 构建知识项
+                    kg_item = {
+                        'path': f"{source_entity} → {entity_name}",
+                        'summary': entity_info.get('desc', ''),
+                        'source': source_entity,
+                        'target': entity_name,
+                        'score': entity_info.get('score', 0),
+                        'category': category,
+                        'reference': reference,
+                        'related_entities': []
+                    }
+                    
+                    # 添加相关实体信息
+                    for rel in related_entities:
+                        rel_category = rel.get('category', 'Unknown')
+                        kg_item['related_entities'].append({
+                            'name': rel['entity'],
+                            'relation': rel['relation'],
+                            'direction': rel['direction'],
+                            'desc': rel.get('desc', ''),
+                            'category': rel_category
+                        })
+                    
+                    kg_data.append(kg_item)
             
             if kg_data:
                 print(f"[DialogueManager] 成功构建知识图谱，共 {len(kg_data)} 个节点")
@@ -453,6 +445,8 @@ class DialogueManager:
             categories = []
             category_map = {}
             
+            print(f"\n[DialogueManager] 开始提取知识图谱节点用于可视化...")
+            
             # 处理多个子问题的知识图谱结果
             for sub_q, kg_context in kg_contexts.items():
                 if not kg_context or not isinstance(kg_context, str):
@@ -461,6 +455,7 @@ class DialogueManager:
                 try:
                     if kg_context.startswith('['):
                         kg_data = json.loads(kg_context)
+                        print(f"[DialogueManager] 解析到 {len(kg_data)} 个知识图谱项")
                         
                         for item in kg_data:
                             # 检查必需字段
@@ -477,36 +472,42 @@ class DialogueManager:
                                 if len(parts) >= 3:
                                     relation = parts[1].strip()
                             
+                            # 获取源节点和目标节点的类别
+                            source_category = item.get('category', '概念')
+                            print(f"[DialogueManager] 源节点 '{source}' 的类别: {source_category}")
+                            
+                            # 尝试从相关实体中获取目标节点的类别
+                            target_category = '概念'  # 默认值
+                            if 'related_entities' in item:
+                                for rel_entity in item['related_entities']:
+                                    if rel_entity.get('name') == target:
+                                        target_category = rel_entity.get('category', '概念')
+                                        break
+                            print(f"[DialogueManager] 目标节点 '{target}' 的类别: {target_category}")
+                            
                             # 添加节点
                             for node_name, node_desc, node_category in [
-                                (source, item.get('summary', ''), item.get('category', '概念')),
-                                (target, item.get('summary', ''), item.get('category', '概念'))
+                                (source, item.get('summary', ''), source_category),
+                                (target, item.get('summary', ''), target_category)
                             ]:
                                 if not any(n['name'] == node_name for n in nodes):
-                                    # 为节点确定类别
-                                    category = node_category
-                                    if not category:
-                                        if '模型' in node_name:
-                                            category = '模型'
-                                        elif '数据' in node_name:
-                                            category = '数据'
-                                        elif '方法' in node_name:
-                                            category = '方法'
-                                        else:
-                                            category = '概念'
+                                    # 使用节点的实际类别
+                                    category = node_category if node_category not in ['Unknown', 'unknown', 'unknown'] else '地理概念'
+                                    print(f"[DialogueManager] 节点 '{node_name}' 将使用类别: {category}")
                                     
-                                    # 确保类别存在
+                                    # 确保类别存在于分类中
                                     if category not in category_map:
                                         category_map[category] = len(categories)
                                         categories.append({'name': category})
+                                        print(f"[DialogueManager] 添加新的类别: {category}")
                                     
                                     nodes.append({
                                         'name': node_name,
                                         'category': category_map[category],
-                                        'value': item.get('score', 0.5) * 20,  # 使用得分设置价值
-                                        'symbolSize': 40 + (item.get('score', 0.5) * 20), # 根据得分调整大小
+                                        'value': item.get('score', 0.5) * 20,
+                                        'symbolSize': 40 + (item.get('score', 0.5) * 20),
                                         'draggable': True,
-                                        'desc': item.get('summary', '')
+                                        'desc': node_desc
                                     })
                             
                             # 添加关系
@@ -521,6 +522,12 @@ class DialogueManager:
                     print(f"JSON解析失败: {kg_context[:100]}... - {je}")
                 except Exception as e:
                     print(f"处理知识图谱上下文时出错: {e}")
+            
+            print(f"[DialogueManager] 知识图谱可视化提取完成:")
+            print(f"  - 节点数量: {len(nodes)}")
+            print(f"  - 关系数量: {len(links)}")
+            print(f"  - 类别数量: {len(categories)}")
+            print(f"  - 类别列表: {[c['name'] for c in categories]}")
             
             # 返回结果
             return {

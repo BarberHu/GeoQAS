@@ -1,0 +1,1629 @@
+# 古 林 大 学 
+
+研究生学号: 2017644026
+
+单位代码: 10183
+密 级: 公开
+
+
+## 吉林大学
+
+## 硕士学位论文
+
+## (专业学位)
+
+基于 SWAT 模型的京津冀地区地表径流模拟研究
+Simulation study of runoff in Beijing-Tianjin-Hebei region based on the SWAT model
+
+作者 姓 名：林豪栋
+类 别：工程硕士
+领域（方向）：环境工程
+指 导 教 师：洪 梅 教 授
+合 作 导 师：张文静 研究员
+培养 单 位：新能源与环境学院
+
+2020 年 06 月
+
+基于 SWAT 模型的京津冀地区地表径流模拟研究
+
+Simulation study of runoff in Beijing-Tianjin-Hebei region based on the SWAT model
+
+作者 姓 名：林豪栋
+领域（方向）：环境工程
+指 导 教 师：洪 梅 教 授
+合 作 导 师：张文静 研究员
+类 别：工程硕士
+答 辩 曰 期：2020年5月30日
+
+# 吉林大学博士(或硕士)学位论文原创性声明 
+
+本人郑重声明：所呈交学位论文，是本人在指导教师的指导下，独立进行研究工作所取得的成果。除文中已经注明引用的内容外，本论文不包含任何其他个人或集体已经发表或撰写过的作品成果。对本文的研究做出重要贡献的个人和集体，均已在文中以明确方式标明。本人完全意识到本声明的法律结果由本人承担。
+
+学位论文作者签名：林毒棓
+日期：2020年6月10日
+
+中国知网 https://www.cnki.net
+
+# 摘 要 
+
+水资源短缺是制约我国社会经济发展的重要因素之一，为解决这一矛盾，更好的管理和充分利用水资源，实现水资源利用可持续，利用水文模型通过数学方法对流域水循环进行模拟和描述，了解其时空上的变化规律，具有重要的实际意义。分布式水文模型自提出以来便成为研究的热点，对水资源合理配置、水资源变化规律研究具有重要的意义。SWAT 模型作为分布式水文模型的代表，在流域径流、污染物迁移转化模拟和下垫面情景变化分析等方面应用广泛。
+
+京津冀地区在我国社会经济发展中具有重要的战略地位，随着地区经济的长期高速增长，水资源短缺问题日益加剧，不仅成为制约京津冀地区高质量发展的短板之一，也成为深入开展水生态环境保护的重要制约因素。针对上述问题，在京津冀地区开展水文模拟、设置流域情景，充分分析问题原因、通过水文模拟角度提出问题的解决办法，为更加合理的水资源开发利用提出建议，促进地区更好的发展具有重要的意义。
+
+本文以京津冀地区为研究对象，使用 SWAT 模型作为研究工具，广泛搜集了研究区的基础资料并构建研究区基础数据库，对京津冀地区径流进行模拟，同时对典型地区土地利用情景变化和水资源管理措施变化进行了探索，为进一步开展水质模拟、地表地下耦合模拟和流域管理措施制定奠定了基础，也为构建京津冀地区"三水"综合模拟预测系统提供了支撑。
+
+1、本研究构建了完整的京津冀地区 SWAT 模型基础数据库体系。数据库包括数字高程、土壤、土地利用、气象和水文等。共有 DEM 栅格数据 3 套，不同时期土地利用栅格数据 6套，土壤栅格数据 1 套，不同尺度气象数据 3 套和数字化的研究区水系、河网、灌区、湖库、水文站等水文数据，为后续开展各项研究提供了基础支撑。
+
+2、本研究选取潮白河流域和东洋河流域作为典型区域，针对 SWAT 模型降水输入数据对温带东亚季风气候区的适用性进行了评价。结果表明，在无水库控制的潮白河支流潮河水系 CMADS 降水数据支撑的模型率定期 $\mathrm{R}^{2}=0.64 、 \mathrm{NSE}=0.64$ ，验证期 $\mathrm{R}^{2}=0.61 、 \mathrm{NSE}=0.58$ ，达到了 SWAT 模型模拟效果的评价标准，CMADS 降水数据在温带东亚季风气候区无水库控制流域情景下具有适用性；在潮白河水库控制支流白河水系，CMADS 降水数据支撑下的模型在率定期 $\mathrm{R}^{2}=0.89 、 \mathrm{NSE}=0.87$ ，验证期模型 $\mathrm{R}^{2}=0.61 、 \mathrm{NSE}=0.61$ ；CMADS 降水数据支撑的东洋河水库控制流域模型率定期 $\mathrm{R}^{2}=0.84 、 \mathrm{NSE}=0.78$ ，验证期 $\mathrm{R}^{2}=0.87 、 \mathrm{NSE}=0.85$ ，CMADS降水数据在温带东亚季风气候区水库控制流域具有很好的适用性。CMADS 降水数据可以用于温带东亚季风气候区水库控制流域水文模型的建立。
+
+3、本研究构建了京津冀地区 SWAT 模型。模型生成研究区流域面积 $22.2 \times 10^{4} \mathrm{~km}^{2}$ ，共包含 242 个子流域、 1459 个水文响应单元，模型共包括 7 个入水口， 12 个流域出水口。在构建好的模型基础上对研究区径流进行了模拟，根据现有资料选取滦县、新防潮闸、宁车沽、柴沟堡东、中唐梅、临清水文站分析各站所包含子流域径流敏感性参数并率定，对结果进行拟合和验证。在整个模拟期内，滦县水文站月径流模拟结果的 $\mathrm{R}^{2}=0.81$ ，NSE $=0.75$ ；新防潮闸水文站月径流结果的 $\mathrm{R}^{2}=0.81, \mathrm{NSE}=0.78$ ；宁车沽水文站月径流结果的 $\mathrm{R}^{2}=0.82, \mathrm{NSE}=0.81$ ；临清水文站月径流模拟结果 $\mathrm{R}^{2}=0.92$ ，NSE $=0.90$ ；中唐梅水文站月径流结果的 $\mathrm{R}^{2}=0.63$ ， NSE $=0.63$ ；柴沟堡东水文站月径流模拟结果的 $\mathrm{R}^{2}=0.85$ ，NSE $=0.85$ 。模型整体具有较好的模拟效果。
+4、在上述研究基础上，选取潮白河流域作为典型研究区，对土地利用历史变化和不同土地利用变化情景下产流和产沙的响应进行了研究。结果表明，随着该流域土地利用的历史变化，流域产流和产沙均有所增加；对比不同情景下的产流产沙结果，增加林地面积有利于涵养水分保持水土，而耕地面积的增加则会加重流域水土流失，不利于生态保护和修复。选取永定河流域作为典型研究区，对水资源管理措施变化情景下下游恢复"有水"可行性进行了研究。结果表明，通过上游有效的水资源配置，能够实现下游约 70 km 长的河段恢复 "有水"，对制定水资源管理措施提供了参考。
+5、对本研究现有结论和成果进行总结，对现存问题和不足进行分析，提出后续进一步研究的展望，以期获得更多的实际应用价值。
+
+关键词：京津冀地区；SWAT：数据库构建；径流模拟：情景模拟
+
+#### Abstract
+
+The development of human society and economy is accompanied by an increase in demand for water resources, which makes the contradiction between water supply and demand increasingly prominent. In order to resolve this contradiction, better management and full use of water resources, and sustainable use of water resources, the use of hydrological models to simulate and describe the water cycle of the basin through mathematical methods, and to understand its temporal and spatial changes, has important practical significance . The distributed hydrological model has become a research hotspot since it was proposed, and it is of great significance to study the rational allocation of water resources and the laws of water resources changes. SWAT model, as a representative of distributed hydrological model, is widely used in river basin runoff, pollutant simulation, and analysis of underlying scenario changes.
+
+The Beijing-Tianjin-Hebei region has an important strategic position in the development of our country, but with the long-term and rapid development of the regional economy, the issue of its water resources use has become increasingly prominent. Problems in the use of water resources not only restrict the development of the Beijing-Tianjin-Hebei region, but are also not conducive to the protection of the regional ecological environment. In response to the above problems, hydrological simulations and watershed scenarios are set up in the Beijing-Tianjin-Hebei region. The causes of the problems are fully analyzed, and solutions to the problems are proposed from the perspective of hydrological simulations. Suggestions are made for more reasonable development and utilization of water resources to promote better regional development.
+
+This article takes the Beijing-Tianjin-Hebei region as the research object and uses the SWAT model as a research tool. It has extensively collected the basic data of the study area and constructed a basic database of the research area to simulate the runoff in the Beijing-Tianjin-Hebei area. The changes in water resources management measures were explored, which laid the foundation for further development of water quality simulation, coupled surface and underground simulation, and basin management measures. It also provides support for the construction of a comprehensive simulation forecast system for the "Sanshui" in the Beijing-Tianjin-Hebei region.
+
+1. This research builds a complete basic database system of SWAT model in Beijing-Tianjin-Hebei area. The database includes digital elevation, soil, land use, meteorological and hydrological aspects. There are 3 sets of DEM raster data, 6 sets of land use raster data in different periods, 1 set of soil raster data, 3 sets of meteorological data of different scales, and digital research area water system, river network, irrigation area, lake bank, hydrological station and other hydrology data. It provides basic support for subsequent research.
+2. This study selected typical areas of the Chaobai River Basin and Dongyang River Basin, and evaluated the applicability of SWAT model precipitation input data in the temperate East Asian monsoon climate zone where the study area is located. The results show that the model rate supported by the CMADS precipitation data of the Chaohe River tributary of the Chaobai River without reservoir control is regularly $\mathrm{R}^{2}=0.64, \mathrm{NSE}=0.64$, and the verification period $\mathrm{R}^{2}=0.61$, $\mathrm{NSE}=0.58$, which meets the evaluation criteria for the SWAT model simulation effect. The CMADS precipitation data is applicable under the scenario of no-reservoir-controlled watershed in the temperate East Asian monsoon climate zone; in the Chaobaihe Reservoir controlling the
+
+tributary Baihe system, the model supported by the CMADS precipitation data has regular rates of $\mathrm{R}^{2}=0.89, \mathrm{NSE}=0.87$, and the validation period model $\mathrm{R}^{2}=0.61, \mathrm{NSE}=0.61$; CMADS precipitation data supported by the Dongyanghe Reservoir control basin model rate regularly $\mathrm{R}^{2}=$ 0.84, NSE $=0.78$, verification period $\mathrm{R}^{2}=0.87, \mathrm{NSE}=0.85$, CMADS precipitation data has a very high temperature in the reservoir control basin of the temperate East Asian monsoon climate zone. Good applicability. CMADS precipitation data can be used to build hydrological models of the basin affected by human activities in the temperate East Asian monsoon climate zone, as the basis for subsequent analysis of human activities and scenario changes.
+3. This study builds a SWAT model in the Beijing-Tianjin-Hebei region. The model area of the study area is $22.2 \times 10^{4} \mathrm{~km} 2$, including a total of 242 sub-basins and 1459 hydrological response units. The model includes a total of 7 water inlets and 12 water outlets. Based on the constructed model, the runoff in the study area was simulated. According to the available data, the Shexian County, the new tide barrier, Ningchegu, Chaigoubao East, Zhongtangmei, Linqing Hydrological Station were analyzed to analyze the contents of each station. The watershed runoff sensitivity parameters were calibrated and the results were fitted and verified. During the entire simulation period, the monthly runoff simulation results of Shexian Hydrological Station were $\mathrm{R}^{2}$ $=0.81, \mathrm{NSE}=0.75$; the monthly runoff results of Xintiozha Hydrological Station were $\mathrm{R}^{2}=0.81$, $\mathrm{NSE}=0.78$; and the monthly runoff results of Ningchegu Hydrological Station were $\mathrm{R}^{2}=0.82$, $\mathrm{NSE}=0.81$; Monthly runoff simulation results of Linqing Hydrological Station $\mathrm{R}^{2}=0.92, \mathrm{NSE}=$ 0.90; Monthly runoff results of Zhongtang Mei Hydrological Station $\mathrm{R}^{2}=0.63, \mathrm{NSE}=0.63$; Monthly runoff simulation results of Chaigoubao Hydrological Station $\mathrm{R}^{2}=0.85, \mathrm{NSE}=0.85$. The model as a whole has a good simulation effect.
+4. Based on the above research, the Chaobai River Basin was selected as a typical research area to study the response to runoff and sediment yield under historical land use changes and different land use change scenarios. The results show that with the historical change of land use in the basin, the runoff and sediment yield in the basin have increased. Comparing the results of runoff and sediment yield under different scenarios, increasing the forest land area is conducive to water conservation and soil and water conservation, while the increase in cultivated land area is It will aggravate water and soil loss in the watershed, which is not conducive to ecological protection and restoration. The Yongding River Basin was selected as a typical research area, and the feasibility of restoring "with water" in the downstream under the scenario of changes in water resources management measures was studied. The results show that through the effective allocation of water resources in the upstream, it is possible to achieve "water" in the downstream reach of about 70 km , which provides a reference for the formulation of water resources management measures.
+5. Summarize the existing conclusions and results of this research, analyze existing problems and deficiencies, and put forward prospects for further research in order to obtain more practical application values.
+
+Key word: Beijing-Tianjin-Hebei region, SWAT model, database construction, runoff simulation, scenario simulation
+
+# 目 录 
+
+摘 要 ..... I
+Abstract ..... III
+目 录 ..... I
+第1章 绪论 ..... 1
+1.1 研究背景 ..... 1
+1.2 研究意义 ..... 1
+1.3 国内外研究现状 ..... 2
+1.4 研究内容、方法与技术路线 ..... 5
+1.4.1 研究内容与方法 ..... 5
+1.4.2 技术路线 ..... 6
+第2章研究区及模型概况 ..... 8
+2.1 研究区概况 ..... 8
+2.1.1 自然地理概况 ..... 8
+2.1.2 社会经济概况 ..... 13
+2.1.3 水资源开发利用概况 ..... 13
+2.2 模型概况 ..... 19
+2.2.1 模型概述 ..... 19
+2.2.2 模型计算 ..... 21
+第3章 数据收集与基础数据库构建 ..... 24
+3.1 数据收集 ..... 24
+3.2 数字高程数据库构建 ..... 25
+3.3 土地利用数据库构建 ..... 27
+3.4 土壤数据库构建 ..... 31
+3.5 气象数据库构建 ..... 33
+3.6 水文数据库构建 ..... 35
+3.6.1 研究区水系关系梳理及河网概化 ..... 35
+3.6.2 研究区灌区梳理 ..... 37
+3.6.3 研究区主要湖库梳理 ..... 38
+3.6.4 研究区主要水文站梳理 ..... 40
+3.7 本章小结 ..... 41
+第4章 降水输入数据适用性评价 ..... 42
+4.1 选区概况 ..... 42
+4.2 模型构建 ..... 43
+4.3 结果分析 ..... 44
+
+4.3.1 无水库潮河水系不同降水数据模拟结果 ..... 45
+4.3.2 水库控制白河水系不同降水数据模拟结果 ..... 46
+4.3.3 东洋河水库控制流域模拟研究 ..... 48
+4.4 本章小结 ..... 48
+第5章 京津冀地区水量模型构建与模拟 ..... 50
+5.1 京津冀地区水文模型构建 ..... 50
+5.1.1 子流域划分 ..... 50
+5.1.2 HRU 划分 ..... 51
+5.1.3 气象数据输入 ..... 51
+5.1.4 输入文件生成及编辑 ..... 51
+5.2 SWAT 模型模拟 ..... 52
+5.2.1 模型参数敏感性分析 ..... 53
+5.2.2 模型参数率定和验证 ..... 54
+5.3 模拟结果分析 ..... 55
+5.3.1 参数敏感性分析结果 ..... 55
+5.3.2 水文站模拟结果 ..... 57
+5.4 典型地区情景变化模拟 ..... 61
+5.4.1 土地利用变化情景构建 ..... 61
+5.4.2 土地利用变化结果分析 ..... 61
+5.4.3 水资源管理措施情景构建 ..... 64
+5.4.4 水资源管理措施变化结果分析 ..... 65
+5.5 本章小结 ..... 67
+第6章 结论与建议 ..... 69
+参考文献 ..... 71
+个人简历及在学期间科研成果 ..... 76
+致 谢 ..... 77
+
+# 第1章 绪论 
+
+## 1.1 研究背景
+
+水作为地球上最常见的物质之一，是"人类生命的源泉"，在自然生态与人类活动中占有重要地位，是影响国家经济社会发展的重要战略资源。但人类社会经济的发展伴随的是对水资源需求的增加，这使得水资源供需间的矛盾日益突出 ${ }^{[1]}$ 。为解决这一矛盾，更好的管理和充分利用水资源，实现水资源利用可持续，利用水文模型通过数学方法对流域水循环进行模拟和描述，了解其时空上的变化规律，具有实际意义。
+
+流域水文模型作为流域水文模拟的重要工具，是水资源评价、配置、开发和利用的基础，在防洪减灾、水资源开发利用、生态环境需水研究、流域水资源配置、人类活动对流域水资源影响、面源污染研究等方面发挥重要作用 ${ }^{[2,3]}$ 。随着不断的发展、水文模型逐渐从系统、传统概念式发展成了半分布、分布式模型。分布式水文模型因其独特的优点，自提出以来，便得到了快速发展，逐渐成为国际水文研究的热点。随着 GIS 的发展及其与模型的结合，更进一步促进了分布式水文模型的发展 ${ }^{[4]}$ 。SWAT 模型作为分布式水文模型的一种，自提出以来已经在径流模拟、污染物运移、气候变化、流域下垫面变化影响分析等领域得到了广泛的应用 ${ }^{[5,6]}$ 。
+
+## 1.2 研究意义
+
+我国的淡水资源呈现 "总量较多，人均贫乏" 的特点。据统计，我国淡水资源现有总量 $2.8 \times 10^{13} \mathrm{~m}^{3}$ ，人均水资源量 $2300 \mathrm{~m}^{3(7)}$ 。庞鹏沙、王媛等 ${ }^{[8-10]}$ 的研究都指出，虽然我国水资源总量较为丰富，但是我国的水资源人均占有不足，且水资源与人口、耕地资源等不相适应，并且我国水资源利用中存在水体污染严重、生态恶化、水资源利用效率低、浪费严重及地下水超采等一系列的问题。
+
+京津冀地区是我国的"首都经济圈"，由北京市、天津市、河北省各地市组成，面积 $21.8 \times 10^{4} \mathrm{~km}^{2}$ ，人口超过 1.1 亿，2018年经济总量超 8 万亿元，是我国重要的政治、经济、文化中心，也是我国粮食产区之一，在我国发展中具有重要的战略地位。但随着地区经济的长期高速发展，其水资源利用的问题也日益突出。京津冀地区人口密度大，城镇化率高，经济发展速度快，对水资源需求量巨大；水利设施众多，对水资源的开发和利用程度高；地处海河流域，流域自然水资源量少，供需矛盾突出并且存在着严重的资源利用浪费现象；并且由于地表水资源的短缺，地下水超采严重，这导致地面沉降、水质恶化。也正因此，使得京
+
+津冀地区河道出现断流现象，下游河水入海量下降，水生态严重退化 ${ }^{[11,12]}$ 。
+针对上述问题，在京津冀地区开展水文模拟、设置流域情景，充分分析问题原因、通过水文模拟角度提出问题的解决办法，为更加合理的水资源开发利用提出建议，促进地区更好的发展具有重要的意义。
+
+# 1.3 国内外研究现状 
+
+自水文模型概念提出以来，对其发展的研究就一直伴随其发展的过程，陈仁升等 ${ }^{[13]}$ 研究指出随着水文学的不断发展产生了水文模型的概念，并且水文模型随着水文学的不断发展也在不断地丰富和进步，其研究还指出，水文模型的发展大致经过了从原始模型阶段、经典模型阶段及随着计算机技术的发展逐步发展到计算机初步应用阶段、模型参数自动调整阶段、黑箱及概念模型阶段直到 21 世纪的确定性模型全面发展阶段这六个主要阶段。胡春歧等 ${ }^{[14]}$的研究中，将水文模型按照其性质及建模技术分为了实体模型、类比模型及模拟模型三类，将水文模型的发展总结为原始、近代和现代三个阶段，并提出在 21 世纪随着计算机技术及地理信息技术的发展分布式水文模型会成为水文模型研究热点的展望。何长高等 ${ }^{[2]}$ 的研究中也指出目前国际水文研究的热点是分布式流域水文模型，并提出尺度问题、动态耦合问题等是国际水文学研究的重点。王中根等 ${ }^{[15]}$ 对分布式水文模型的发展做出了系统的研究，其研究指出，国外分布式水文模型的研究可以追溯到 1969 年 Rreeze 和 Harlan 发表的文章，随着研究的不断深入，越来越多的模型被提出并发展，并且伴随着计算机技术的发展，"基于 DEM的分布式水文模型"发展起来，成为"数字化时代水文模型发展的主要方向"。SWAT 模型是在 19 世纪 90 年代后期由美国农业部农业研究所 Arnold 主持下，吸收了 CREAMS.EPIC、 SWRRB 等模型优点将 SWRRB 和 ROTO 整合而成的模型，作为一个开源模型，自提出以来几十年间得到了迅速的发展，逐渐成为分布式水文模型的代表之一 ${ }^{[16]}$ 。SWAT 模型在全球各地长时间、大尺度流域水文要素的模拟中，都有十分出色的模拟表现 ${ }^{[17,18]}$ 。并且 SWAT 模型可以基于 GIS 平台运行，很好的适应了地理信息技术、遥感技术、计算机技术等现代手段的发展 ${ }^{[19]}$ ，被国内外越来越多的学者所研究使用。
+
+SWAT 模型是 soil and water assessment tool 的缩写，是由美国农业部（USDA）农业研究中心（Agricultural research service，ARS）Jeff Arnold 博士带领团队开发的流域尺度模型。最初为预测情况复杂的大流域内土地利用管理措施在长时间内对产流、产沙和农业污染方面的影响而设计，因此该模型基础特点有以下几方面 ${ }^{[20]}$ 。
+(1)基于物理机制；
+
+(2)输入变量易获取;
+(3)计算效率高;
+(4)可对流雨进行长期模拟。
+
+SWAT 模型是一个开源模型，其应用程序及源程序均可在其网站上下载并进行开发。模型自提出以来，经过了几十年的发展，不断进行修订和性能的扩展，SWAT 2012 以前主要有 6 个版本的修订更新 ${ }^{[20]}$ 。模型发展至今，程序成熟并被广泛应用的有 SWAT 2009 版和 SWAT 2012 版，除模型程序上不断更新外，在模型发展的过程中，模型的用户界面也在不断地更新，有同 QGIS 结合而成的 QSWAT，也有同 ArcGIS 结合而成的 ArcSWAT，都得到了广泛的应用。
+
+模型在其发展过程中广泛的应用于水量模拟、非点源污染模拟、模型改进及应用等方面， SWAT 模型在美洲、亚洲、欧洲、非洲等都得到了广泛的应用 ${ }^{[21]}$ 。Arnold 等 ${ }^{[22-25]}$ 开发并在美国境内多个流域都使用 SWAT 模型进行径流等相关模拟，验证了模型的适用性，除应用模型进行流域径流模拟外，模型还应用在产沙、非点源污染运移与模拟以及地表地下耦合模拟等研究中。Srinivasan 等应用模型在密西西比河流域进行水文模拟，模拟结果表明 SWAT模型在长时间尺度流域模拟具有更好的应用效果。Hermandez 等 ${ }^{[26]}$ 研究表明 SWAT 模型在半干旱地区能够较好的反映径流对土地利用变化的响应。Chaponnoiere 等 ${ }^{[27]}$ 在半干旱山区流域应用 SWAT 模型，模型在资料较少的情况下表现出了较好的模拟结果。Rostamian 等 ${ }^{[28]}$在伊朗 Beheshtabad 流域和 Vanak 流域应用 SWAT 模型对径流和泥沙进行模拟，使用 SUFI-2方法对模型模拟结果进行率定，结果发现，在资料缺失的山区模型对径流的模拟结果较好。 Bouraoui 等 ${ }^{[29]}$ 在突尼斯 Medjerda 流域应用 SWAT 模型对土地利用管理措施变化进行模拟为更好地进行水资源管理提供依据。Birsingh Dhami ${ }^{[30]}$ 等在尼泊尔 Karnali 流域应用 SWAT 模型进行水量平衡模拟分析，研究表明该流域 $12 \%$ 的径流来自融雪补给，并且基流 $\alpha$ 因子是该流域模型的最敏感参数，模型可以有效应用于尼泊尔山区流域进行水资源管理研究。
+
+SWAT 模型在国内的研究起步虽较晚，但在引入国内以后迅速被应用到了我国的各个流域，在径流模拟、面源污染等方面都有广泛的应用 ${ }^{[31-41]}$ 。在模型引入我国初期，王中根、刘昌明等人及其科学团队在我国黄河流域、海河流域对 SWAT 模型的应用进行了大量的探索，为 SWAT 模型在我国的广泛应用奠定了基础。王中根、刘昌明等 ${ }^{[42]} 2003$ 年在《地理科学进展》期刊上发表论文，系统的介绍了 SWAT 模型的基本原理、模型结构及具体的命令控制结构，并且在黑河（莺落峡）流域应用模型进行了月值、日值径流模拟，得到了较为理想的结果，表明模型较适用于我国西北寒旱地区。同年刘昌明等 ${ }^{[43]}$ 在黄河河源区流域应用 SWAT
+
+模型对唐乃亥水文站年值、月值径流进行模拟，结合黄河河源区高海拔积雪的气候特点对模型融雪参数进行调整，最终得到了较为理想的模拟结果，文章同时还探究变化条件下流域径流的变化情况，得出气候变化是引起黄河河源区径流变化的主要原因的结论。张雪松等 ${ }^{[44]}$在黄河下游小花间区域内氏水文站以上流域探究了 SWAT 模型在中尺度流域径流和产沙模拟种的应用效果，研究结果表明 SWAT 模型在降水多径流大的流域应用效果更佳。王中根等 ${ }^{[18,45]}$ 通过对海河流域河网进行合理概化，在大量基础资料的支撑下，成功将 SWAT 模型应用于海河流域，开发了 SWAT 模型应用软件系统。在其后续的研究中又使用 SWAT 模型与地下水模拟软件 MODFLOW 进行了海河流域地表水与地下水耦合模拟的研究，为更好的实现流域地表水地下资源管理提供了支撑。张永勇等 ${ }^{[46]}$ 对 SWAT 模型水质模块进行了本土化扩展并在海河流域涉县地区水量水质模拟中取得较好效果，为 SWAT 模型对 COD 指标的模拟提供了一种新的思路。李建新等 ${ }^{[47]}$ 成功构建了流域、子流域、县级行政区划三种不同层次的 SWAT 模型，分析了不同影响因素共同作用下的流域与区域水循环特征，分析了水资源综合管理措施的实施效果，为区域、流域水资源管理提供了科学依据。有了海河流域、黄河流域 SWAT 模型成功应用的经验，SWAT 模型在我国得到了更加广泛的应用。陈昌春 ${ }^{[17]}$等将 SWAT 模型成功应用于我国亚热带湿润地区的赣江流域径流模拟及土地利用变化影响研究中，取得了很好的模拟结果。刘贵花等 ${ }^{[48]}$ 在我国东北部三江平原挠力河流域上游应用 SWAT 模型，对 SWAT 模型在沼泽性河流的实用性进行了验证并取得了很好的模拟效果，同时在研究中使用模型参数移植法在实测资料缺失的流域进行径流模拟，模拟结果 $\mathrm{R}^{2}$ 为 0.91 ，为该流域无观测资料流域径流模拟提供了一种可借鉴的方法。项瑛等 ${ }^{[49]}$ 通过实测水系与人工修正相结合的方法，运用凹陷化算法合理概化江苏里下河平原区河网作为 SWAT 模型河网输入，使模型生成子流域更符合该流域实际，最终流域汛期径流模拟结果 $\mathrm{R}^{2}$ 与纳什系数均高于 0.8 ，模型在平原区具有较好的适用性。刘伟等 ${ }^{[50]}$ 以三峡库区大宁河流域作为研究区构建 SWAT 模型并进行径流模拟，比较了两种模型常用的不确定性分析方法 SUFI-2 和 GLUE之间的优劣，结果表明 SUFI-2 方法能在更短的时间内得到更好的拟合结果。陈晓丽等 ${ }^{[51]}$ 在我国南方雨量充沛的亚热带季风气候区北江飞来峡流域应用 SWAT 模型对流域日径流进行模拟，使用 SWAT_CUP 中的 SUFI-2 方法对模型参数进行敏感性分析及率定，在模型率定期和验证期模拟结果 $\mathrm{R}^{2}$ 均为 0.83 ，模型在该流域适用性良好。王宏伟等 ${ }^{[52]}$ 在半湿润地区细河流域使用 SWAT 模型进行径流模拟研究，率定期内模型 $\mathrm{R}^{2}=0.92$ ，验证期 $\mathrm{R}^{2}=0.89$ ，模型模拟精度较高，为后续进行流域水资源评估、非点源污染研究等提供了科学准确的手段。王蕾等 ${ }^{[53]}$ 在关中平原泾惠渠灌区构建 SWAT 模型的基础数据库为 SWAT 模型在灌区的应用奠
+
+定基础。苏欣等 ${ }^{[54,55]}$ 在黄河青铜峡灌区应用 SWAT 模型开展灌区水资源循环相关研究，定量的探究不同节水方案对灌区水循环的影响，用科学的手段支撑灌区节水灌溉技术的发展。李蔚等 ${ }^{[56]}$ 对 SWAT 模型水库管理模块进行了修改，增加了水库供水大点调度规划，并将改进后的模型应用于东江流域水库控制流域，研究结果表明修改后的模型大幅度提高了月尺度和日尺度径流模拟的精度，模拟期内月径流模拟结果的 R 2 提高了 0.06-0.22，纳什系数提高了 0.06-1.22，日模拟结果 R²提高了 0.04-0.16，纳什系数提高了 0.04-0.12 有效解决了模型水库模拟出流汛期过大的问题。余文君等 ${ }^{[57]}$ 对 SWAT 融雪模块进行改进，将 FASST 模型与 SWAT 结合，使模型更加适用于我国高寒山区流域，使模型应用范围更加广泛。孟现勇等 ${ }^{[58]}$在新疆地区对 SWAT 模型融雪模块进行修改，对比"温度指数法"融雪模型与"能量平衡法"融雪模型应用效果，促进了高寒山区分布式融雪径流预报预警的发展。骆月珍等 ${ }^{[59]}$ 使用 CMADS 作为气象输入驱动模型在富春江水库控制流域构建了SWAT 模型对流域水量平衡进行模拟分析取地了较好的模拟效果。周峥 ${ }^{[60-63]}$ 等应用 SWAT 模型进行水库流域、变化对径流影响研究。
+
+# 1.4 研究内容、方法与技术路线 
+
+### 1.4.1 研究内容与方法
+
+本文以京津冀地区作为研究区域，以 ArcGIS 作为数据处理工具，使用美国农业部农业研究服务中心开发的分布式水文模型 SWAT 作为主要的研究工具，通过丰富的数据收集手段收集了大量的研究区基础数据，并利用 GIS 平台对数据进行处理，构建了京津冀地区基础数据库，并在典型地区进行了数据库降水输入数据的适用性评价，为京津冀地区的各项后续研究提供基础支撑，同时使用 SWAT 模型对京津冀地区进行水量模型并对模拟结果进行了验证，构建了京津冀地区水量模型，并且在典型地区分别进行了不同土地利用变化下产流、产沙响应分析和不同水资源管理措施下下游恢复 "有水" 可行性分析，为后续进一步研究流域水质、制定流域规划决策奠定了基础。
+（1）结合研究区实际对 SWAT 模型的原理方法进行掌握，通过多种手段收集大量基础数据，对基础数据进行数字化及格式转化，构建模型输入所需数据库，包括气象、土壤、土地利用和水文等。
+（2）选取京津冀地区较为典型的流域构建 SWAT 水量模型，针对研究区特点，在水库控制流域及无水库控制流域对基础数据库中的数据特别是气象数据库中的降水数据进行适用性评价。
+
+（3）在适用性评价的基础上，对京津冀地区进行 SWAT 模型构建。
+（4）根据构建好的模型结果，对研究区各子流域进行参数的敏感性分析，确定各子流域敏感性参数，并对敏感性参数进行率定，率定好各参数后，对京津冀地区地表径流进行模拟。
+（5）在研究区径流模拟结果的基础上，以潮白河流域为典型研究区，建立不同的土地利用变化情景，以探究流域产流、产沙对不同土地利用情景的响应情况；以永定河流域为典型研究区，建立不同水资源管理措施情景，对下游恢复"有水"可行性进行模拟分析。
+
+SWAT 模型在结构上属于"第二类分布式水文模型"，SWAT 模型的流域水文过程包括水循环的陆面部分和水面部分 ${ }^{1421}$ 。模型径流的主要计算方法为 SCS 曲线法和 Muskingum 法。本研究所使用的主要硬件设备、软件环境和主要辅助软件如下。
+（1）硬件设备：
+计算机：Lenovo G50-70，Lenovo R-720；
+数据储存：希捷移动硬盘；
+（2）软件环境：
+计算机操作系统：windows 7、window 10 操作系统；
+模型运行环境：ArcGIS10.2 及以上版本；
+核心软件：
+ArcSWAT 2012：SWAT 模型在 GIS 平台下的应用程序；
+ArcGIS 10.3：对应 SWAT 版本的运行环境，进行数据显示与处理；
+SWAT_CUP：目前广泛使用的 SWAT 模型参数敏感性分析与率定工具；
+辅助软件：
+Google earth pro：用于空间数据提取、比对等；
+SPAW：土壤水文特性软件，主要用来计算模型所需要的土壤物理属性值；
+SWATweather：北京师范大学数字流域实验室杨岩开发的便捷 SWAT 天气发生器参数计算软件：
+
+Microsoft office：使用 EXCEL、ACCESS 构建模型数据库，进行输入数据的统计、数字化和计算处理，对模型结果进行统计、计算和显示。
+
+# 1.4.2 技术路线 
+
+本研究技术路线如图 1.1 所示，首先对研究所需基础数据进行收集整理，对数据进行预处理得到基础数据库；在基础数据库的基础上，根据研究需要构建研究区 SWAT 模型基础
+
+数据库；对数据库中降水数据在研究区的适用性进行评价后构建研究区 SWAT 模型并进行参数率定；使用率定好的模型对京津冀地区地表径流进行模拟并选择典型地区进行情景变化模拟分析。
+
+
+# 第2 章 研究区及模型概况 
+
+## 2.1 研究区概况
+
+### 2.1.1 自然地理概况
+
+## 1、地理位置
+
+京津冀地区发展历史悠久，位于我国环渤海地区的腹地，是我国北方经济规模最大、最具活力的地区 ${ }^{[64]}$ 。京津冀地区位于东经 $113^{\circ} 27^{\prime} \sim 119^{\circ} 50^{\prime}$ 、北纬 $36^{\circ} 05^{\prime} \sim 42^{\circ} 40^{\prime}$ 之间，地理位置如图 2.1 所示。京津冀地区东临渤海，西倚太行，向北紧邻蒙古高原。行政区划上，河北省环抱北京、天津，河北省位于内蒙古自治区以南，山东、河南以北，西邻山西省、东北与辽宁省相连。空间上与五省一海相接。
+
+
+图 2.1 京津冀地区地理位置
+Fig 2.1 Geographic map of Beijing-Tianjin-Hebei region
+京津冀地区区域总面积 $21.8 \times 10^{4} \mathrm{~km}^{2}$ ，京津冀地区市级行政区划面积占比如表2.1所示。
+表 2.1 京津冀地区市级行政区划面积
+Table 2.1 Statistical table of administrative divisions in Beijing-Tianjin-Hebei region
+
+| 省市 | 地市 | 面积/(10 ${ }^{4} \mathbf{k m}^{2}$ ) | 比例/\% |
+| :--: | :--: | :--: | :--: |
+| 北京 | 北京 | 1.641 | 8 |
+| 天津 | 天津 | 1.1946 | 5 |
+|  | 保定 | 2.219 | 10 |
+|  | 唐山 | 1.3473 | 6 |
+| 河北 | 顺坊 | 0.65 | 3 |
+|  | 石家庄 | 1.5848 | 7 |
+|  | 郇郇 | 1.2 | 5 |
+
+续表 2.1
+
+| 省市 | 地市 | 面积/(10 ${ }^{2} \mathrm{~km}^{2}$ ) | 比例/\% |
+| :--: | :--: | :--: | :--: |
+|  | 秦皇岛 | 0.7813 | 4 |
+|  | 张家口 | 3.6 | 16 |
+|  | 承德 | 3.9519 | 18 |
+|  | 沧州 | 1.3419 | 6 |
+|  | 邢台 | 1.2486 | 6 |
+|  | 衡水 | 0.8815 | 4 |
+|  | 雄安新区 | 0.2 | 1 |
+|  | 合计 | 21.8 | 100 |
+
+2、地形地貌
+北京、天津全部及河北 $91 \%$ 的面积都位于我国九大流域之一的海河流域内，京津冀地区面积占海河流域面积的 $65 \%$ 以上，整体位于海河流域东部。由于京津冀地区在海河流域地理位置及面积上的分布特点，地势上同海河流域一致，为西北高东南低，大致上可以分为山地及平原两种地貌，西北部为太行山、燕山山区，东南部为华北平原 ${ }^{[65]}$ 。京津冀地区高程如图 2.2 。
+
+
+图2.2 京津冀地区高程图
+Fig 2.2 Elevation map of Beijing-Tianjin-Hebei region
+3、土壤植被
+京津冀地区植被类型分布如图 2.3，其面积大部分位于温暖带落叶阔叶林区域、暖温带北部落叶枢林地带，北部仅张家口市、承德市部分地区位于温带草原区域，南部邯郸市部分面积位于温暖带落叶阔叶林区域、暖温带南部落叶枢林亚地带。京津冀地区最主要的植被类型为栽培植被，面积占总面积的 $66.51 \%$ ，温带落叶灌丛面积占第二位，为总面积的 $11.49 \%$ ，
+
+其余面积占比超过百分之一的植被分别为草丛、圆叶林、草原、草甸和针叶林，植被类型面积占比如图2.4。
+
+
+图 2.3 京津冀地区植被类型分布图
+Fig 2.3 Map of vegetation types in Beijing-Tianjin-Hebei region
+
+
+图 2.4 京津冀地区植被覆盖类型占比饼状图
+Fig 2.4 Proportion of vegetation cover types in Beijing-Tianjin-Hebei region
+京津冀地区所在海河流域土壤划分为内蒙古高原栗钙土绵土区、华北山地棕壤褐土区和海河平原黄垆土潮土盐土区三个区 ${ }^{[66]}$ 。根据全国土壤七级分类系统，共包括 8 个土壤冈，包含了 12 个土壤亚冈共计 22 个土壤类别，流域主要的土壤类型分别为潮土、褐土。按照传统 "土壤发生分类"系统，京津冀地区土壤共有 26 个土类共计 51 个亚类，京津冀地区土类空间分布情况如图 2.5 所示，每种土类具体含义及面积统计见表 2.2 。京津冀地区土壤以褐
+
+土、潮土为主，其中褐土面积占区域总面积的 $32.74 \%$ ，潮土面积占区域总面积的 $31.12 \%$ ，除褐土潮土外，棕壤、栗钙土、粗骨土、栗褐土、石质土为京津冀地区主要的土壤类型，面积占比均超过 $1 \%$ ，上述土壤类型共占京津冀地区面积的 $92.08 \%$ ，是京津冀地区主要的几种土壤类型。
+
+
+图 2.5 京津冀地区土壤类型图
+Fig 2.5 Map of soil types in Beijing-Tianjin-Hebei region
+
+表 2.2 京津冀地区土壤类型及面积统计表 单位: $\mathrm{m}^{2}$
+Table 2.2 Statistical table of soil types and areas in Beijing-Tianjin-Hebei area
+
+| 土类代码 | 土壤类型 | 面积 | 土类代码 | 土壤类型 | 面积 |
+| :--: | :--: | :--: | :--: | :--: | :--: |
+| 1 | 棕壤 | 24951 | 14 | 砂姜黑土 | 971 |
+| 2 | 褐土 | 70469 | 15 | 山地草甸土 | 341 |
+| 3 | 厔褐土 | 1797 | 16 | 潮土 | 66995 |
+| 4 | 灰色森林土 | 1677 | 17 | 沼泽土 | 1156 |
+| 5 | 黑钙土 | 12 | 18 | 沿途 | 242 |
+| 6 | 栗钙土 | 14343 | 19 | 滨海盐土 | 2126 |
+| 7 | 栗褐土 | 8250 | 20 | 碱土 | 7 |
+| 8 | 黄绵土 | 525 | 21 | 水稻土 | 625 |
+
+| 9 | 新积土 | 1335 | 22 | 灌漱土 | 1009 |
+| :--: | :--: | :--: | :--: | :--: | :--: |
+| 0 | 风沙土 | 1556 | 23 | 城区 | 342 |
+| 11 | 石质土 | 3118 | 24 | 湖泊 | 1519 |
+| 12 | 粗骨土 | 10085 | 25 | 沙洲 | 2 |
+| 13 | 草甸土 | 1150 | 26 | 盐场 | 659 |
+
+4、河湖水系
+海河流域内的 3 大水中系诸多河流流经京津冀地区。其中滦河发源自河北省丰宁县西部，自和别生沽源县流出河北省流经内蒙古自治区后自丰宁县北部流入河北省后于河北省乐亭县汇入渤海；北三河水系发源自京津冀地区，流经河北北京天津后入海；永定河水系上游桑干河流经册田水库经阳原县进入河北省，洋河流经友谊水库后进入河北境内，永定河汇入海河入海；大清河水系除唐河上游自山西发源流入河北省外，其余河流均位于京津冀地区；子牙河水系滹沱河上游发源自山西于石家庄市西部流入河北省，漳河、卫河于河北省馆陶县南部大名泛区汇流，卫运河、漳卫新河沿河北、山东边界向下游流动。
+
+# 5、气象条件 
+
+京津冀地区位于海河流域，属于温带东亚季风气候区 ${ }^{[67]}$ 。因京津冀地区地理位置的特殊性，其一年内分别受蒙古大陆性气团、海洋性气团、西伯利亚大陆性气团影响，使其春季风大干燥，蒸发量较大，易旱；夏季气温高空气湿润，降雨多发生在夏季且多暴雨，降雨量空间、年际差别大，容易产生旱涝灾害；秋季降雨少，冬季寒冷干燥，降水少。据统计，海河流域年平均气温 $1.5 \sim 14^{\circ} \mathrm{C}$ ，年平均相对湿度 $50 \% \sim 70 \%$ ；年平均降水量 539 mm ，属半湿润半干旱地带；年平均陆面蒸发量 470 mm ，水面蒸发量 $1100 \mathrm{~mm}^{[68]}$ 。根据海河流域水资源公报统计 2008 - 2016 年流域降水如表 2.3 所示，9年内平、枯水年占 $77.8 \%$ 且年内降水多集中在汛期。
+
+表 2.3 海河流域 2008 - 2016 年降水统计
+Table 2.3 Haihe basin 2008-2016 precipitation statistics
+
+| 年份 | 降水量 $/ \mathrm{mm}$ | 汛期占比 $/ \%$ | 较多年平均 | 丰枯类型 |
+| :--: | :--: | :--: | :--: | :--: |
+| 2008 | 541 | 73.96 | $+0.01$ | 平 |
+| 2009 | 489.8 | 72.91 | $-0.086$ | 平 |
+| 2010 | 533.6 | 78.35 | $-0.004$ | 平 |
+| 2011 | 518.8 | 76.08 | $-0.03$ | 平 |
+| 2012 | 601.3 | 77.35 | $+0.123$ | 偏丰 |
+
+| 2013 | 547.7 | 86.32 | -0.02 | 平 |
+| :-- | :-- | :-- | :-- | :-- |
+| 2014 | 427.4 | 75.81 | -0.202 | 枯 |
+| 2015 | 517.2 | 67.23 | -0.034 | 平 |
+| 2016 | 614.2 | 77.42 | +0.147 | 偏丰 |
+
+# 2.1.2 社会经济概况 
+
+根据最新国民经济和社会发展公报 ${ }^{[69-71]}$ 统计，截止到 2019 年末，北京市地区常住人口为 2153.6 万人，其中城镇人口比重为 $86.6 \%$ ，地区生产总值 35371.3 亿元，其中第三产业占 $83.5 \%$ ，按照行业划分，其他服务业创造的生产总值最高，占 $45 \%$ ；河北省地区常住人口 7591.97 万人，城镇人口占比 $57.62 \%$ ，河北省地区生产总值 35104.5 亿元，第三产业占比 $51.3 \%$ ，粮食总产量 3739.2 万吨。截止到 2018 年末，天津市地区常住人口为 1559.6 万人，城镇人口比重为 $83.15 \%$ ，天津市生产总值 18809.64 亿元，第三产业占比 $58.6 \%$ ，第一产业仅为 $0.9 \%$ 。
+
+### 2.1.3 水资源开发利用概况
+
+## 1、水资源量
+
+京津冀地区位于海河流域，根据海河流域水资源公报整理得到 2008 - 2016 年京津冀地区各省级行政区水资源量详情见表 2.4。
+
+表 2.4 京津冀行政分区水资源量 单位 $10^{8} \mathrm{~m}^{3}$
+Table 2.4 Statistics of water resources in Beijing-Tianjin-Hebei region
+
+| 省份 | 年份 | 地表水资源量 | 地下水资源量 | 地表地下不重复量 | 总量 |
+| :--: | :--: | :--: | :--: | :--: | :--: |
+|  | 2008 | 12.79 | 24.93 | 21.42 | 34.21 |
+|  | 2009 | 6.76 | 17.76 | 15.08 | 21.84 |
+|  | 2010 | 7.22 | 18.88 | 15.86 | 23.08 |
+|  | 2011 | 9.17 | 21.16 | 17.64 | 26.81 |
+| 北京 | 2012 | 17.95 | 26.49 | 21.55 | 39.5 |
+|  | 2013 | 9.43 | 18.74 | 15.38 | 24.81 |
+|  | 2014 | 6.46 | 15.96 | 13.8 | 20.26 |
+|  | 2015 | 9.32 | 20.63 | 17.44 | 26.76 |
+|  | 2016 | 14.01 | 24.15 | 21.05 | 35.06 |
+|  | 2008 | 13.61 | 5.91 | 4.69 | 18.3 |
+|  | 2009 | 10.59 | 9.5 | 4.65 | 15.24 |
+|  | 2010 | 5.58 | 4.45 | 3.62 | 9.2 |
+|  | 2011 | 10.89 | 5.22 | 4.48 | 15.37 |
+| 天津 | 2012 | 26.54 | 7.62 | 6.38 | 32.92 |
+|  | 2013 | 10.8 | 5.01 | 3.84 | 14.64 |
+|  | 2014 | 8.33 | 3.67 | 3.04 | 11.37 |
+|  | 2015 | 8.7 | 4.87 | 4.12 | 12.82 |
+|  | 2016 | 14.1 | 6.08 | 4.82 | 18.92 |
+|  | 2008 | 60.44 | 132.03 | 94.82 | 155.26 |
+
+|  | 2009 | 46.87 | 119.94 | 91.14 | 138.01 |
+| :-- | :-- | :-- | :-- | :-- | --: |
+|  | 2010 | 54.29 | 107.24 | 76.86 | 131.15 |
+|  | 2011 | 67.66 | 123.08 | 85.21 | 152.87 |
+|  | 2012 | 114.9 | 159.73 | 113.9 | 228.8 |
+|  | 2013 | 74.64 | 134.75 | 95.72 | 170.36 |
+|  | 2014 | 45.83 | 85.81 | 56.41 | 102.24 |
+|  | 2015 | 49.29 | 109.43 | 80.65 | 129.94 |
+|  | 2016 | 103.22 | 149.75 | 98.53 | 201.75 |
+
+其中 2008、2012和2016 各行政区水资源量明显高于其他年份，这些年份中，北京市的水资源分区总量均高于 $30 \times 10^{8} \mathrm{~m}^{3}$ ，天津市的水资源分区总量均高于 $18 \times 10^{8} \mathrm{~m}^{3}$ ，河北省的水资源分区总量均高于 $155 \times 10^{8} \mathrm{~m}^{3}$ 。各省级行政区的地表水资源量年际变化程度明显高于地下水资源，这是由于地表水资源主要来源于大气降水，受降水的年际变化影响。
+
+根据水资源公报多年统计数据，京津冀地区各省级行政区多年平均地表水资源量分别为北京市 $10.35 \times 10^{8} \mathrm{~m}^{3}$ 、天津市 $12.13 \times 10^{8} \mathrm{~m}^{3}$ 、河北省 $68.59 \times 10^{8} \mathrm{~m}^{3}$ 。2008 - 2016 年京津冀地区各行政区年际地表水资源量较多年平均变化情况如图 2.6 所示，除 2012 年北京市、天津市年际地表水资源量高于多年平均、2013年天津市年际地表水资源量高于多年平均外，其余年份京津冀地区地表水资源量均低于多年平均水平。
+
+
+图2.6 京津冀地区地表水资源较多年平均比较
+Fig 2.6 Comparison of annual average surface water resources in Beijing-Tianjin-Hebei region河北省、北京市的地下水资源量明显高于地表水资源量，地下水资源作为京津冀地区重要的水资源来源，2008-2016年海河流域山区、平原区地下水资源量分布情况及京津冀地区各省级行政区地下水资源量年际情况如表 2.5 所示。
+
+表 2.5 地下水资源年际分布情况 单位 $10^{5} \mathrm{~m}^{3}$
+Table 2.5 Inter-annual distribution statistics of groundwater resources
+
+| 时间 | 海河流域 |  |  |  | 行政分区 |  |  |
+| :--: | :--: | :--: | :--: | :--: | :--: | :--: | :--: |
+|  | 水资源总量 | 山丘区 | 平原区 | 重复计算量 | 北京 | 天津 | 河北 |
+| 2008 | 242.1 | 111.18 | 164.37 | 33.45 | - | - | - |
+| 2009 | 236.22 | 96.87 | 171.32 | 31.97 | 17.76 | 9.5 | 119.94 |
+| 2010 | 223.46 | 100.9 | 153.9 | 31.34 | 18.88 | 4.45 | 107.24 |
+| 2011 | 237.34 | 111.91 | 156.57 | 31.14 | 21.16 | 5.22 | 123.08 |
+| 2012 | 288.72 | 122.84 | 202.25 | 36.37 | 26.49 | 7.62 | 159.73 |
+| 2013 | 259.68 | 114.37 | 179.38 | 34.07 | 18.74 | 5.01 | 134.75 |
+| 2014 | 184.37 | 101.49 | 113.6 | 30.72 | 15.96 | 3.67 | 85.81 |
+| 2015 | 213.63 | 100.2 | 145.97 | 32.36 | 20.63 | 4.87 | 109.43 |
+| 2016 | 280.43 | 131.08 | 184.08 | 34.73 | 24.15 | 6.08 | 149.75 |
+
+京津冀地区有众多的水库，根据海河流域水资源公报整理流域大中型水库 2008 - 2016年着水动态情况如表 2.6 所示。
+
+表 2.6 海河流域大中型水库蓄水动态表 单位 $10^{5} \mathrm{~m}^{3}$
+Table 2.6 Dynamic storage table of large and medium reservoirs in Haihe River Basin
+
+| 年份 | 大型水库 | 中型水库 | 总蓄水量 |
+| :--: | :--: | :--: | :--: |
+| 2008 | 65.35 | 8.73 | 74.08 |
+| 2009 | 53.58 | 7.39 | 60.97 |
+| 2010 | 57.08 | 9.55 | 66.63 |
+| 2011 | 74.13 | 12.09 | 86.22 |
+| 2012 | 83.52 | 12.28 | 95.8 |
+| 2013 | 81.28 | 11.73 | 93.01 |
+| 2014 | 61 | 9.41 | 70.41 |
+| 2015 | 55.53 | 9.62 | 65.15 |
+| 2016 | 92.53 | 12.7 | 105.23 |
+
+2、水利工程
+京津冀地区需水量巨大，在社会发展的过程中为了满足各领域用水需要，解决洪水等自然灾害问题，在其发展历史中逐渐修建了大量的水库、闸坝、蓄滞洪区等水利工程，预防自然灾害的同时也在极大程度上缓解了地区水资源供需上存在的矛盾。
+
+根据海河流域水资源公报及水文年鉴等相关资料整理了京津冀地区主要的大、中型水库所在水系、河流、行政区情况如表 2.7 所示。海河流域大、中型水库主要集中于京津冀地区，通过水库对水资源的调蓄，对地表水资源进行合理配置。
+
+表 2.7 京津冀地区主要大、中型水库表
+Table 2.7 Tables of major large and medium-sized reservoirs in the Beijing-Tianjin-Hebei region
+
+| 水系 | 河流 | 水库 | 所在行政区 |
+| :-- | :-- | :-- | :-- |
+| 滦河 | 闪电河 | 闪电河水库 | 河北省 |
+
+| 水系 | 河流 | 水库 | 所在行政区 |
+| :--: | :--: | :--: | :--: |
+|  | 伊逊河 | 庙宫水库 |  |
+|  | 滦河 | 大黑汀水库 |  |
+|  |  | 遣家口水库 |  |
+|  | 青龙河 | 桃林口水库 |  |
+|  | 陡河 | 陡河水库 |  |
+|  | 洋河 | 洋河水库 |  |
+|  | 潮河、白河 | 密云水库 |  |
+|  |  | 怀柔水库 | 北京市 |
+| 北三河 | 白河 | 白河堡水库 |  |
+|  | 白河 | 云州水库 | 河北省 |
+|  | 还乡河 | 邱庄水库 |  |
+|  | 州河 | 于桥水库 | 天津市 |
+| 永定河 | 永定河 | 官厅水库 | 河北省 |
+|  | 斐流河 | 斐流河水库 |  |
+
+续表 2.7
+
+| 水系 | 河流 | 水库 | 所在行政区 |
+| :--: | :--: | :--: | :--: |
+| 大清河 | 东洋河 | 友谊水库 | 山西省 |
+|  | 桑干河 | 册田水库 |  |
+|  | 磁河 | 横山岭水库 |  |
+|  | 郁河 | 口头水库 |  |
+|  | 沙河 | 王快水库 |  |
+|  | 唐河 | 西大洋水库 | 河北省 |
+|  | 潜河 | 龙门水库 |  |
+|  | 中易水 | 安戈庄水库 |  |
+|  |  | 白洋淀水库 |  |
+|  |  | 东武仕水库 |  |
+|  |  | 临城水库 |  |
+| 子牙河 | 南澧河 | 朱庄水库 | 河北省 |
+|  | 谭沱河 |  |  |
+|  |  | 黄壁庄水库 |  |
+|  | 独流减河 | 北大港水库 | 天津市 |
+| 滂卫河 | 滂河 | 岳城水库 | 河北省 |
+
+除水库外，海河流域各水系还建设有许多的水利闸坝，北三河水系主要闸坝有包括土门楼泄洪闸、宁车沽防潮闸、蓟运河防潮闸和黄庄洼分洪闸在内的 14 座；永定河水系有包括卢沟桥枢纽、三家店拦河闸在内的三座主要水利闸坝；海河水系主要闸坝有防潮闸及海河二道闸；大清河水系主要闸坝有 6 座、子牙河水系有 8 座、南运河水系 14 座。
+
+蓄滞洪区的存在，有效的缓解了汛期洪水对河流沿岸的压力，京津冀地区有包括永定河泛区、宁晋泊、文安洼、白洋淀、永年洼在内的主要蓄滞洪区 26 座。
+
+# 3、水资源开发情况 
+
+根据2008-2016年海河流域水资源公报，京津冀地区2008-2016年平均供水量为：北京市 $36.5 \times 10^{8} \mathrm{~m}^{3}$ 、天津市 $23.9 \times 10^{9} \mathrm{~m}^{3}$ 、河北省 $189.6 \times 10^{9} \mathrm{~m}^{3}$ 。供水来源主要有地表水、地下水以及其他来源。水资源利用途径有农业、工业、生活、生态环境等几方面，京津冀地区各省级行政区 2008 - 2016 年供用水具体情况如图 2.7 - 2.9 所示。
+
+
+图 2.7 北京市水资源开发利用概况
+Fig 2.7 Overview of water resources development and utilization in Beijing
+
+
+
+
+图 2.8 天津市水资源开发利用概况
+Fig2.8 Overview of water resources development and utilization in Tianjin
+
+
+图2.9 河北省水资源开发利用概况
+Fig 2.9 Overview of water resources development and utilization in Hebei
+由图中可以看出北京市多年供水量总量变化不大，供水途径中，地下水所占比例持续下降，从 2008 年的 $65 \%$ 下降到 2016 年的 $45 \%$ ，地表水和其他供水比例上升。北京市主要的水资源利用途径为生活用水，在 2008 - 2016 年间，农业用水量持续下降，2015年起工业用水量也呈下降趋势，而生态环境用水与生活用水量呈增长趋势，生态环境用水量占总用水量的百分比由 2008 年的 $9.1 \%$ 增长到 2016 年的 $28.6 \%$ ，农业用水量占比由 2008 年的 $32.3 \%$减少到 2016 年的 $14.7 \%$ 。天津市近年来供水量有所增长，地表水始终在城市供水中占主要地位，多年间对地下水的利用比例下降了 $10 \%$ 。天津市工业、生活用水趋势多年间保持稳
+
+定，生态环境用水量自 2014 年开始大幅度增加，这也是造成天津市近年来供水量增长的主要原因之一。随着河北省农业用水量的下降，河北省供水量呈现下降的趋势，地下水在供水中所占的比例也下降了 $10 \%$ ，生态环境方面的用水量增加了一倍，从侧面反映出河北省农业产业结构的升级，对水资源利用效率的提升和对生态环境保护的重视。
+
+# 4、水资源开发问题 
+
+我国目前水资源面临的问题十分复杂，海河流域更是我国大型流域片区种水资源短缺最为严重的地区，京津冀地区水资源情势尤为严峻 ${ }^{[72]}$ ，京津冀地区面临的主要水资源问题有：
+（1）水资源短缺、供需矛盾突出，水资源浪费现象依然存在 ${ }^{[73]}$ 。京津冀地区人口密度大，工农业发展快，伴随着京津冀地区的发展，用水量增长迅速，地区需水量远超供水量，缺水严重，又由于地区内城市、行业之间的发展不平衡，导致了水资源浪费的现象依然明显。
+（2）地下水超采、地面沉降、水环境恶化 ${ }^{[74]}$ 。地表水资源的短缺导致对地下水资源的需求量激增，京津冀地区平原区地下水供水占比达 $70 \%$ ，造成了京津冀地区地下水长期处于超采状态，并且由于地下水超采，造成了一系列地质灾害的产生 ${ }^{[75]}$ 。京津冀地区存在污水灌溉的现象，导致浅层地下水、土壤和农作物受到污染，地下水位因超采降低，污染物入渗加快，水环境恶化严重。
+（3）河道断流、入海量锐减、水生态退化。随着海河流域降水的减少和京津冀地区用水的增加，河道开始出现不同程度的断流，大于 $4000 \mathrm{~km}^{2}$ 的平原河道变为季节性河流，河水入海量锐减，湿地萎缩，湖泊注淀干涸，水生态遭到严重破坏，生物多样性降低。
+
+## 2.2 模型概况
+
+### 2.2.1 模型概述
+
+SWAT 模型能够模拟流域内发生的各种物理过程，水量平衡是流域内所有过程的驱动力。为了能够对径流、泥沙、营养物、污染等进行准确的预测，模型模拟的水文循环需要和流域内相一致 ${ }^{[20]}$ 。流域水文建模可以划分为两个主要阶段：一是水文循环的陆地阶段，控制每个子流域内水流、泥沙、营养物和杀虫剂负荷等向主河道的输入，该阶段如图 2.10 所示；二是水文循环的汇流阶段，是指流域河网中的水流、泥沙等向出水口的运移过程 ${ }^{[39]}$ 。
+
+
+
+图 2.10 模型水文循环陆地阶段示意图 ${ }^{[20]}$
+Fig 2.10 Schematic diagram of the land phase of the model hydrological cycle
+一、水文循环的陆地阶段
+SWAT 的水文循环基于水量平衡方程 ${ }^{[42]}$ 进行:
+
+$$
+S W_{t}=S W_{0}+\sum_{i=t}^{t}\left(R_{\text {day }}-Q_{\text {surf }}-E_{\mathrm{a}}-W_{\text {seep }}-Q_{\mathrm{gw}}\right)
+$$
+
+式中: $S W_{t}$ 表示土壤最终含水量, $\mathrm{mm} ; S W_{0}$ 表示第 $i$ 天的土壤初始含水量, $\mathrm{mm} ; t$ 表示时间, $\mathrm{d} ; R_{\text {day }}$ 表示第 $i$ 天的降水量, $\mathrm{mm} ; Q_{\text {surf }}$ 表示第 $i$ 天的地表径流量, $\mathrm{mm} ; E_{\mathrm{a}}$ 表示第 $i$ 天的蒸散发量, $\mathrm{mm} ; W_{\text {seep }}$ 表示第 $i$ 天从土壤剖面进入包气带的水量, $\mathrm{mm} ; Q_{\mathrm{gw}}$ 表示第 $i$ 天回归流的水量, mm 。
+
+SWAT 模型水文循环陆地阶段主要包括的输入和过程有气候、水文、土地覆盖/植物生长、侵蚀、营养物的运移和转化、杀虫剂和管理措施 ${ }^{[20]}$ 。其中气候包括了降水、温度、风速和太阳辐射、相对湿度等方面，模型水文过程在 HRU 尺度上的水流潜在路径如图 2.11 所示。管理措施可以添加与农业种植、灌溉、施肥等相关的操作。
+
+
+
+图 2.11 水流潜在路径示意图 ${ }^{[20]}$
+Fig 2.11 Schematic diagram of potential flow path
+二、水文循环演算阶段
+确定了迁移到主河道的水流、泥沙、营养物和杀虫剂负荷之后, 运用类似于 HYMO 的指令结构演算流域整个河网中的相应负荷量 ${ }^{[76]}$ 。除了记录河道中的物质流，SWAT 还模拟河流和河床中的化学物质转换 ${ }^{[20]}$ 。SWAT 模型的这一部分主要包括主河道或河段演算和水库演算两部分。
+
+# 2.2.2 模型计算 
+
+SWAT 模型水文循环陆地阶段基于水量平衡方程。水文计算主要包括地表径流、蒸散发、土壤水和地下水四个方面 ${ }^{[20]}$ 。其中最主要的地表径流阶段的计算方法具体为：
+
+一、地表径流
+1、地表径流
+SWAT 中地表径流计算方法有两种，分别为 SCS 曲线数法与 Green\&Ampt 下涉法。SCS径流方程是 20 世纪 50 年代普遍使用的经验模型，发展历史长，结果准确。SCS 曲线数法方程为:
+
+$$
+Q_{\text {surf }}=\frac{\left(R_{\text {day }}-I_{a}\right)^{2}}{\left(R_{\text {day }}-I_{a}+S\right)}
+$$
+
+式中: $Q_{\text {surf }}$ 表示累积径流量或超渗雨量, $\mathrm{mm} ; R_{\text {day }}$ 表示某天的雨深, $\mathrm{mm} ; I_{\mathrm{a}}$ 表示初损量,
+
+包括产流前的地面填洼量、植物截留量和下渗量， $\mathrm{mm} ； S$ 表示滞留参数， mm 。滞留参数随着土壤、土地利用、管理措施和坡度的不同而呈现空间上的差异，随着土壤含水量的变化而呈现时间上的差异。定义为：
+
+$$
+S=25.4\left(\frac{1000}{C N}-10\right)
+$$
+
+式中： $C N$ 表示某天的曲线数。初损 $I_{\mathrm{n}}$ 通常近似为 $0.2 S$ ，则方程 1.2 变为：
+
+$$
+Q_{\text {surf }}=\frac{\left(R_{\text {day }}-0.2 S\right)^{2}}{\left(R_{\text {day }}+0.8 S\right)}
+$$
+
+仅当 $R$ day $>I_{\mathrm{n}}$ 时产生地表径流。
+2、洪峰流量
+SWAT 中的洪峰流量计算公式为:
+
+$$
+q_{\text {peak }}=\frac{C \times i \times A r e a}{3.6}
+$$
+
+式中： $q_{\text {peak }}$ 表示洪峰流量， $\mathrm{m}^{3} / \mathrm{s} ： C$ 表示径流系数； $i$ 表示降雨强度， $\mathrm{mm} / \mathrm{hr} ;$ Area 表示子流域面积， $\mathrm{km}^{2} ; 3.6$ 表示单位换算因子。
+
+除此以外，还有地表径流之后及传输损失的相关计算。
+二、蒸散发
+蒸散发是一个集合项，具体包括植物冠层水分的蒸发和蒸散、土壤水分的升华和蒸发等过程。蒸散发是流域水分散失的主要途径而降雨量与蒸散发量之间的差量可供人类利用和管理。
+
+# 1、冠层截留 
+
+SWAT 可以模拟呈日变化的植物冠层最大截留量，它是叶面积指数的函数：
+
+$$
+c a n_{\text {day }}=c a n_{\mathrm{mn}} \frac{L A I}{L A I_{\mathrm{mn}}}
+$$
+
+式中： $c a n_{\text {day }}$ 表示某天植物冠层截留的最大水量， $\mathrm{mm} ： c a n_{\mathrm{mn}}$ 表示冠层生长最繁茂时所截留的最大水量， $\mathrm{mm} ： L A I$ 表示某天的叶面积指数； $L A I_{\mathrm{mn}}$ 表示植物的最大叶面积指数。
+
+## 2、蒸散发:
+
+SWAT 模型在气象输入资料全面的情况下，一般采用 Penman - Monteith 法计算潜在蒸发量:
+
+$$
+\lambda E=\frac{\Delta\left(H_{\text {net }}-G\right)+\rho_{\text {air }} \Gamma_{a}\left(\left(e_{c}^{0}-e_{c}\right) / r_{a}\right.}{\Delta+\gamma\left(1+r_{c} / r_{a}\right)}
+$$
+
+式中： $\lambda E$ 表示潜热通量密度， $\mathrm{MJ} /\left(\mathrm{m}^{2} \cdot \mathrm{~d}\right): \mathrm{E}$ 表示蒸发率， $\mathrm{mm} / \mathrm{d} ： \Delta$ 表示饱和水汽压-温度关系曲线的斜率，即 $\mathrm{de} / \mathrm{d} T, \mathrm{kPa} /{ }^{\circ} \mathrm{C} ; \mathrm{H}_{\text {net }}$ 表示净辐射量， $\mathrm{MJ} /\left(\mathrm{m}^{2} \cdot \mathrm{~d}\right): \mathrm{G}$ 表示到达地面的热量通量密度， $\mathrm{MJ} /\left(\mathrm{m}^{2} \cdot \mathrm{~d}\right): \rho_{\text {air }}$ 表示空气密度， $\mathrm{kg} / \mathrm{m}^{3} ： c_{\mathrm{p}}$ 表示恒压下的特定热量， $\mathrm{MJ} /\left(\mathrm{kg} \cdot{ }^{\circ} \mathrm{C}\right)$ ； $\mathrm{e}^{0}{ }_{\mathrm{e}}$ 表示高度 $z$ 处的饱和水汽压， $\mathrm{kPa} ： \mathrm{e}_{z}$ 表示高度 $z$ 处的水汽压， $\mathrm{kPa} ： \gamma$ 表示湿度计算常数， $\mathrm{kPa} /{ }^{\circ} \mathrm{C} ： \mathrm{r}_{\mathrm{c}}$ 表示植物冠层的阻抗， $\mathrm{s} / \mathrm{m} ， \mathrm{r}_{\mathrm{a}}$ 表示空气层的扩散阻抗（空气动力阻抗） $\mathrm{s} / \mathrm{m}$ 。
+
+# 三、土壤水 
+
+模型壤中流的计算公式为:
+
+$$
+Q_{\text {dat }}=0.024\left(\frac{2 S W_{\text {fy-excess }} \Gamma K_{\text {sat }} / S L P}{\phi_{d} \Gamma L_{\text {full }}}\right)
+$$
+
+式中： $S W_{\text {fy-excess }}$ 为土壤饱和区可流出水量， $\mathrm{mm}: \mathrm{K}_{\text {sat }}$ 为土壤饱和水力传导系数， $\mathrm{mm} / \mathrm{hr}$ ： $S L P$ 为平均坡度， $\mathrm{m} / \mathrm{m} ： \varphi d$ 为土壤可流出孔隙度， $\mathrm{mm} / \mathrm{mm} ： L_{\text {full }}$ 为山坡坡长， m 。
+
+四、地下水
+SWAT 模型将各子流域划分为两类含水层计算，浅层含水层属于潜水含水层，汇入子流域主要河道或河段；深层含水层是承压含水层，假定水汇入流域外河流。
+
+1、浅层含水层
+
+$$
+a q_{\mathrm{sh}, i}=a q_{\mathrm{sh}, i-1}+w_{\text {tcheg,sh }}-Q_{\mathrm{gw}}-w_{\text {revap }}-w_{\text {pump,sh }}
+$$
+
+式中: $a q_{\mathrm{sh}, i}$ 表示第 $i$ 天浅层含水层的储水量, $\mathrm{mm}: a q_{\mathrm{sh}, \mathrm{i}-1}$ 表示第 $i$ - 1 天浅层含水层的储水量, $\mathrm{mm}: w_{\text {tcheg,sh }}$ 表示第 $i$ 天浅层含水层的补给量， $\mathrm{mm}: Q_{\mathrm{gw}}$ 表示第 $i$ 天汇入主河道的地下水径流量或基流量， $\mathrm{mm}: w_{\text {revap }}$ 表示第 $i$ 天因土壤水分不足而进入土壤带的水量， $\mathrm{mm}: w_{\text {pump,sh }}$表示第 $i$ 天浅层含水层的抽水量， mm 。
+
+2、深层含水层
+
+$$
+a q_{\mathrm{dp}, i}=a q_{\mathrm{dp}, i-1}+w_{\text {deep }}-w_{\text {pump,dp }}
+$$
+
+式中: $a q_{\mathrm{dp}, i}$ 表示第 $i$ 天深层含水层的储水量, $\mathrm{mm}: a q_{\mathrm{dp}, \mathrm{i}-1}$ 表示第 $i$ - 1 天深层含水层的储水量， $\mathrm{mm}: w_{\text {deep }}$ 表示第 $i$ 天浅层含水层渗入深层含水层的水量， $\mathrm{mm}: w_{\text {pump,dp }}$ 表示第 $i$ 天深层含水层的抽水量， mm 。
+
+进入到深层含水层的水量不参与水量收支计算，可以看作是系统中的损失部分。
+
+# 第3章数据收集与基础数据库构建 
+
+本研究主要采用高斯克里格投影，根据六度带分带法，通过计算可以得到京津冀地区所处分带，空间参考坐标系采用 Beijing_54_GK_Zone_20投影坐标系，对构建 SWAT 模型所需要的空间数据库中的所有空间数据进行投影变换，所有空间数据都采用相同的投影和坐标系。
+
+## 3.1 数据收集
+
+本研究根据研究区京津冀地区的实际情况，对照 SWAT 模型输入要求及后续研究需要，通过多种途径采取多种手段进行基础数据收集。对于公开发布的数据，本研究主要通过资源环境数据云平台(http://www.resdc.cn)、地理空间数据云(http://www.gscloud.cn)、寒区早区科学数据中心 (http://westdc.westgis.ac.cn)、中国气象数据网(http://data.cma.cn)、模型官网 (https://swat.tamu.edu) 以及 CMADS 网站(http://www.cmads.org) 进行下载，对部分研究区所在海河流域相关数据，通过水利部海河水利委员会网站(http://www.hwcc.gov.cn) 及相关链接进行下载。通过大量的基础数据收集，为后续研究提供丰富的模型基础数据库，为研究提供全面的数据支撑。本研究收集到的主要基础数据如表 3.1 所示。
+
+表 3.1 基础资料收集统计表
+Table 3.1 Basic data collection statistics table
+
+| 数据来源 | 数据集名称 | 数据内容 |
+| :--: | :--: | :--: |
+| 寒区早区科学数据中心 | 基于世界土壤库的中国土壤数据集 | 土壤棚格图 |
+|  |  | 土壤物理属性表 |
+| CMADS 官网 | 中国气象同化驱动数据集 | 2008-2016 气象数据 |
+| SWAT 官网链接 | 全球气象数据 | 1980-2014 气象数据 |
+|  | 中国地面国际交换站气象资料日值数 | 2000-2017 |
+| NMIC 国家气象信息中心 | 据集 |  |
+|  | 中国地面气候资料日值数据集 |  |
+|  | 中国辐射日值数据集 |  |
+|  | 京津冀地区控制单元 | 京津冀地区控制单元 |
+|  | 全国五级河流数据 | 1、2、4、5 级河流矢量图 |
+| 环境规划院 | 2006-2011 海河流域水文年鉴 |  |
+|  | 2012-2016 北运河、大清河水文年鉴 |  |
+| 资源环境数据云平台 | 中国行政区划数据 | 中国省级行政边界数据中国地市行政边界数据中国九大流域片 |
+|  | 中国自然地理分区数据 | 中国生态功能保护区 |
+|  | 中国土地利用遥感监测数据 | 2010 中国土地利用现状遥感监测数据 |
+
+续表 3.1
+
+| 数据来源 | 数据集名称 | 数据内容 |
+| :--: | :--: | :--: |
+|  | 中国陆地生态系统宏观结构数据 | 2015 中国土地利用现状遥感监测数据 |
+|  | 植被类型数据 | 中国 100 万植被类型空间分布数据 |
+|  |  | 中国植被区划数据 |
+|  | 土壤数据 | 中国土壤类型空间分布数据 |
+|  |  | 中国土壤侵蚀空间分布数据 |
+|  | 全球 100 万基础地理数据 | 中国土壤质地空间分布数据 |
+|  |  | 世界面状水系 |
+| 资源环境数据 |  | 世界线状水系 |
+| 云平台 |  | 2006-2015 逐年年降水量空间插值数据 |
+|  |  | 集 |
+|  |  | 2006-2015 逐年年平均气温空间插值数 |
+|  | 中国气象数据 | 据集 |
+|  |  | 中国气候区划 |
+|  |  | 中国气象背景数据集 |
+|  |  | 中国气象站点空间分布数据 |
+|  |  | 分省 DEM90m 数据 |
+|  | 地形地貌数据 | 全国 DEM1km 数据 |
+|  |  | 全国 DEM500m 数据 |
+|  |  | 全国 DEM250m 数据 |
+| 水利部海河水利 | 中国水系流域空间分布数据集 | 基于 DEM 提取的中国流域河网数据集 |
+| 委员会官网 | 海河流域水资源公报 | 2008-2016 年公报 |
+| 海河流域水利科 |  |  |
+| 技共享系统 | 海河流域农田水利报告 |  |
+
+对收集到的基础数据进行分类，建立 SWAT 模型原始数据库，对原始数据进行处理，即可构建京津冀地区 SWAT 模型输入数据库。
+
+# 3.2 数字高程数据库构建 
+
+SWAT 模型构建的第一步便是对研究区数字高程棚格图的载入，数字高程数据是模型后续一切操作的基础，数字高程数据的质量直接关系到模型产流、产沙等一系列模拟结果的好坏 ${ }^{[39,77,78]}$ 。本研究对数字高程数据库的构建主要使用 ArcGIS 中的相关功能进行。
+
+本研究根据收集到的基础数据，制作了三套不同分辨率的数字高程模型，以满足不同分辨率需要的 SWAT 模型构建。首先对资源环境数据云平台收集到的分省 90 m 分辨率 DEM 使用 ArcGIS 软件经过投影变换、边界裁剪和填注等操作得到 SWAT 模型所需的 90 m 分辨率 DEM 数据。如图 3.1a：基于 90 m 分辨率数据，通过 ArcGIS 重采样功能，对 90 m 分辨率
+
+DEM 数据进行重采样，得到京津冀地区 200 m 分辨率 DEM 数据，如图 3.1b。通过对全国 500 m 分辨率数字高程数据进行掩膜提取、填注等操作得到研究区 500 m 分辨率 DEM 数据，如图 3.1c 所示。最后根据得到的数字高程数据，构建京津冀地区不同分辨率条件下的数字高程模型数据库。
+
+DEM 数据分辨率越高，在 SWAT 中识别生成的河网就越准确，坡度划分也就越准确， DEM 数据的分辨率在一定范围内变化时对径流模拟结果影响较小但是对产沙结果的影响十分敏感。但分辨率越高的 DEM 数据所需要的计算量也就越大，模型运行所需的计算机系统内存以及计算时间也就越多。在大尺度流域 SWAT 模型构建过程中，普通 PC 端在使用高分辨率的 DEM 数据时常容易因计算机计算能力不足导致软件崩溃，因此在构建模型时，需要根据研究区尺度的大小、计算机的计算能力以及实际的模拟需要等因素来综合考虑选取合适分辨率的 DEM 数据，以满足实际需求。
+
+
+图3.1 不同分辨率条件下 DEM
+Fig 3.1 DEM at different resolutions
+
+不同分辨率数字高程模型在地图显示比例为 1: 150000 下对比如图 3.2 所示。在研究区为小流域的情况下，使用高分辨率 DEM 数据能够更好的反应真实的河网、坡度等情况。
+
+
+图 3.2 不同分辨率 DEM 数据对比
+Fig 3.2 Comparison of DEM data at different resolutions
+
+# 3.3 土地利用数据库构建 
+
+土地利用数据对 SWAT 模型的模拟结果有着重要影响，SWAT 模型需要的土地利用数据包括土地利用图件及土地利用类型索引表 ${ }^{[39,99-84]}$ 。通过资源环境数据云平台收集京津冀地区自 20 世纪 80 年代至 2018 年的分省 1 km 分辨率土地利用栅格数据，对原始数据进行合并、坐标转换等操作，得到京津冀地区近 38 年来不同时期土地利用类型栅格数据。
+
+
+
+
+图3.3 京津冀地区土地利用变化图
+Fig 3.3 Land use change in Beijing-Tianjin-Hebei region
+对得到的棚格数据进行土地利用类型面积统计，得到京津冀地区 1980～2018 各土地利用类型面积统计表 3.2，对京津冀地区历史土地利用类型变化进行统计分析。
+
+表 3.2 京津冀地区土地利用类型面积统计表 单位: $\mathrm{m}^{2}$
+Table 3.2 Statistical table of land use types and areas in Beijing-Tianjin-Hebei region Unit: $\mathrm{m}^{2}$
+
+| 代码 | 类别 | 面积统计 |  |  |  |  |
+| :--: | :--: | :--: | :--: | :--: | :--: | :--: |
+|  |  | 1980 | 1990 | 2000 | 2010 | 2018 |
+| 11 | 水田 | 6146 | 6096 | 6075 | 5332 | 1320 |
+| 12 | 旱地 | 106036 | 105697 | 103431 | 102698 | 98529 |
+| 21 | 有林地 | 22411 | 22257 | 22255 | 22241 | 24460 |
+| 22 | 灌木林 | 17817 | 17829 | 17770 | 17738 | 16969 |
+| 23 | 疏林地 | 3667 | 3387 | 3343 | 3341 | 3290 |
+| 24 | 其他林地 | 1059 | 1091 | 1284 | 1307 | 1171 |
+| 31 | 高覆盖度草地 | 22664 | 22884 | 22644 | 22651 | 22509 |
+| 32 | 中覆盖度草地 | 10425 | 10565 | 10522 | 10286 | 9741 |
+| 33 | 低覆盖度草地 | 2120 | 2088 | 2000 | 1969 | 1768 |
+| 41 | 河渠 | 1363 | 1351 | 1342 | 1319 | 1734 |
+| 42 | 湖泊 | 122 | 150 | 215 | 193 | 311 |
+| 43 | 水库坑塘 | 2084 | 1934 | 2339 | 2246 | 3829 |
+| 45 | 沸涂 | 261 | 264 | 227 | 178 | 337 |
+| 46 | 沸地 | 2522 | 2521 | 2312 | 2256 | 1063 |
+| 51 | 城镇用地 | 1987 | 2244 | 3491 | 4747 | 6739 |
+| 52 | 农村居民点 | 10725 | 10955 | 11811 | 12000 | 16313 |
+| 53 | 其他建设用地 | 1858 | 1963 | 2402 | 3055 | 4691 |
+| 61 | 沙地 | 668 | 668 | 687 | 656 | 39 |
+| 63 | 盐碱地 | 247 | 232 | 170 | 153 | 325 |
+| 64 | 沼泽地 | 1246 | 1251 | 1154 | 1118 | 1200 |
+| 65 | 裸土地 | 32 | 32 | 33 | 32 | 37 |
+| 66 | 裸岩石质地 | 29 | 29 | 29 | 29 | 28 |
+| 99 | 海洋 | 49 | 49 | 0 | 8 | 7 |
+
+京津冀地区水田面积在 2000 年前变化幅度不大，2000-2010之间开始下降，2010-2018八年间水田面积从 $5332 \mathrm{~m}^{2}$ 骤减至 $1320 \mathrm{~m}^{2}$ ，旱地面积在过去三十多年间面积也在不断减少中；1980～2018年间京津冀地区草地面积整体变化不大，低覆盖草地面积有所减少；有林地面积在 2010 - 2018 年之间增加了 $2000 \mathrm{~m}^{2}$ 、疏林地面积有所减少；在 2010 年之前，京津冀地区水域面积变化幅度较小，2010～2018年之间，水库坑塘的面积增加了 1.7 倍，河渠面积、湖泊、溥涂面积也有所增长，但滩地面积减少了 $40 \%$ 。
+
+在收集到的土地利用数据基础上，根据平台实际需要，结合数据时间尺度，选定 2015年土地利用数据进行 SWAT 模型土地利用数据库构建。首先根据研究区 DEM 图层对分省土地利用数据进行裁剪、提取及投影转换，得到与 DEM 数据相同边界相同投影的各省土地利用棚格图，由于土地利用棚格数据分辨率较低，在对分省数据进行拼接时会出现边界土地利用不重合现象，导致拼接后的土地利用棚格图内部出现空值，影响模拟结果准确度。针对这
+
+一问题，本研究在进行土地利用棚格数据制作过程中，比对实际地图、分省土地利用棚格数据和其他土地利用棚格数据对出现空值区域逐一进行土地利用类型分析，并在 GIS 中对缺失的土地利用信息进行补充，最终构建完整的研究区土地利用棚格数据。SWAT 模型输入的土地利用数据类型需要与美国的土地利用参数库相一致，把研究区域土地利用实际特点和 SWAT 模型系统相结合，把原始土地利用类型进行重分类，并将每种类型与 SWAT 模型标准代码相一致，根据土地利用重分类对照表对土地利用数据进行重分类，京津冀地区所有土地利用类型及重分类对照表如表 3.3 所示，根据重分类后的土地利用棚格图属性表建立查找表文件，最后得到模型所需的土地利用类型棚格图如图3.4所示。
+
+表 3.3 京津冀地区土地利用重分类表
+Table 3.3 Reclassification of land use in Beijing-Tianjin-Hebei region
+
+| 值 | LUCC 分类 | 二调新对照 | 新值 |
+| :--: | :--: | :--: | :--: |
+| 11 | 水田 | AGRL | 1 |
+| 12 | 旱地 | AGRL | 2 |
+| 21 | 有林地 | FRST | 3 |
+| 22 | 灌木林 | FRST | 3 |
+| 23 | 疏林地 | FRST | 3 |
+| 24 | 园林 | ORCD | 4 |
+| 32 | 中覆盖草地 | PAST | 5 |
+| 33 | 低覆盖草地 | PAST | 5 |
+| 41 | 河渠 | WATR | 6 |
+| 42 | 湖泊 | WATR | 6 |
+| 43 | 水库坑塘 | WATR | 6 |
+| 45 | 滩涂 | WATR | 6 |
+| 46 | 滩地 | WATR | 6 |
+| 51 | 城镇用地 | URHD | 7 |
+| 52 | 农村居民点 | URLD | 8 |
+| 53 | 其他建设地 | UIDU | 9 |
+| 61 | 沙地 | BARR | 10 |
+| 63 | 盐碱地 | BARR | 10 |
+| 64 | 沼泽地 | WETL | 11 |
+| 65 | 视土地 | BARR | 10 |
+| 66 | 视岩石质地 | BARR | 10 |
+| 99 | 海洋 | BARR | 10 |
+
+
+
+图 3.4 SWAT 模型输入土地利用类型栅格图
+Fig 3.4 SWAT model input land use type raster
+
+# 3.4 土壤数据库构建 
+
+SWAT 模型所需土壤数据需要包括土壤空间分布数据和土壤属性数据，土壤属性数据又包括土壤的物理属性和化学属性两方面，其中对水循环起到重要作用的时土壤的物理属性，是构建土壤数据库时所必须的内容 ${ }^{[85-90]}$ 。
+
+本研究使用的原始数据来源于寒区早区科学数据网站，数据土壤对其粒径进行分类的默认标准与 SWAT 模型本身所使用的标准是一致的，不需要再次对粒径进行重分类。本研究中对土壤栅格数据在 ArcGIS 中进行提取，由于研究区面积较大，提取后的土壤栅格数据土壤类型多，对提取后土壤进行物理属性对比发现，存在土壤物理属性相同的土壤类型，在构建土壤数据库时易造成重复，因此，首先根据土壤原始数据，对物理性质一致的土壤类型进行合并、重新分类生成新的研究区土壤栅格图，在此基础上进行土壤物理属性数据库的计算。本研究直接以土壤类型数字代码作为模型输入读取的土壤代码，以土壤类型的英文缩写作为模型土壤属性数据库中对应的匹配代码。对土壤属性中有的代码如粘土、砂土等的含量直接进行查找编辑，对模型所需需要通过计算得到的参数，使用 SPAW 软件计算得到，对于其他的不能通过直接查找或计算得到的参数，根据 SWAT 模型应用经验，使用模型默认值作为输入。对模型主要土壤属性参数进行总结如表 3.4 所示。
+
+表 3.4 SWAT 模型输入主要土壤属性表
+Table 3.4 SWAT model main soil attribute table
+
+| 变量名称 | 定义 | 注释 |
+| :--: | :--: | :--: |
+| TITLE | 说明文件 |  |
+| SNAM | 土壤名称 |  |
+| NLAYERS | 土壤分层数 |  |
+| HYDGRP | 土壤水文学分组 |  |
+| SOL_ZMX | 土壤剖面最大根系深度 |  |
+| ANION_EXCL | 阴离子交换孔隙度 | 模型默认值 0.5 |
+| SOL_CRK | 土壤最大可压缩量 | 可选项，模型默认值 0.5 |
+| TEXTURE | 土壤层结构 |  |
+| SOL_Z | 各土壤层底层到土壤表层的深度 | HWSD 土壤分为两层 |
+| SOL_BD | 土壤湿密度 |  |
+| SOL_AWC | 土壤层有机持水度 |  |
+| SOL_K | 饱和水力传导系数 |  |
+| SOL_CBN | 土壤层有机碳含量 | 经验计算，有机质含量乘 0.58 |
+| CLAY | 粘土含量 |  |
+| SILT | 壤土含量 |  |
+| SAND | 砂土含量 |  |
+| ROCK | 砾石含量 |  |
+| SOL_ALB | 地表反射率 | 模型默认值 0.01 |
+| USLE_K | USLE 方程土壤侵蚀因子 |  |
+| SOL_EC | 土壤电导率 | 模型默认值 0 |
+
+本研究使用的土壤数据将土壤分为两层，每层都需要进行响应土壤属性的计算，计算完成后需要将数据导入到 SWAT 模型 SWAT2010.mdb 数据库中的 user_soil 表中，生成研究区土壤属性数据库，并且需要在数据库与土壤栅格图之间建立查找表，查找表能够确保模型正确识别到每一种土壤类型的每一个属性。本研究经过提取、重分类后的土壤栅格图如图 3.5所示，在土壤栅格图面积范围内共有 68 种土壤类型，每种土壤类型的代码如图 3.5 图例所示。
+
+
+
+图 3.5 SWAT 模型输入土壤类型分布栅格图
+Fig 3.5 SWAT model input soil type distribution raster
+
+# 3.5 气象数据库构建 
+
+气象数据是 SWAT 模型模拟中最重要的数据，对于水文过程的描述非常重要。降水输入数据是否准确直接影响到模拟模拟结果的好坏。为使模型模拟结果准确，SWAT 模型中必须的气象数据有实测降水数据和日最高、最低气温数据，其他如太阳辐射、相对湿度等在没有实测数据的情况下可以通过模型内置的天气发生器进行生成。
+
+天气发生器内置于模型基础数据库中，在准备模型基础数据时需要使用研究区当地的实测气象站气象数据计算研究区的天气发生器属性值。天气发生器的存在可以对缺失的实测气象数据进行补充，弥补因为实测气象数据不足带来的问题。同时，天气发生器还可以用来进行不同的天气情景的模拟预测。
+
+气象数据收集的难点在于受限于数据提供方的限制，每日下载气象数据尺度有限，因此在气象数据下载和格式转换方面，耗费了大量的时间。本文在前期资料收集过程中，通过广泛搜索，结合其他研究，共收集到了包括中国地面气候资料日值数据集、CMADS 数据集、 CFSR 数据集在内的三套气象数据，三套数据均包括降水、气温、相对湿度、风速、太阳辐射等要素。根据研究区实际空间范围，对三套数据中位于研究区附近的站点、格点进行提取，得到气象站、气象格点位置分布图如图 3.6 所示。其中共包括 42 个中国地面气候资料日值数据集气象站点、 666 个 CMADS 气象格点及 300 个 CFSR 气象格点。
+
+
+
+图 3.6 研究区气象站、气象格点空间分布图
+Fig 3.6 Spatial distribution map of meteorological stations and meteorological grids in the study area
+
+CMADS 数据集及 CFSR 数据集是经过整理后专门用于 SWAT 模型输入的数据集，数据格点数据经过插值得到，因此，在计算构建天气发生器时，使用中国地面气候资料日值数据集的气象站数据。天气发生器中的主要参数共有 14 个，各参数含义及模型代码如表 3.5 所示。
+
+表 3.5 天气发生器参数表
+Table 3.5 The parameters table of the weather generator
+
+| 参数 | 模型中代码 | 参数 | 模型中代码 |
+| :--: | :--: | :--: | :--: |
+| 月平均最低气温 | TMPMN | 月平均最高气温 | TMPMX |
+| 最低气温标准差 | TMPSTDMN | 最高气温标准差 | TMPSTDMX |
+| 月均降水量 | PCPMM | 日均降水量标准差 | PCPSTD |
+| 降水偏态系数 | PCPSKW | 晴天后雨天概率 | PR_W1 |
+| 雨天后雨天概率 | PR_W2 | 平均降雨天数 | PCPD |
+| 最大半小时降雨量 | RAINHHMX | 太阳辐射均值 | SOLARAV |
+| 露点温度均值 | DEWPT | 风速均值 | WNDAV |
+
+构建天气发生器时，使用北京师范大学数字流域实验室杨岩集成的天气发生器参数计算软件 swatweather 对天气发生器所需参数进行计算。该程序可通过用户编写好的实测日值气象数据输入表自动计算出各站点天气发生器中每月的参数值并导出。用户可根据计算结果将参数替换到模型天气发生器中，构建自己的研究区天气发生器。
+
+# 3.6 水文数据库构建 
+
+水文数据主要用于对模型模拟结果的分析，河网、水库等作为模型输入，因此需要根据研究区实际及模型需要对水文数据进行合理梳理并生成模型所需格式，构建水文数据库，本研究主要对研究区河流水系进行梳理，得到概化后的研究区河网 shp 图，作为模型"burn in"河网输入：对研究区灌区空间分布进行梳理，对模型子流域添加种植、灌溉操作提供支撑；对研究区主要湖库进行梳理并生成湖库日出流文件，作为模型水库输入数据；对研究区主要水文站进行梳理，并根据水文站空间分布情况，生成模型 outlets 输入表。
+
+### 3.6.1 研究区水系关系梳理及河网概化
+
+华北平原大部都位于京津冀地区，平原区河网交错，情况复杂，在平原区模型自身识别生成的河网水系难以符合实际情况，且模拟精度不同对水系的精度要求也不同，为确保模型结果的准确性，需要对京津冀地区的河网水系进行梳理，确定各河流水系间的水文联系，对河网进行合理概化，得到准确的输入河网，梳理后的河网关系如下所示。
+
+1、滦河水系：
+
+2、北三河水系:
+
+3、永定河水系:
+
+
+4、大清河水系
+
+5、子牙河水系:
+
+6、南运河水系:
+
+
+根据梳理后的河网关系，对京津冀地区水系进行合理概化，对交错的河网进行分析，根据 SWAT 模型输入需要，结合模型尺度对实际河网进行概化后得到概化后的河网如图 3.7。
+
+本研究使用概化后的河网 shp 数据作为模型 burn in 河网输入，结合模型内计算，生成模型内的河网。
+
+
+图3.7 研究区概化后河网分布图
+Fig 3.7 River network distribution map after generalization in the study area
+
+# 3.6.2 研究区灌区梳理 
+
+华北平原是我国主要的粮食产区之一，京津冀地区尤其河北省农业发达，在农业发展过程中，京津冀地区形成了大量的大中、小型灌区，灌区的存在对研究区的水文过程产生较大的影响，为使模拟结果更符合研究区实际，需对研究区内灌区进行梳理。基础资料收集过程中未直接获取到研究区灌区分布 shp 数据。为得到准确的研究区灌区空间分布数据，本研究通过对历史文献、报告及海河流域水利报告中相关信息进行获取，得到海河流域主要大型灌区图件，在 ArcGIS 中对图件进行空间校准，通过目视解译方式，绘制研究区主要大型灌区空间分布图，并对灌区进行信息统计，确定每座灌区具体名称。通过对京津冀地区主要大型灌区进行梳理得到京津冀地区大型灌区空间分布如图 3.8。共整理得到大型灌区 25 座，其中位于北京市的有海子灌区、新河灌区，位于天津市的有里自洁灌区、团泊灌区，位于河北省的有磁县跃峰灌区、陡河灌区、房来溷灌区、抚宁洋河灌区、邯郸跃峰灌区、壸流河灌区、军留灌区、滦河下游灌区、并际绵河灌区、沙河灌区、石津灌区、唐河灌区、通桥河灌区、万全洋河灌区、宣化洋河灌区、治河灌区、易水灌区、引青灌区、漳滦河灌区、朱野灌区、桑干河灌区。对灌区梳理后，可在后续进行相关研究时更好的确定各操作设置的子流域范围。
+
+
+
+图3.8 京津冀地区主要大型灌区空间分布图
+Fig 3.8 Spatial Distribution of Major Irrigation Districts in Beijing-Tianjin-Hebei region
+
+# 3.6.3 研究区主要湖库梳理 
+
+京津冀地区有大量的水库，集蓄水、防洪、发电等功能于一体，发挥着重要的作用，根据海河流域水文年鉴整理京津冀地区主要水库及属性数据见表 3.6。SWAT 模型需要载入水库的主要物理属性数据及相应尺度的水库出流数据以保证模型模拟结果的准确。根据水文年鉴统计数据整理京津冀地区主要水库的日出流数据作为模型输入，构建京津冀地区水库出流数据库。
+
+表 3.6 京津冀地区主要水库及水库信息表
+Table 3.6 Information sheet of main reservoirs and reservoirs in the Beijing-Tianjin-Hebei region
+
+| 水库名称 | 库容信息 $\left(\mathbf{1 0}^{\mathbf{4}} \mathbf{m}^{\mathbf{3}}\right)$ |  |  |  | 面积信息（ha） |  |  |
+| :--: | :--: | :--: | :--: | :--: | :--: | :--: | :--: |
+|  | 总库容 | 防洪库容 | 兴库容 | 死库容 | 最大面积 | 通常面积 | 灌溉面积（万亩） |
+| 大黑汀 | 33700 | 30000 | 10000 |  | 6000 | 1000 |  |
+| 桃林口 | 85900 | 70900 | 70900 | 5110 | 15000 | 2610 | 120 |
+| 庙宫 | 18300 | 4460 | 2420 | 40 | 2000 | 530 | 6.5 |
+| 云州 | 10200 | 5940 | 2040 | 2770 | 760 | 252 | 3 |
+| 白河堡 | 9060 |  |  |  | 750 | 280 |  |
+| 密云 | 438000 | 400800 | 233800 | 43700 | 18800 | 13754 |  |
+| 于桥 | 155900 |  | 38500 |  | 21000 | 7000 |  |
+| 邱庄 | 20400 | 13900 | 12100 | 700 | 5000 | 1000 | 14.8 |
+| 友谊 | 11600 | 6810 | 5330 | 620 | 800 | 300 |  |
+
+续表 3.6
+
+| 水库名称 | 库容信息 $\left(10^{7} \mathrm{~m}^{2}\right)$ |  |  |  | 面积信息（ha） |  |  |
+| :--: | :--: | :--: | :--: | :--: | :--: | :--: | :--: |
+|  | 总库容 | 防洪库容 | 兴库容 | 死库容 | 最大面积 | 通常面积 | 灌溉面积（万亩） |
+| 册田 | 58000 | 52300 | 16300 | 36000 | 1800 | 1404 |  |
+| 委流河 | 8700 | 5630 |  |  | 119 | 40 |  |
+| 官厅 | 416000 |  |  |  | 23200 | 13000 | 138 |
+| 口头 | 10560 | 6080 | 1610 | 1599 | 667 | 200 |  |
+| 安格庄 | 30339 | 20135 | 14553 | 3860 | 1560 | 510 | 49 |
+| 西大洋 | 125800 | 87900 | 51500 | 7990 | 5380 | 1022 | 50 |
+| 横山岭 | 2400 | 14770 | 9800 | 1700 | 1084 | 280 | 36 |
+| 王快 | 138900 | 108200 | 65200 | 10900 | 5720 | 1450 | 102.7 |
+| 龙门 | 11800 | 7750 | 4390 | 410 | 1056 | 186 | 6.4 |
+| 岳城 | 130000 |  |  |  |  |  |  |
+| 东武仕 | 18100 | 10950 | 13500 | 1000 |  |  | 64 |
+| 朱庄 | 41620 | 28220 | 22850 | 3400 | 1200 |  | 14 |
+| 临城 | 17130 | 12260 | 8000 | 1190 |  |  | 15 |
+| 黄壁庄 | 121000 | 73663 | 46400 | 6968 | 6000 | 4000 | 157 |
+
+根据水文年鉴统计数据整理得到京津冀地区主要水库空间分布如图 3.9 所示，在获取到水库的坐标信息后，可整理得到研究区内水库空间分布数据库，在模型划分子流域后，对模型进行水库空间输入操作。
+
+
+图 3.9 京津冀地区主要水库空间分布图
+Fig 3.9 Spatial distribution of major reservoirs in the Beijing-Tianjin-Hebei region
+
+# 3.6.4 研究区主要水文站梳理 
+
+SWAT 模型地模拟结果需要同水文站实测水文数据进行对比以拟合模拟结果达到准确地模拟结果。SWAT 模型需要在水文站所在的位置设置出水口以确保模拟结果在空间上地准确性，因此需要对京津冀地区地水文站进行梳理，确定水文站的空间信息，并生成水文站所在点位的模型 outlets 输入文件来将实际水文站添加到模型中去，根据水文年鉴中的记录，对京津冀地区的水文站进行数据提取并整理，得到京津冀地区各河流水系上所存在的水文站信息见表 3.7 。
+
+表 3.7 京津冀地区主要水文站统计表
+Table 3.7 Statistics of major hydrological stations in the Beijing-Tianjin-Hebei region
+
+| 站名 | 集水面积 | 站名 | 集水面积 | 站名 | 集水面积 | 站名 | 集水面积 |
+| :--: | :--: | :--: | :--: | :--: | :--: | :--: | :--: |
+| 冈屯河水库 | 890 | 大阁 | 1850 | 紫荆关 | 1760 | 云州水库 | 1170 |
+| 正蓝旗 | 3194 | 下会 | 5340 | 张坊 | 4810 | 白河堡 | 4040 |
+| 白音卜罗 | 5947 | 土门楼 | 2850 | 北河店 | 0 | 张家坟 | 8506 |
+| 大河口 | 1086 | 耳闸 | 0 | 湟水河 | 653 | 三道营 | 1600 |
+| 沟台子 | 1890 | 海河闸 | 0 | 东芙村 | 0 | 西大洋水库 | 4420 |
+| 郭家屯 | 13000 | 土门楼 | 2850 | 史各庄 | 22600 | 北辛店 | 0 |
+| 鸟龙矶 | 30100 | 通县 | 2478 | 进洪闸 | 32700 | 龙门水库 | 470 |
+| 庙宫水库 | 2400 | 友谊水库 | 2250 | 工农兵闸 | 0 | 安格庄水库 | 476 |
+| 韩家营 | 6787 | 柴沟堡东 | 3674 | 金各庄 | 751 | 北陈屯 | 0 |
+| 承德 | 2460 | 柴沟堡 | 2903 | 胜芳 | 0 | 九宫闸 | 0 |
+| 下板城 | 1615 | 张家口 | 2300 | 南庄 | 11936 | 四女寺闸 | 0 |
+| 石佛 | 1050 | 响水堡 | 14507 | 周南水库 | 15900 | 捷地 | 0 |
+| 宽城 | 1661 | 奎流河水库 | 1717 | 黄壁庄水库 | 23000 | 寿庄 | 17627 |
+| 潘家口水库 | 33700 | 钱家沙洼 | 4316 | 泉口 | 1627 | 赶水坝 | 0 |
+| 大黑汀水库 | 35300 | 石匣里 | 23627 | 地都 | 2521 | 黄白桥 | 0 |
+| 涑县 | 44100 | 延庆东大桥 | 0 | 平山 | 6420 | 宁车站 | 0 |
+| 双山子 | 3550 | 官厅水库 | 42500 | 临城水库 | 384 | 北郭村 | 8550 |
+| 桃林口水库 | 5250 | 雁翅 | 43674 | 朱庄水库 | 1220 | 南水芦 | 497 |
+| 于桥水库 | 2060 | 三家店 | 44200 | 八堡 | 46300 | 倒马关 | 1284 |
+| 九王庄 | 5120 | 卢沟桥 | 44400 | 杨柳青 | 91900 | 中唐梅 | 3480 |
+| 张头窝 | 0 | 固安 | 44700 | 东蒙 | 0 | 岳城水库 | 18100 |
+| 邱庄水库 | 525 | 横山岭水库 | 440 | 冯庄 | 4386 | 临清 | 0 |
+| 小定府庄 | 1060 | 皁平 | 2210 | 献县 | 46000 | 四女寺闸 | 0 |
+| 新防潮闸 | 0 | 王快水库 | 0 | 元村集 | 14286 | 新乐 | 3770 |
+
+京津冀地区主要水文站空间分布如图3.10，根据水文站坐标信息，编写SWAT 模型outlets
+输入表。
+
+
+
+图 3.10 京津冀地区主要水文站空间分布
+Fig 3.10 Spatial distribution of major hydrological stations in the Beijing-Tianjin-Hebei region
+
+# 3.7 本章小结 
+
+本章详细介绍了京津冀地区 SWAT 模型基础数据库构建所需基础数据的类型和收集途径，对京津冀地区 SWAT 模型基础数据库构建过程进行了阐述。通过多种手段的数据收集，得到了丰富的研究区基础资料。通过对基础资料的分析，本研究构建了完整的京津冀地区 SWAT 模型基础数据库体系。数据库包括数字高程、土壤、土地利用、气象和水文等方面。共得到不同分辨率 DEM 栅格数据 3 套，不同时期京津冀地区土地利用栅格数据 6 套，可用于模型输入的土地利用栅格数据 3 套，分别为 1980 年历史数据、2015 年栅格数据及 2018年土地利用栅格数据，得到模型输入所需土壤栅格数据 1 套，得到不同尺度气象数据 3 套并构建了天气发生器，得到数字化的研究区水系、河网、灌区、湖库、水文站等水文数据，为后续开展各项研究提供了基础支撑。
+
+# 第4章降水输入数据适用性评价 
+
+构建完基础数据库后，需要对数据库中的数据适用性进行评价，尤其是对模型模拟结果具有重要影响的降水数据。本研究使用中国大气同化驱动数据集（China meteorological assimilation driving database for the SWAT model，以下简称 CMADS）作为模型气象输入数据，数据包括降水、温度、相对湿度、太阳辐射和风速。CMADS 具有专门针对 SWAT 模型而整理的数据格式，具有数据来源广、多时间尺度和多分辨率的特点，可应用于不同分辨率下的模型并且使用方便。孟现勇等 ${ }^{[91]}$ 首先整理得到了 CMADS 数据集并将其应用在我国西北干旱区黑河流域，取得了很好的应用效果；张利敏等 ${ }^{[92]}$ 对洋河流域 CMADS 在 SWAT 模型中的表现进行评价，结果表明 CMADS 具有很好的适用性；张春辉等 ${ }^{[93]}$ 对比了 CMADS 气象数据与传统气象数据驱动下 SWAT 模型在苦水河流域的模拟效果，结果表明 CMADS 气象数据在西北干旱内陆流域模拟精度优于传统气象数据；Thom Thi Vu 等 ${ }^{[94]}$ 通过对比探究了 CMADS 数据集在朝鲜半岛汉江流域的应用效果；Ningpeng Dong 等 ${ }^{[95]}$ 研究表明 CMADS数据集在赣江上游流域同样具有较好的适用性。目前 CMADS 数据集已应用于我国东南、西北干旱地区和东亚地区，但在我国人类活动对径流影响较大的温带东亚季风气候区适用性研究尚不多见。
+
+## 4.1 选区概况
+
+京津冀地区修建大量的水库堤坝、农业灌溉设施，人类活动影响了径流对降水的响应，改变了径流过程，以 CMADS 作为模型输入数据时需考虑其适用性。潮白河流域受人类开发较早，流域内修建大小水库 40 余座，总库容达 $46.69 \times 10^{8} \mathrm{~m}^{3}$ ，密云水库控制流域内河水全部被开发；东洋河流域建有友谊水库，汇入洋河后为洋河灌区提供灌溉水源，河流沿途灌区分布密集，多修建灌溉水渠，人类活动对潮白河流域、东洋河流域径流影响明显，在京津冀地区具有代表性。
+
+因此本研究选取潮白河流域、东洋河流域作为研究区域，借助 SWAT 模型作为水文过程模拟研究工具，在潮白河流域以水文年鉴实测降水资料作对比，探究了 CMADS 降水数据在温带东亚季风气候区潮河（无水库控制）和白河、东洋河（有水库控制）流域的适用性；通过 CMADS 降水数据在潮白河、东洋河水库控制流域 SWAT 模型中的表现，以决定系数 R $^{2}$ 作为评价指标，对 CMADS 降水数据在温带东亚季风气候区水库控制流域的适用性进行评价。
+
+潮白河是海河水系 5 大河之一，流经河北、北京及天津三省市，流域位于华北平原北部，潮白河上游主要有潮河、白河两条支流，支流流出密云水库汇流为潮白河，汇流后潮白河全长 458 km ，流域面积 $19500 \mathrm{~km}^{2}$ ；东洋河位于海河流域西北部，为洋河上游支流，流经山西、河北二省，在怀安、万全县交界处汇入洋河，潮白河流东洋河流域在京津冀地区的空间位置如图4.1 所示。
+
+
+图 4.1 潮白河流域、东洋河流域在京津冀地区空间位置图
+Fig 4.1 Map of Chaobai river basin and Dongyang river basin in Beijing-Tianjin-Hebei region
+
+# 4.2 模型构建 
+
+模型根据研究区 DEM 图自动划分子流域。加载土地利用、土壤、坡度及相关属性文件后，模型生成研究区水文响应单元（HRUs），HRUs 是 SWAT 模型特有的部分，能够反映不同土地利用类型、土壤和其他水文条件的差异。本文在进行 HRUs 划分时，将土地利用、土壤及坡度阈值分别设置为 $20 \% 、 10 \% 、 20 \%{ }^{[20]}$ 。潮白河流域被划分成 36 个子流域， 375 个 HRUs，东洋河流域被划分为 13 个子流域， 82 个 HRUs。潮白河流域、东洋河流域子流域划分及主要水库、水文站分布分别如图 4.2a、4.2b 所示，选择潮白河流域下会水文站、张家坟水文站及东洋河流域柴沟堡东水文站的实测径流数据进行结果分析。
+
+
+
+图 4.2 潮白河(a)、东洋河(b)流域概况
+Fig 4.2 Overview of Chaobai River(a) and Dongyang River(b) basin
+
+# 4.3 结果分析 
+
+保持模型其他气象输入数据不变，分别以年鉴实测降水数据与 CMADS 降水数据作为模型降水输入对比 SWAT 模型模拟结果，以探究 CMADS 降水数据在潮白河流域有、无水库情景的适用性，再通过 CMADS 降水数据在白河水系和东洋河流域的模拟结果对其在水库控制流域的适用性进行评价。SWAT 模型一般采用决定系数（ $\mathrm{R}^{2}$ ）和纳什系数（Nash-Suticliff效率系数 NSE）评价模型模拟结果， $\mathrm{R}^{2}$ 表示的是实测值与模拟值的相关性，其值越接近于 1 ，说明模拟效果越好，而纳什系数的变化范围为 $-\infty$ 到 1 ，一般当 NSE 大于 0.5 时模型的结果即可以接受 ${ }^{[96]}$ 。具体表达式为：
+
+$$
+\begin{gathered}
+R^{2}=\frac{\left[\sum_{i=1}^{n}\left(Q_{\mathrm{oi}}-\bar{Q}_{\mathrm{o}}\right)\left(Q_{\mathrm{mi}}-\bar{Q}_{\mathrm{in}}\right)\right]^{2}}{\sum_{i=1}^{n}\left(Q_{\mathrm{oi}}-\bar{Q}_{\mathrm{o}}\right)^{2} \sum_{i=1}^{n}\left(Q_{\mathrm{mi}}-\bar{Q}_{\mathrm{in}}\right)^{2}} \\
+N S E=1-\frac{\sum_{i=1}^{n}\left(Q_{\mathrm{mi}}-Q_{\mathrm{oi}}\right)^{2}}{\sum_{i=1}^{n}\left(Q_{\mathrm{oi}}-\bar{Q}_{\mathrm{oi}}\right)^{2}}
+\end{gathered}
+$$
+
+式中： $\mathrm{Q}_{\mathrm{mi}}$ 为模拟径流量，单位 $\mathrm{m}^{3} / \mathrm{s} ; \mathrm{Q}_{\mathrm{mi}}$ 为实测径流量，单位 $\mathrm{m}^{3} / \mathrm{s} ; \bar{Q}_{\mathrm{o}}$ 为实测径流量平均值，单位 $\mathrm{m}^{3} / \mathrm{s} ; \bar{Q}_{\mathrm{m}}$ 为模拟径流量平均值，单位 $\mathrm{m}^{3} / \mathrm{s}$ 。
+
+根据需求将模型模拟时间步长设为月，2008年作为模型预热期。潮白河流域模型率定期为 2009-2013 年，验证期为 2014-2016 年；东洋河流域水文资料时间不连续，率定期为 2009-2011 年，验证期为 2015-2016 年。
+
+# 4.3.1 无水库潮河水系不同降水数据模拟结果 
+
+首先在无水库控制的潮白河支流潮河水系进行不同降水数据模拟结果对比研究。无水库控制流域河道径流对降水响应敏感，选择潮河下游下会水文站月值实测径流数据进行模拟结果对比，水文站 2009 - 2016 年降水径流趋势如图 4.3 所示，多年月均径流量 $3.13 \mathrm{~m} \%$ ，月降雨量均小于 300 mm ，对比相同地区 CMADS 雨量格点与年鉴实测降水数据可以看出三者总体差别不大，少数年份存在 CMADS 雨量格点汛期降水量低于年鉴实测降水量的情况。分别以 CMADS 降水数据与水文年鉴实测降水数据作为模型输入，在率定期建立 SWAT 模型得到潮河水系径流模拟结果 SIM1 和 SIM2，选取相同的敏感性参数使用模型率定软件 SWAT_CUP 中的 SUFI2 方法对率定期模型进行参数率定，使用率定好的参数分别对两次模拟进行参数赋值。在整个模拟期运行赋值后的模型得到整个模拟期内的模拟结果如图 4.4a、 4.4 b 所示。
+
+
+图4.3 下会水文站降水径流趋势对比
+Fig 4.3 Comparison of Precipitation and Runoff Trends in Xiahui Hydrological Station
+
+
+图4.4 下会水文站模拟结果对比
+Fig 4.4 Comparison of Simulation Results of Xiahui Hydrological Station
+
+表 4.1 为不同降水输入下的下会站径流模拟评价指标统计。通过表 2 可以看出：在无水库控制流域，使用年鉴实测降水数据支撑下的模型在整个模拟期内模拟评价指标 $\mathrm{R}^{2}$ 均大于 0.80 ，NSE 均大于 0.60 ，模拟效果好；使用 CMADS 降水数据支撑下的模型在整个模拟期内模拟评价指标 $\mathrm{R}^{2}$ 均大于 0.60 ，NSE 均大于 0.50 ，模拟效果较好。以上模拟结果能够达到 SWAT模型模拟效果的评价标准，CMADS 降水数据在潮白河流域无水库控制情景下具有适用性，但其模拟结果的准确度低于年鉴实测降水数据模拟，使用时需进一步优化。
+
+表 4.1 下会站径流模拟评价指标统计
+Table 4.1 Evaluation index statistics of Xiahui hydrological station runoff simulation
+
+| 时期 | CMADS 降水数据 |  | 年鉴降水数据 |  |
+| :--: | :--: | :--: | :--: | :--: |
+|  | $R^{2}$ | NSE | $R^{2}$ | NSE |
+| 率定期 | 0.64 | 0.64 | 0.83 | 0.83 |
+| 验证期 | 0.61 | 0.58 | 0.83 | 0.60 |
+
+# 4.3.2 水库控制白河水系不同降水数据模拟结果 
+
+水库对上游来水起到蓄水调控的作用，下游水量主要受水库水量调蓄操作的影响，水库对下游的水量补给不受季节、降水量的影响；因此水库控制流域内下游河道径流趋势与实测降水趋势同一般自然流域内下游河道径流趋势与实测降水趋势差别较大。在水库控制流域潮白河支流白河水系开展不同降雨数据输入模拟对比研究，选择白河下游张家坟水文站月值实测径流数据进行模型模拟结果对比分析，张家坟水文站 2009 - 2016 年月实测径流如图 4.5所示。由图 4.5 可见径流对降水响应不明显，径流曲线不随降水变化而呈现出与降水曲线相同的变化趋势，水文站多年月均径流 $6.31 \mathrm{~m}^{3} / \mathrm{s}$ ，月降雨量均小于 300 mm ；该地区 CMADS雨量格点与实际雨量站降水数据表明，二者整体趋势较为一致，部分年份汛期降雨量存在差异 。水库控制流域同无水库流域在模型建立过程中的区别在于需要在模型中添加水库的基础物理属性信息并选择水库出流操作，研究区水文资料中提供了详细的水库日均出流数据，因此选择日值出流操作，在流域中添加云州水库和白河堡水库的库容、面积及初始水量信息并写入整理好的水库日值出流数据 dbf 表，采用与无水库流域相同的模型建立、参数率定方法，得到使用 CMADS 降水数据建立的模型在整个模拟期的模拟结果 SIM3(图 4.6a)，得到使用实测降水资料建立的模型在整个模拟期的模拟结果 SIM4(图 4.6b)。
+
+
+
+图4.5 张家坟水文站降雨径流趋势对比
+Fig 4.5 Comparison of Precipitation and Runoff Trends in Zhangjiafen Hydrological Station
+
+
+
+图4.6 张家坟水文站模拟结果对比
+Fig 4.6 Comparison of Simulation Results of Zhangjiafen Hydrological Station
+
+表 4.2 为不同降水输入下的张家坟水文站径流模拟评价指标统计。从表 4.2 可以看出：在月尺度上，率定期水库控制流域两种不同降水资料的径流模拟评价指标 $\mathbf{R}^{2}$ 及 NSE 均在 0.85 以上，模拟效果均十分理想，使用 CMADS 降水数据的模拟结果评价指标略高于使用年鉴实测降水数据的模拟结果：验证期，两种不同降水资料径流模拟结果 $\mathbf{R}^{2}$ 及 NSE 均在 0.60 以上，使用实测降水资料的模拟结果 $\mathbf{R}^{2}=0.67$ ，使用 CMADS 数据集降水资料的模拟结果 $\mathbf{R}^{2}=0.61$ ，造成验证期模拟结果 $\mathbf{R}^{2}$ 明显降低的原因是 2016 年 7 月实测值与模拟值差异过大。在验证期 2014-2015年间，SIM3 $\mathrm{R}^{2}=0.74 、 \mathrm{NSE}=0.71 、 \mathrm{SIM} 4 \mathrm{R}^{2}=0.76 、 \mathrm{NSE}=0.75$ ，均大于 0.70 。通过对比可以看出，CMADS 降水数据在整个模拟期内都具有很好的模拟效果， CMADS 降水数据在潮白河水库控制流域具有适用性。
+
+表 4.2 张家坟站径流模拟评价指标统计
+Table 4.2 Evaluation index statistics of Zhangjiafen hydrological station runoff simulation
+
+| 时期 | CMADS 降水数据 |  | 年鉴降水资料 |  |
+| :--: | :--: | :--: | :--: | :--: |
+|  | $R^{2}$ | NSE | $R^{2}$ | NSE |
+| 率定期 | 0.89 | 0.87 | 0.87 | 0.86 |
+| 验证期 | 0.61 | 0.61 | 0.67 | 0.65 |
+
+# 4.3.3 东洋河水库控制流域模拟研究 
+
+为进一步探究 CMADS 降水数据在水库控制流域的适用性，选取和潮白河流域同一纬度且气候条件相同的水库控制流域东洋河流域建立 SWAT 模型，选择柴沟堡东水文站作为模型出水口，使用 SWAT_CUP 对模拟结果进行率定，得到东洋河流域柴沟堡东水文站径流模拟结果如图 4.7 所示。率定期模型模拟结果评价指标 $\mathrm{R}^{2}=0.84 、 N S E=0.78$ ，验证期模拟结果评价指标 $\mathrm{R}^{2}=0.87$ ，NSE $=0.85$ 。在整个模拟过程中，评价系数 $\mathrm{R}^{2}$ 均大于 0.8 ，NSE 均大于 0.75 ，说明 CMADS 降水数据在东洋河水库控制流域同样具有很好的适用性。
+
+
+图 4.7 柴沟堡东水文站径流模拟结果
+Fig 4.7 Runoff Simulation Results of East Chaigoupu Hydrological Station
+
+## 4.4 本章小结
+
+本章对 SWAT 模型降水输入数据适用性进行了评价，结果表明，在无水库控制的潮白河支流潮河水系 CMADS 降水数据支撑的模型率定期 $\mathrm{R}^{2}=0.64 、 \mathrm{NSE}=0.64$ ，验证期 $\mathrm{R}^{2}=0.61$ 、 NSE $=0.58$ ，模拟结果能够达到 SWAT 模型模拟效果的评价标准，CMADS 降水数据在温带东亚季风气候区无水库控制流域情景下具有适用性，在潮白河水库控制支流白河水系， CMADS 降水数据支撑下的模型在率定期 $\mathrm{R}^{2}=0.89 、 \mathrm{NSE}=0.87$ ，验证期模型 $\mathrm{R}^{2}=0.61 、 \mathrm{NSE}=0.61$ ； CMADS 降水数据支撑的东洋河水库控制流域模型率定期 $\mathrm{R}^{2}=0.84 、 \mathrm{NSE}=0.78$ ，验证期 $\mathrm{R}^{2}=0.87$ 、NSE $=0.85$ ，CMADS 降水数据在温带东亚季风气候区水库控制流域具有很好的适用性。CMADS 降水数据可以用于温带东亚季风气候区受人类活动影响流域水文模型的建立，
+
+作为后续开展人类活动、情景变化等分析的基础。
+
+# 第5章 京津冀地区水量模型构建与模拟 
+
+## 5.1 京津冀地区水文模型构建
+
+SWAT 模型的建立过程包括图 5.1 所示基础空间数据加载、子流域划分等一系列过程 ${ }^{[33]}$ 。
+
+
+图 5.1 SWAT 模型构建一般流程
+Fig 5.1 SWAT model construction general process
+根据之前收集处理的基础数据库数据及数据适用性评价结果，新建一京津冀地区水量模型文件夹，将所有基础数据存放在同一目录下并保证文件夹路径为纯英文，并使用构建好的模型数据库替换 SWAT 模型原始数据库，开始模型工程构建。
+
+### 5.1.1 子流域划分
+
+本研究所使用 SWAT 2012 对应 ArcGIS 10.3 版本，首先进行子流域划分工作，通过 "watershed delineation"功能进行子流域划分，该功能共包括五部进行：
+(1) 在 DEM setup 步骤加载数据库中的 90 m 分辨率数字高程模型并选择概化后的河网 shp文件作为 burn in 河网;
+(2)在 Stream Definition 步骤根据 DEM 设定子流域最小面积阈值 80000 ha，并创建河网和子流域出水口；
+(3) 在 Outlet and Iinlet Definition 步骤，根据京津冀地区河网复杂湖库局坝众多的实际情况加载基础数据库中人工写好的 outlet、inlet 表并为子流域添加点源;
+(4) 在 Watershed Outlet Selection and Definition 步骤选择流域出水口并进行流域生成;
+(5)通过 Calculation of Subbasin Paramenters 步骤完成子流域划分并在划分好的子流域上添加水库的空间位置信息。
+
+通过以上操作后，本研究基于 DEM 数据提取的京津冀地区模型面积为 $22.2 \times 10^{4} \mathrm{~km}^{2}$ ，整个研究区划分为 242 个子流域，研究区子流域划分结果如图5.1。
+
+
+
+图5.2 研究区子流域划分空间分布图
+Fig 5.2 Spatial distribution of subbasin in the study area
+
+# 5.1.2 HRU 划分 
+
+确定好子流域及水库后，通过"HRU Analysis"功能进行 HRU 划分，HRU 划分主要包括 Land Use/Soils/Slope Definition 和 HRU Definition 两部分操作。第一部分是对土地利用图、土壤图及土地利用、土壤索引表输入到模型中，对土地利用类型和土壤进行重分类并定义坡度分级及将三者 overlay 的过程，第二部分是通过设置阈值生成 HRU 的过程。加载并 overlay完成京津冀地区的土地利用及土壤图后，进行 HRU 的定义，在水量模拟的过程中通常采用一子流域包含多水文响应单元的方式，为保证计算的准确性与速度，一个字流域内一般划分 2-3 个 HRU。在本研究中，将土地利用、土壤、坡度划分阈值设定为 $20 \% 、 10 \% 、 20 \%$ ，意为低于 $20 \% 、 10 \% 、 20 \%$ 的土地利用土壤坡度将被拆分并合并到其他类型中。通过 HRU 划分操作，整个研究区划分为 1459 个水文响应单元。
+
+### 5.1.3 气象数据输入
+
+在模型 HRU 定义完成后，需要导入模型模拟所需的气象数据。气象数据包括降水、温度、相对湿度、太阳辐射、风速五类。在导入气象数据前首先要选择模型所需天气发生器，天气发生器使用前期基于中国地面气候资料日值数据集计算好的用户自定义的天气发生器，包括气象站空间属性及各类气象属性参数。本研究使用的气象数据为 CMADS 数据集中提取的研究区气象数据，直接加载气象站位置表，模型即可通过位置表读取各气象格点的气象数据信息。
+
+### 5.1.4 输入文件生成及编辑
+
+模型成功运行与否取决于模型参数赋值的正确与否，在完成气象数据输入后，通过 "Write SWAT Input Tables"操作，创建模型的输入文件，可直接利用 Write All 命令一次性创
+
+建模型所有输入文件。在 SWAT2012 版本中，模型输入文件包括：
+流域结构文件(Confirmation File .Fig)、
+土壤数据(Soil Data .Sol)、
+气象数据(Weather Generator Data)、
+子流域文件(Subbasin/snow Data)、
+水文响应单元文件(HRU/Drainage Data)、
+主河道数据(Main Channel Data)、
+地下水文件(Groundwater Data)、
+用水文件(Water Use Data)、
+管理操作文件(Management Data)、
+土壤化学属性文件(Soil Chemacal Data)、
+池塘数据文件(Pond Data)、
+河流水质文件(Stream Water Quality Data)、
+腐败文件(septic data)、
+操作文件(Operations Data)、
+流域文件(Watershed Data)、
+主要流域控制文件(master watershed file);
+创建完成模型输入文件后，根据研究区实际，对研究区内入水口、水库、农业管理措施等操作进行定义并载入相应文件。本研究主要进行的操作有研究区入水口月值数据写入、研究区水库数据编辑及日值出流数据写入、研究区主要农作物种植管理操作编辑等。
+
+在完成所有文件写入后，执行 "Rewrite SWAT input tables" 操作，确保数据写入到模型运行读取的数据库中。
+
+# 5.2 SWAT 模型模拟 
+
+完成所有模型输入工作后，可以进行模型运行及结果输出。SWAT2012 模型运行设置界面如图所示。模型运行前首先需要确定模拟时间区间及模拟方法，模型模拟时间区间为 2008-2016 年，根据计算机系统版本，将 SWAT 可执行文件选择为 64-bit，release 版本，适应计算机版本的同时提高模型的运行速度。根据整个模拟期时长，选择月值输出并将模型预热期设为 1 年，完成设置后即可执行 Setup SWAT Run 操作并运行模型。运行结束后，可在 "SWAT Output" 界面选择需要导出的输出文件并进行结果输出、检查、模拟保存等操作。
+
+本研究气象资料时间为 2008 - 2016 年，2008年作为模型预热期，模型模拟期为 2009-2016年。
+
+
+图 5.3 SWAT 模型运行界面
+Fig 5.3 SWAT model running interface
+
+# 5.2.1 模型参数敏感性分析 
+
+模型模拟的初始结果往往与实际结果存在一定的差异，因此在模型运行完成后需要对模型进行参数敏感性分析并对敏感参数进行率定和验证，使模型达到准确的程度。SWAT 模型中与水量过程相关的参数众多，对模型模拟结果准确性的影响也有高有低，有些参数对模型模拟结果的影响较小，有些参数则对模型结果有着举足轻重的作用，因此首先要对影响水量模拟的参数进行筛选并对其进行敏感性分析。本研究通过对文献的整理及对 SWAT 模型输入输出文件手册等的查阅结合专家建议，选择了 24 个与水量模拟过程相关的参数进行模型的敏感性分析，参数含义及初始取值方式、取值范围详见表 5.1。
+
+表 5.1 水量敏感性参数汇总表
+Table 5.1 Summary Table of Water Sensitivity Parameters
+
+| 参数 | 含义 | 赋值方式 | 初始范围 |
+| :--: | :--: | :--: | :--: |
+| CN2 | SCS 径流曲线数 | R | $-0.7-0.7$ |
+| ALPHA_BF | 基流 $\alpha$ 因子 | V | $0-1$ |
+| GW_DELAY | 地下水的时间延迟 | V | $30-450$ |
+| GWQMN | 回归流时浅层含水层水位阈值 | V | $0-5000$ |
+| ESCO | 土壤蒸发补偿因子 | V | $0-1$ |
+| EPCO | 植物吸收补偿因子 | R | $-0.2-0.2$ |
+| CANMX | 最大冠层截留量 | R | $-0.7-0.7$ |
+| SOL_ALB |  | R | $-0.1-0.1$ |
+| GW_REVAP | 地下水的 revap 系数 | V | $0.02-0.2$ |
+| REVAPMN | Revap 所需浅层含水层水位 | V | $0-500$ |
+| $\mathrm{CH}_{2} \mathrm{N} 1$ | 支流曼宁系数 n | R | $-0.3-0.3$ |
+| SLSUBBSN | 平均坡长 | R | $-0.7-0.7$ |
+| OV_N | 坡面漫流的曼宁系数 | R | $-0.2-0.2$ |
+
+续表 5.1
+
+| 参数 | 含义 | 赋值方式 | 初始范围 |
+| :--: | :--: | :--: | :--: |
+| $\mathrm{CH}_{2} \mathrm{~K} 1$ | 支流冲积层的有效渗透系数 | R | $-0.7-0.7$ |
+| SOL_Z | 土层底部埋深 | V | $0-1000$ |
+| SOL_BD | 土壤湿容重 | R | $-0.5-0.5$ |
+| SOL_AWC | 土壤有效含水量 | R | $-0.5-0.5$ |
+| SOL_K | 饱和渗透系数 | R | $-0.8-0.8$ |
+| HRU_SLP | 平均比降 | R | $-0.2-0.2$ |
+| RCHRG_DP | 深层含水层的渗透系数 | V | $0-1$ |
+| $\mathrm{CH}_{2} \mathrm{~N} 2$ | 主河道的曼宁系数 | V | $-0.01-0.3$ |
+| $\mathrm{CH}_{2} \mathrm{~K} 2$ | 主河道冲积物的有效渗透系数 | V | $-0.01-500$ |
+| ALPHA_BNK | 河岸调蓄的基流 $\alpha$ 因子 | V | $0-1$ |
+| SLSOIL | 侧向水流的坡长 | R | $-0.7-0.7$ |
+
+在模型所选取的参数中，ESCO、EPCO、CANMX、SOL_ALB、GW_REVAP、REVAPMN等参数与潜在和实际蒸散发有关，CN2 与径流相关， $\mathrm{CH}_{2} \mathrm{~N} 1$ 、SLSUBBSN、OV_N 的值影响汇流时间的长短，以 SOL 开头的参数则与土壤水的计算有关，HRU_SLP、SLSOIL 控制侧向流的时间和水流坡长，GW_DELAY、ALPHA_BF、GWQMN、RECHRG_DP 是地下水计算相关的参数， $\mathrm{CH}_{2} \mathrm{~N} 2 、 \mathrm{CH}_{2} \mathrm{~K} 2 、 \mathrm{ALPHA} \mathrm{BNK}$ 对主河道的水流演算产生影响。
+
+# 5.2.2 模型参数率定和验证 
+
+确定水量相关参数后，对研究区内子流域进行参数敏感性分析，按照自上而下由支流到干流的原则，选择合适的水文站所在子流域作为参数敏感性分析及率定的子流域出水口，首先在 SWAT_CUP 中进行参数敏感性分析。衡量参数敏感性的指标有 t -stat 与 p -value 两个， t -stat 的绝对值越大， p -value 的值越接近于 0 则说明参数的敏感性越高，对模型模拟的影响越大。参数 p -value 大于 0.4 时认为对模型影响较小，在进行参数敏感性分析后，选择参数 p -value 值小于 0.4 的参数进行进一步率定。模型率定有人工率定和自动率定两种方式，随着软件的开发，目前国际上常用 SWAT-CUP 软件中的 SUFI-2 方法对模型进行自动率定。本研究对参数进行率定时选择该方法。SWAT-CUP 参数敏感性分析结果界面如图5.3所示，可在结果界面查看所选参数的敏感性分析结果，对敏感性参数进行提取。
+
+
+
+图 5.4 SWAT-CUP 运行及敏感性分析界面
+Fig 5.4 SWAT-CUP sensitivity analysis interface
+
+# 5.3 模拟结果分析 
+
+京津冀地区面积较大，模型为大流域模型，且京津冀河网水系众多，根据研究区内流域、河网的分布，共设置了 12 个流域出水口，对京津冀地区 SWAT 模型模拟结果同样采用 R²与 NSE 作为模拟结果的评价标准 ${ }^{[97]}$ ，根据现有水文资料完整程度，选取了包括滦河水系滦县水文站，北三河水系新防潮闸、宁车沽水文站，大清河水系中唐梅水文站，永定河水系柴沟堡东水文站和漳卫河临清水文站在内的 6 座水文站对模型月径流模拟结果进行分析。京津冀地区 SWAT 水量模型月径流模拟结果具体如下。
+
+### 5.3.1 参数敏感性分析结果
+
+首先在 SWAT_CUP 中对各水文站水量参数的敏感性进行分析，得到各水文站各自的敏感性参数及各敏感性参数敏感程度。将敏感性参数中 Pvalue 值小于 0.4 的参数进行提取，并在 SWATCUP 中对敏感性参数进行率定。各水文站在经过 400 次敏感性分析选代后的参数敏感性统计如表 5.2 所示。选取的所有 6 个水文站共有 19 个不同的敏感性参数，滦县、新防潮闸有 13 个敏感性参数，宁车沽有 12 个敏感性参数，临清、中唐梅、柴沟堡东分别有 10 个、 9 个、 8 个敏感性参数。在这些参数中 CN2、SOL_BD、SLSUBBSN 对所有水文站都是敏感性参数，SOL_K 为除宁车沽外 5 个水文站的敏感性参数，HRU_SLP 为除柴沟堡东外 5 个水文站的敏感性参数。对所有参数的影响过程进行分析可以发现，敏感性参数主要是地表径流、土壤水、地下水、潜在和实际蒸散发、侧向流、汇流时间和河道水流演算相关的参数，这说明上述几个过程是影响京津冀地区地表径流的主要因素。
+
+表 5.2 各水文站敏感性参数统计表
+Table 5.2 Statistical table of hydrological station sensitivity parameters
+
+| 水文站 | 敏感性排序 | 参数 | P-value | |T-stat| |
+| :--: | :--: | :--: | :--: | :--: | :--: |
+|  | 1 | CN2 | 0.000 | 21.018 |
+|  | 2 | SOL_BD | 0.000 | 11.453 |
+|  | 3 | SOL_K | 0.000 | 7.736 |
+|  | 4 | SLSUBBSN | 0.005 | 2.805 |
+|  | 5 | HRU_SLP | 0.025 | 2.243 |
+|  | 6 | $\mathrm{CH}_{2} \mathrm{~N} 2$ | 0.085 | 1.726 |
+| 涑县 | 7 | $\mathrm{CH}_{2} \mathrm{~K} 2$ | 0.193 | 1.305 |
+|  | 8 | OV_N | 0.201 | 1.280 |
+|  | 9 | ALPHA_BF | 0.252 | 1.147 |
+|  | 10 | REVAPMN | 0.291 | 1.058 |
+|  | 11 | ESCO | 0.330 | 0.975 |
+|  | 12 | SLSOIL | 0.371 | 0.896 |
+|  | 13 | CANMX | 0.377 | 0.884 |
+|  | 1 | CN2 | 0.000 | 32.017 |
+|  | 2 | SOL_BD | 0.010 | 2.585 |
+|  | 3 | SOL_Z | 0.024 | 2.258 |
+|  | 4 | SLSUBBSN | 0.025 | 2.247 |
+|  | 5 | SOL_K | 0.085 | 1.726 |
+|  | 6 | ALPHA_BF | 0.128 | 1.526 |
+| 新防潮闸 | 7 | ALPHA_BNK | 0.189 | 1.316 |
+|  | 8 | GW_DELAY | 0.209 | 1.259 |
+|  | 9 | SLSOIL | 0.271 | 1.103 |
+|  | 10 | $\mathrm{CH}_{2} \mathrm{~N} 2$ | 0.279 | 1.085 |
+|  | 11 | SOL_AWC | 0.296 | 1.046 |
+|  | 12 | $\mathrm{CH}_{2} \mathrm{~N} 1$ | 0.310 | 1.017 |
+|  | 13 | HRU_SLP | 0.335 | 0.965 |
+|  | 1 | CN2 | 0.000 | 26.111 |
+|  | 2 | ALPHA_BNK | 0.000 | 7.585 |
+|  | 3 | $\mathrm{CH}_{2} \mathrm{~K} 2$ | 0.001 | 3.330 |
+|  | 4 | SOL_Z | 0.005 | 2.840 |
+|  | 5 | SOL_AWC | 0.033 | 2.137 |
+| 宁车沽 | 6 | SLSUBBSN | 0.054 | 1.931 |
+|  | 7 | SOL_BD | 0.100 | 1.648 |
+|  | 8 | GW_DELAY | 0.133 | 1.506 |
+|  | 9 | ALPHA_BF | 0.179 | 1.347 |
+|  | 10 | OV_N | 0.201 | 1.280 |
+|  | 11 | $\mathrm{CH}_{2} \mathrm{~N} 1$ | 0.364 | 0.909 |
+|  | 12 | HRU_SLP | 0.384 | 0.871 |
+|  | 1 | CN2 | 0.000 | 17.983 |
+| 临清 | 2 | SOL_BD | 0.000 | 12.378 |
+|  | 3 | SOL_K | 0.000 | 8.741 |
+
+续表 5.2
+
+| 水文站 | 敏感性排序 | 参数 | P-value | [T-stat] |
+| :--: | :--: | :--: | :--: | :--: |
+| 临清 | 4 | SLSUBBSN | 0.002 | 3.052 |
+|  | 5 | HRU_SLP | 0.010 | 2.577 |
+|  | 6 | CH_N2 | 0.070 | 1.818 |
+|  | 7 | CANMX | 0.147 | 1.454 |
+|  | 8 | OV_N | 0.196 | 1.296 |
+|  | 9 | REVAPMN | 0.278 | 1.087 |
+|  | 10 | CH_K1 | 0.280 | 1.081 |
+|  | 11 | GWQMN | 0.298 | 1.042 |
+|  | 1 | CN2 | 0.000 | 23.331 |
+|  | 2 | SOL_BD | 0.000 | 4.854 |
+|  | 3 | SOL_K | 0.000 | 3.961 |
+|  | 4 | SLSUBBSN | 0.042 | 2.037 |
+| 中唐梅 | 5 | ALPHA_BNK | 0.062 | 1.872 |
+|  | 6 | SOL_Z | 0.067 | 1.838 |
+|  | 7 | CH_N2 | 0.168 | 1.380 |
+|  | 8 | HRU_SLP | 0.245 | 1.165 |
+|  | 9 | ALPHA_BF | 0.270 | 1.105 |
+|  | 10 | GW_DELAY | 0.393 | 0.856 |
+|  | 1 | CN2 | 0.000 | 26.992 |
+|  | 2 | SLSUBBSN | 0.010 | 2.576 |
+|  | 3 | ALPHA_BNK | 0.013 | 2.503 |
+|  | 4 | SOL_K | 0.041 | 2.053 |
+| 柴沟堡东 | 5 | ALPHA_BF | 0.058 | 1.902 |
+|  | 6 | SOL_BD | 0.168 | 1.382 |
+|  | 7 | SOL_Z | 0.229 | 1.204 |
+|  | 8 | GW_DELAY | 0.260 | 1.129 |
+|  | 9 | GWQMN | 0.349 | 0.939 |
+
+5.3.2 水文站模拟结果
+
+1、滦县水文站模拟结果
+滦县水文站位于滦河下游，位于河北省唐山市滦县附近。滦河水系水文资料为 20082011 年、2015 年实测径流数据。故选取2008年作为模型预热期，2009-2011年为滦县水文站模拟结果率定期，2015年为验证期。滦县水文站模拟结果如图5.4所示，在模拟期内，滦县水文站月径流模拟结果的 $\mathrm{R}^{2}=0.81, \mathrm{NSE}=0.75$ 。
+
+
+
+图5.5 涂县水文站模拟结果
+Fig 5.5 Simulation Results of the Luanxian hydrological station
+2、新防潮闸水文站模拟结果
+新防潮闸水文站位于蓟运河下游，天津市宁河区南部附近。新防潮闸水文站水文资料时间尺度为 2008-2016 年，2008 年为预热期，2009-2013 年为模型率定期，2014-2016 年为模型验证期。新防潮闸水文站模拟结果如图 5.5，在整个模拟期内，新防潮闸水文站月径流结果的 $\mathrm{R}^{2}=0.81, \mathrm{NSE}=0.78$ 。
+
+
+图5.6 新防潮闸水文站模拟结果
+Fig 5.6 Simulation Results of the Xinfangchaozha hydrological station
+3、宁车沽水文站模拟结果
+宁车沽位于潮白新河下游，天津市塘沽区北部。该站水文资料时间尺度为 2008 - 2016年，2008 年为预热期，2009-2013 年为模型率定期，2014-2016 年为模型验证期。宁车沽水文站模拟结果如图 5.6，在整个模拟期内，宁车沽水文站月径流结果的 $\mathrm{R}^{2}=0.82, \mathrm{NSE}=0.81$ 。
+
+
+
+图5.7 宁车沽水文站径流模拟结果
+Fig 5.7 Simulation Results of the Ningchegu hydrological station
+4、临清水文站模拟结果
+漳卫河上游支流位于山西省及河南上境内，流入河北境内后于南陶南部汇流，选取卫运河临清水文站进行模拟结果分析，临清水文站水文资料为 2008 - 2011 年、2015年实测径流数据。故选取 2008 年作为模型预热期，2009-2011年为临清水文站模拟结果率定期，2015年为验证期。在模拟期内模拟结果如图5.7所示，模拟期内 $\mathrm{R}^{2}=0.92$ ，NSE $=0.90$ 。
+
+
+图5.8 临清水文径流模拟结果
+Fig 5.8 Simulation Results of the Linqing hydrological station
+5、中唐梅水文站模拟结果
+中唐梅水文站位于大清河水系唐河中游西大洋水库以上，河北省唐县西北部。该站水文资料时间尺度为 2008 - 2016 年，2008年为预热期，2012-2014年为模型率定期，2015-2016年为模型验证期。中唐梅水文站模拟结果如图 5.8，在整个模拟期内，中唐梅水文站月径流结果的 $\mathrm{R}^{2}=0.63, \mathrm{NSE}=0.63$ 。
+
+
+
+图5.9 中唐梅水文站径流模拟结果
+Fig 5.9 Simulation Results of the Zhongtangmei hydrological station
+6、柴沟堡东水文站模拟结果
+柴沟堡东水文站位于永定河水系东洋河，河北省张家口市怀安县北。柴沟堡东水文资料为 2008 - 2011 年、 2015 - 2016 年实测径流数据。故选取 2008 年作为模型预热期，2009-2011年为滦县水文站模拟结果率定期，2015 -2016 年为验证期。柴沟堡东水文站模拟结果如图 5.9 所示，在模拟期内，柴沟堡东水文站月径流模拟结果的 $\mathrm{R}^{2}=0.85$ ，NSE $=0.85$ 。
+
+
+图5.10 柴沟堡东水文站径流模拟结果
+Fig 5.10 Simulation Results of the Chaigoupudong hydrological station京津冀地区 SWAT 模型模拟结果总体表现较好，模拟结果 $\mathrm{R}^{2}$ 及 NSE 均较高，说明京津冀地区水量模型构建成功。
+
+# 5.4 典型地区情景变化模拟 
+
+### 5.4.1 土地利用变化情景构建
+
+在模型数据适用性评价的基础上，选取潮白河流域作为典型地区进行土地利用/覆盖变化情景模拟研究，对流域内不同情景下模拟结果进行对比分析。潮白河流域主要的土地利用类型为耕地、林地、草地和城镇用地。首先使用 1980 年、2000年、2018年不同历史时期真实的土地利用数据作为模型土地利用输入数据，对研究区进行模拟，分析自二十世纪八十年代至今土地利用变化对流域产流、产沙的影响。然后根据历史变化结果，以2018年土地利用为基准，对土地利用变化进行假设，构建两种不同的土地利用变化情景，分析土地利用的变化对流域内径流、产沙的影响。具体情景设置如下：
+
+情景 1：研究区域内现有耕地全部转化为林地；
+情景 2：农业继续发展，研究区域内的草地开层用于种植农作物。
+根据构建的情景，使用 ArcGIS 对 2018 年土地利用类型栅格数据进行重分类，分别生成两种情景下的土地利用输入数据，在模型中对两种情景分别进行模拟，得到模型模拟结果并输出。
+
+### 5.4.2 土地利用变化结果分析
+
+1、产流、产沙对土地利用历史变化响应结果分析：
+对潮白河流域土地利用栅格数据进行提取并统计各土地利用类型面积结果如表 5.3。潮白河流域近 38 年来土地利用的历史变化趋势为水田、旱地、草地和荒地面积的持续减少，城市、农村和其他建设用地面积持续增加，各类果园、水体面积在 1980 - 2000 年间略有增加在 2000 - 2018 年间减少，林地面积先减后增，沼泽水田从无到有的变化趋势。在这样的历史变化趋势下，潮白河流域产流和产沙的变化如图5.10，5.11。流域内子流域同流域呈现出相同的变化趋势，随着土地利用的历史演化，产流、产沙均呈增加的趋势。对比各土地利用类型变化趋势变化率与产流产沙的变化率，分析影响产流产沙的主要因素为城市、乡村及其他建设用地的增加。
+
+表 5.3 不同土地利用面积历史变化统计表
+Table 5.3 Statistics of historical changes in different land use areas
+
+| 土地利用类型 | 面积 $\mathrm{m}^{2}$ |  |  | 变化趋势 |
+| :--: | :--: | :--: | :--: | :--: |
+|  | 1980 | 2000 | 2018 |  |
+| 水田 | 46 | 28 | 0 | 減少 |
+
+| 土地利用类型 | 面积 $\mathbf{m}^{\mathbf{2}}$ |  |  | 变化趋势 |
+| :--: | :--: | :--: | :--: | :--: |
+|  | 1980 | 2000 | 2018 |  |
+| 旱地 | 4161 | 4053 | 3718 | 减少 |
+| 林地 | 8424 | 8328 | 8426 | 波动 |
+
+续表 5.3
+
+| 土地利用类型 | 面积 $\mathbf{m}^{\mathbf{2}}$ |  |  | 变化趋势 |
+| :--: | :--: | :--: | :--: | :--: |
+|  | 1980 | 2000 | 2018 |  |
+| 果园 | 89 | 177 | 148 | 波动 |
+| 草地 | 4189 | 4152 | 4137 | 减少 |
+| 水体 | 333 | 390 | 305 | 波动 |
+| 城镇 | 22 | 56 | 139 | 增加 |
+| 农村 | 221 | 254 | 424 | 增加 |
+| 其他建设用地 | 23 | 52 | 142 | 增加 |
+| 荒地 | 22 | 22 | 17 | 减少 |
+| 沼泽 | 0 | 0 | 3 | 增加 |
+
+
+
+图 5.11 土地利用历史演变下产流变化
+Fig 5.11 Changes in runoff under historical land use evolution
+
+
+
+图5.12土地利用历史演变下产沙变化
+Changes in Sediment Yield under Historical Land Use Evolution
+2、土地利用类型情景变化下产流产沙响应分析：
+2018年潮白河流域真实土地利用栅格数据与情景 1、情景 2 的土地利用类型面积栅格数据面积统计如表 5.4。情景 1 为在现有土地利用类型的基础上全部耕地转化为林地, 种植混合针叶阔叶植物，情景 2 为当前所有草地被开垦用以种植作物发展农业生产。
+
+表 5.4 不同土地利用情景土地利用面积统计表
+Table 5.4 Statistics of land use area in different land use scenarios
+
+| 土地利用类型 | 面积 $\mathbf{m}^{\mathbf{2}}$ |  |  |
+| :--: | :--: | :--: | :--: |
+|  | $\mathbf{2 0 1 8}$ | $\mathbf{S 1}$ | $\mathbf{S 2}$ |
+| 早地 | 3718 | 0 | 7855 |
+| 林地 | 8426 | 12144 | 8426 |
+| 果园 | 148 | 148 | 148 |
+| 草地 | 4137 | 4137 | 0 |
+| 水体 | 305 | 305 | 305 |
+| 城镇 | 139 | 139 | 139 |
+| 农村 | 424 | 424 | 424 |
+| 其他建设用地 | 142 | 142 | 142 |
+| 荒地 | 17 | 17 | 17 |
+| 沼泽 | 3 | 3 | 3 |
+
+通过极端假设法所预测的两种情景下流域产流产沙结果与原始土地利用条件下流域产流产沙结果如表 5.12、5.13。模拟结果很容易看出，在情景 1 "退耕还林"模限假设下，流域产流有所减少，流域产沙下降幅度明显。在情景 2 农业生产大规模扩大的情景下，流域的产流和产沙均增加，产沙的增加在无水库的地区较为明显，农业生产的发展增加了土地水土流失的风险，增加了随雨水冲刷进入河道的泥沙，而农业非点源污染的迁移往往与泥沙的迁移密切相关，这样增加了河道的污染负荷，不利于对生态的保护和河流水质的保持。
+
+
+
+图5.13土地利用情景变化下产流响应
+Fig 5.13 Response to runoff under changing land use scenarios
+
+
+图5.14土地利用情景变化下产沙响应
+Fig 5.14 Response to Sediment Yield under Changing Land Use Scenarios
+通过土地利用变化情景的预测模拟，可以看出，在该流域，径流对土地利用变化的响应敏感程度不高，土地利用变化不是影响径流的最主要原因，在制定流域管理措施恢复河道流量时，应在考虑水土保持的基础上寻求其他方面的因素变化。
+
+# 5.4.3 水资源管理措施情景构建 
+
+选取永定河流域作为典型地区进行不同水资源管理措施下径流变化分析，对永定河下游断流河段恢复"有水"可行性进行分析。根据《永定河综合治理与生态修复总体方案》中提出的具体治理措施合理分析，设置情景。《方案》提出永定河上游桑干河、洋河共 20 处大中型灌区可新增节水能力 5668 万 $\mathrm{m}^{3}$ ，张家口市可新增节水能力 8400 万 $\mathrm{m}^{3}$ ，北京市流域沿线及小红门污水厂每年可向永定河补水 7500 万 $\mathrm{m}^{3}$ ，另有水系连通、加大黄河水量引用等系类措施。本次模拟重点针对《方案》提出的具有具体节水水量的措施进行情景设置，以 2016 年
+
+为模拟年份，模型输出日值模拟结果，分析不同措施下桑干河、洋河可向下游输送水量、增加流量天数。
+
+首先，根据灌区所在水系将灌溉节水量进行分配，再按照多年月际灌溉水量计算每月灌溉水量分配系数，对年内灌溉水量按月分配，基于每月水量系数进行计算并按照 $20 \% 、 50 \%$ 、 $80 \%$ 的灌溉水量向下游进行水量补给设置 3 种不同补水梯度的情景 S1、S2、S3 分别模拟分析可补给到下游的水量及天数。基于上述三种情景结果，设置 $50 \%$ 灌溉节水水量年内每日持续向下游输水、 $50 \%$ 灌溉节水水量集中月份向下游输水两种情景 S4、S5，对比分析不同情景下洋河、桑干河可向下游输送水量及天数。具体情景设置如表 5.5。
+
+表 5.5 不同水资源管理情景设置表
+Table 5.5 Table of different water management scenarios
+
+| 月 |  | 情景1 |  |  | 情景2 |  |  | 情景3 |  |  | 情景4 |  |  | 情景5 |  |
+| :--: | :--: | :--: | :--: | :--: | :--: | :--: | :--: | :--: | :--: | :--: | :--: | :--: | :--: | :--: | :--: |
+|  |  | 鱼案口 | 桑干河 | 洋河 | 鱼案口 | 桑干河 | 洋河 | 鱼案口 | 桑干河 | 洋河 | 鱼案口 | 桑干河 | 洋河 | 鱼案口 | 桑干河 | 洋河 |
+| 1 |  | 336000 | 0 | 0 | 840000 | 0 | 0 | 1344000 | 0 | 0 | 114754.1 | 54202.19 | 23229.51 | 0 | 0 | 0 |
+| 2 |  | 336000 | 0 | 0 | 840000 | 0 | 0 | 1344000 | 0 | 0 | 114754.1 | 54202.19 | 23229.51 | 0 | 0 | 0 |
+| 3 |  | 840000 | 0 | 0 | 2100000 | 0 | 0 | 3360000 | 0 | 0 | 114754.1 | 54202.19 | 23229.51 | 0 | 0 | 0 |
+| 4 |  | 4200000 | 2777320 | 1190280 | 10500000 | 4543300 | 2975700 | 16000000 | 11109280 | 4761120 | 114754.1 | 54202.19 | 23229.51 | 0 | 0 | 0 |
+| 5 |  | 1600000 | 714168 | 386072 | 4200000 | 1785420 | 765180 | 6720000 | 2856672 | 1224288 | 114754.1 | 54202.19 | 23229.51 | 0 | 0 | 0 |
+| 6 |  | 840000 | 634816 | 272064 | 2100000 | 1587640 | 680160 | 3360000 | 2539264 | 1088256 | 114754.1 | 54202.19 | 23229.51 | 0 | 0 | 0 |
+| 7 |  | 3520000 | 2380560 | 1020240 | 8820000 | 5951400 | 2550600 | 14112000 | 9522240 | 4080960 | 114754.1 | 54202.19 | 23229.51 | 0 | 0 | 0 |
+| 8 |  | 840000 | 793520 | 340080 | 2100000 | 1983800 | 850200 | 3360000 | 3174080 | 1360320 | 114754.1 | 54202.19 | 23229.51 | 0 | 0 | 0 |
+| 9 |  | 840000 | 396760 | 170040 | 2100000 | 991900 | 425100 | 3360000 | 1587640 | 680160 | 114754.1 | 54202.19 | 23229.51 | 0 | 0 | 0 |
+| 10 |  | 1600000 | 238056 | 102024 | 8200000 | 595140 | 255060 | 6720000 | 952224 | 408096 | 114754.1 | 54202.19 | 23229.51 | 688524.6 | 325213.1 | 139377 |
+| 11 |  | 840000 | 0 | 0 | 2100000 | 0 | 0 | 3360000 | 0 | 0 | 114754.1 | 54202.19 | 23229.51 | 688524.6 | 325213.1 | 139377 |
+| 12 |  | 840000 | 0 | 0 | 2100000 | 0 | 0 | 3360000 | 0 | 0 | 114754.1 | 54202.19 | 23229.51 | 6 | 0 | 0 |
+
+# 5.4.4 水资源管理措施变化结果分析 
+
+根据情景设置进行模拟，并对模拟结果进行处理，得到洋河水系不同情景下出流情况如图 5.15，不同情景下洋河水系向下游输水水量及径流增加天数统计如图 5.16 所示。
+
+
+图5.15 不同水资源管理措施下流量曲线
+Fig 5.15 Flow curve under different water resource management measures
+
+
+
+图 5.16 不同水资源管理情景下产水及增加径流天数统计
+Fig 5.16 Statistics of water production and increased runoff days under different water resource management scenarios
+
+情景 1 下，可向下游输水 1242.5 万 $\mathrm{m}^{3}$ ，年内可增加河道流量 258 天，沿程损耗水量 $39.0 \%$ ；情景 2 下，可向下游输水 3848.5 万 $\mathrm{m}^{3}$ ，年内可增加河道流量 333 天，沿程损耗水量 $23.8 \%$ ；情景 3 下，可向下游输水 6798.7 万 $\mathrm{m}^{3}$ ，年内可增加河道流量 362 天，沿程损耗水量 $15.9 \%$ ；情景 4 下，可向下游输水 3678.3 万 $\mathrm{m}^{3}$ ，年内可增加河道流量 352 天，沿程损耗水量 $27.2 \%$ ；情景 5 下，可向下游输水 5008.1 万 $\mathrm{m}^{3}$ ，年内可增加河道流量 61 天，沿程损耗水量 $0.8 \%$ 。情景 4 每日输水情景下较情景 2 可增加河道增流天数 19 天，但水量损耗增加 $3.4 \%$ 。集中输水情景水量损耗最小。
+
+桑干河水系不同情景下出流情况如图 5.17 所示，不同情景下桑干河水系向下游输水水量及径流增加天数统计如图 5.18 所示。
+
+
+图5.17 不同水资源管理措施下流量曲线
+Fig 5.17 Flow curve under different water resource management measures
+
+
+
+图5.18 不同水资源管理情景下产水及增加径流天数统计
+Fig 5.18 Statistics of water production and increased runoff days under different water resource management scenarios
+
+情景 1 可向下游输水 195.86 万 $\mathrm{m}^{3}$ ，年内可增加河道流量 54 天，沿程损耗水量 $75.3 \%$ ；情景 2 可向下游输水 742.28 万 $\mathrm{m}^{3}$ ，年内可增加河道流量 91 天，沿程损耗水量 $62.6 \%$ ；情景 3 可向下游输水 1630.24 万 $\mathrm{m}^{3}$ ，年内可增加河道流量 114 天，沿程损耗水量 $48.6 \%$ ；情景 4 可向下游输水 555.65 万 $\mathrm{m}^{3}$ ，年内可增加河道流量 172 天，沿程损耗水量 $70 \%$ ；情景 5 可向下游输水 1788.02 万 $\mathrm{m}^{3}$ ，年内可增加河道流量 61 天，沿程损耗水量 $9.0 \%$ 。情景 4 每日输水情景下较情景 2 可增加河道增流天数 81 天，但水量损耗增加 $7.4 \%$ 。集中输水情景水量损耗最小。
+
+通过以上 5 种不同情景假设下的模拟结果可以看出，输水水量越多，输水时间越集中，输水效率越高；通过洋河水系向下游补水效果较好，沿途损耗低、增加河道流量天数多，若通过有效的储水配水，将上游节水补给到下游永定河雁翅-卢沟桥约 70 km 长河段，可以有效的达到水量补给，恢复该段河道"有水"的目的。
+
+桑干河水系沿程损失较高，且该水系通过灌溉节水增加的水量占总节水量的 $28.2 \%$ ，可将该水系产生的灌溉节水作为洋河向下游补给的补充，通过情景 5 所设置的假设集中时段向下游输水。根据模拟结果可灵活制定补水方案，以洋河水系灌区节水及张家口节水为主，桑干河节水为辅。
+
+桑干河上游灌溉节水基本能够满足下游雁翅-卢沟桥河段恢复"有水"目标，永定河卢沟桥-固安河段可通过调配北京市污水处理厂处理后的水量进行补给。
+
+# 5.5 本章小结 
+
+本章构建了京津冀地区 SWAT 模型并进行了京津冀地区径流模拟，模型生成研究区流
+
+域面积 $22.2 \times 10^{8} \mathrm{~km}^{2}$ ，共包含 242 个子流域、 1459 个水文响应单元，模型共包括 7 个入水口， 12 个流域出水口。在构建好的模型基础上对研究区径流进行了模拟，根据现有资料选取滨县、新防潮闸、宁车沽、柴沟堡东、中唐梅、临清水文站分析各站所包含子流域径流敏感性参数并率定，对结果进行拟合和验证。在整个模拟期内，滦县水文站月径流模拟结果的 $\mathrm{R}^{2}=0.81$, NSE $=0.75$ ；新防潮闸水文站月径流结果的 $\mathrm{R}^{2}=0.81, \mathrm{NSE}=0.78$ ；宁车沽水文站月径流结果的 $\mathrm{R}^{2}=0.82, \mathrm{NSE}=0.81$ ；临清水文站月径流模拟结果 $\mathrm{R}^{2}=0.92, \mathrm{NSE}=0.90$ ；中唐梅水文站月径流结果的 $\mathrm{R}^{2}=0.63, \mathrm{NSE}=0.63$ ；柴沟堡东水文站月径流模拟结果的 $\mathrm{R}^{2}=0.85$ ， NSE $=0.85$ 。研究结果满足模型精度的要求，说明京津冀地区 SWAT 模型构建成功，模型能够比较准确的对研究区径流进行描述，为后续进行京津冀地区水环境、水生态模拟打下基础，为在京津冀地区开展情景模拟预测分析和进行地表地下水量耦合模拟奠定基础。
+
+在模型模拟的基础上，在典型地区进行土地利用历史演变及土地利用变化情景分析径流、泥沙对土地利用变化的响应。历史演变方面，研究结果表明随着土地利用的自然变化发展，研究区产流、产沙均程增加趋势；情景变化方面，研究结果发现产流和产沙随着耕地的减少、林地的增加而减少，产流和产沙与耕地的面积呈正相关，这表明林地有较好的水土保持效果，而传统农业的发展耕地的增加会导致水土流失的加剧，不利于研究区水环境和水生态的发展。对不同水资源管理情景模拟的分析表明，通过上游有效的水资源管理及合理的水资源配置，能够达到下游断流河段恢复 "有水" 的目的。
+
+# 第6 章 结论与建议 
+
+本文通过广泛的资料收集构建了包括空间数据库、属性数据库在内的京津冀地区 SWAT模型基础数据库，并验证了降水输入数据在京津冀地区的适用性；使用构建好的模型数据库，基于 ArcGIS，利用 SWAT 模型构建京津冀地区水量模型，整个研究区划分为 242 个子流域， 1459 个水文响应单元，模型取得了较好的径流模拟结果；基于此基础本文在典型地区进行了土地利用变化情景模拟分析，探究了历史土地利用变化过程及未来情景变化情形下径流与泥沙的变化情况。但是在模型研究过程中，由于研究区较大、实测数据缺乏，仍然存在许多问题和不足，有待进一步的探究。现针对本研究所取地的成果进行总结并对研究过程中存在的问题和对后续研究的展望进行说明。
+
+结论:
+1、本文通过多样化的数据收集手段，采取多种数据处理技术，对京津冀地区 SWAT 模型所需的大量基础数据进行收集整理和数字化，构建了包括研究区数字高程数据库、土地利用数据库、土壤数据库、气象数据库和水文数据库在内的研究区综合基础数据库。为开展京津冀地区的水资源、水环境、水生态模拟奠定了良好的基础。特别是对河网、湖库、灌区、水文站等水文数据的整理入库，为后续开展各方面的研究都提供了很好的支撑。并且，数据库中包含多套数据，可进行多种不同组合下的模型模拟，拓宽了研究面。
+
+2、首次对 CMADS 数据集在京津冀地区的适用性进行了分析，结果证明，CMADS 在温带东亚季风气候区的京津冀地区具有适用性，在水库控制流域和无水库流域都有较好的表现，能够作为模型输入数据进行使用。
+
+3、构建了京津冀地区 SWAT 模型并进行了京津冀地区径流模拟，根据京津冀地区多个水文站 2008-2016 年间实测月径流数据对模型模拟结果进行校准和验证，研究结果满足模型精度的要求，说明京津冀地区 SWAT 模型构建成功，模型能够比较准确的对研究区径流进行描述，为后续进行京津冀地区水环境、水生态模拟打下基础，为在京津冀地区开展情景模拟预测分析和进行地表地下水量耦合模拟奠定基础。
+
+4、在模型模拟的基础上，在典型地区进行土地利用历史演变及土地利用变化情景分析径流、泥沙对土地利用变化的响应。历史演变方面，研究结果表明随着土地利用的自然变化发展，研究区产流、产沙均程增加趋势；情景变化方面，研究结果发现产流和产沙随着耕地的减少、林地的增加而减少，产流和产沙与耕地的面积呈正相关，这表明林地有较好的水土保持效果，而传统农业的发展耕地的增加会导致水土流失的加剧，不利于研究区水环境和水
+
+生态的发展。对不同水资源管理情景模拟的分析表明，通过上游有效的水资源管理及合理的水资源配置，能够达到下游断流河段恢复 "有水" 的目的。
+
+不足与展望:
+受限于当前研究时间及现有的研究资料程度, 本研究仍存在许多的不足之处:
+1、研究的水文数据时间序列较短, 不同的水系获取的水文数据时间序列不统一, 这对模型整体的准确性造成了较大的影响，影响了模型整体的表现。
+2、本文对情景变化的研究形式较为单一，没有进行多方面综合情景变化下的模拟研究，并且对情景结果的输出和分析也较为单一。
+
+基于以上对本研究结果的总结与不足的分析，对未来的研究提出以下几点展望：
+1、增加野外调查和数据的丰富程度;
+2、在整个京津冀地区开展土地利用变化情景分析，增加土地利用的情景预测类型和方式，进行土地利用与人类活动及气候变化对水资源、水环境、水生态多影响因素作用的研究；在京津冀地区增加断流河段水资源管理措施下河道恢复"有水"可行性研究;
+3、可以结合其他模型，如 GMS、MODFLOW 等，丰富模型的应用范围，开展地表地下的耦合模拟等研究;
+4、可以对模型进行二次开发，探索对灌溉模块、水库模块等的开发，使模型更符合研究区的实际情况，提高模型结果的准确性，丰富模型在研究区的应用。
+
+# 参考文献 
+
+[1] 刘立红. 中国水资源利用效率研究[D]. 沈阳：辽宁师范大学，2016.
+[2] 何长高, 董增川, 陈卫宾. 流域水文模型研究综述[J]. 江西水利科技, 2008, (01): 20-25.
+[3] 范孝芳. 对流域水文模型的评论及展望[C]//对流域水文模型的评论及展望. 全国水文学术讨论会.
+[4] 万洪涛, 周成虎, 万庆等. 地理信息系统与水文模型集成研究述评[J].水科学进展, 2001, (04): 560-568.
+[5] 梁犁丽, 汪党献, 王芳. SWAT 模型及其应用进展研究[J]. 中国水利水电科学研究院学报, 2007, (02): 125-131.
+[6] 田彦杰, 汪志荣, 张晓晓. SWAT 模型发展与应用研究进展[J]. 安徽农业科学, 2012, 40(06): 3480-3483+3486.
+[7] 王顺久. 水资源开发利用综合研究[D]. 成都: 四川大学, 2003.
+[8] 王瑗, 盛连喜, 李科等. 中国水资源现状分析与可持续发展对策研究[J]. 水资源与水工程学报, 2008, (03): 10-14.
+[9] 王喜, 王湛, 杨文涛等. 中国水资源现状及其未来发展方向展望[J]. 环境工程, 2014, 32(07): 1-5.
+[10] 庞鹏沙, 董仁杰. 浅议中国水资源现状与对策[J]. 水利科技与经济, 2004, (05): 267-268.
+[11] 张偲霞. 京津冀区域协同发展的水资源配置研究[D]. 哈尔滨: 哈尔滨工业大学, 2016.
+[12] 段胜利. 京津冀流域区际生态补偿法律制度研究[D]. 保定: 河北大学, 2017.
+[13] 陈仁升, 康尔泗, 杨建平等. 水文模型研究综述[J]. 中国沙漠, 2003, (03): 15-23.
+[14] 胡春歧, 张登杰. 水文模型进展及展望[J]. 南水北调与水利科技, 2004, (06): 29-30.
+[15] 王中根, 刘昌明, 吴险峰. 基于 DEM 的分布式水文模型研究综述[J]. 自然资源学报, 2003, (02): 168-173.
+[16] 张银辉. SWAT 模型及其应用研究进展[J]. 地理科学进展, 2005, (05): 123-132.
+[17] 陈昌春, 张余庆, 项瑛等. 土地利用变化对赣江流域径流的影响研究[J]. 自然资源学报, 2014, 29(10): 1758-1769.
+[18] 王中根, 朱新军, 夏军, et al. 海河流域分布式 SWAT 模型的构建[J]. 地理科学进展, 2008, (04): 1-6.
+[19] 范孝芳, 黄国如. 分布式水文模型的现状与未来[J]. 水利水电科技进展, 2004, (02): 55-58.
+[20] (美)尼奇(Neitsch,S.L.)等著. SWAT 2009 理论基础[M]. 郑州:黄河水利出版社, 2011:12
+[21] Douglas-Mankin K R, Srinivasan R, Arnold J G. Soil and Water Assessment Tool (SWAT) Model: Current Developments and Applications[J]. Transactions of the ASABE, 2010, 53(5):1423-1431.
+[22] Arnold J G, Fohrer N. SWAT2000: current capabilities and research opportunities in applied watershed modelling[J]. Hydrological Processes, 2005, 19(3): 563-572.
+[23] Arnold J G, Allen P M. Automated methods for estimating baseflow and ground water recharge from streamflow records[J]. Journal Of the American Water Resources Association, 1999, 35(2): 411-424.
+[24] Santhi C, Arnold J G, Williams J R, et al. Validation of the swat model on a large river basin with point and nonpoint sources[J]. Journal Of the American Water Resources Association, 2001, 37(5): 1169-1188.
+[25] Gassman P W, Reyes M R, Green C H, et al. The soil and water assessment tool: Historical
+
+development, applications, and future research directions[J]. Transactions of the Asabe, 2007, 50(4): 1211-1250.
+[26] Hernandez M , Miller S N , Goodrich D C , et al. Modeling Runoff Response to Land Cover and Rainfall Spatial Variability in Semi-Arid Watersheds[J]. Environmental Monitoring \& Assessment, 2000, 64(1):285-298.
+[27] A. Chaponnière, Boulet G , Chehbouni A , et al. Understanding hydrological processes with scarce data in a mountain environment[J]. Hydrological Processes, 2008, 22(12): 1908-1921.
+[28] Rostamian R , Jaleh A , Afyuni M , et al. Application of a SWAT model for estimating runoff and sediment in two mountainous basins in central Iran[J]. Hydrological Sciences Journal, 2008, 53(5):977-988.
+[29] Bouraoui F , Benabdallah S , Jrad A , et al. Application of the SWAT model on the Medjerda river basin (Tunisia)[J]. Physics and Chemistry of the Earth, 2005, 30(8/10):497-507.
+[30] Dhami B, Himanshu S K, Pandey A, et al. Evaluation of the SWAT model for water balance study of a mountainous snowfed river basin of Nepal[J]. Environmental Earth Sciences, 2018, 77(1): 21.
+[31] 张秋玲. 基于 SWAT 模型的平原区农业非点源污染模拟研究[D]. 杭州: 浙江大学, 2010.
+[32] 李亚平. 基于 SWAT 模型的徒骇河流域生态需水量研究[D]. 青岛: 中国海洋大学, 2012.
+[33] 邹悦. 基于 SWAT 模型的疏勒河中游径流模拟研究[D]. 兰州: 西北师范大学, 2012.
+[34] 史晓亮. 基于 SWAT 模型的滦河流域分布式水文模拟与干旱评价方法研究[D]. 长春: 中国科学院研究生院(东北地理与农业生态研究所), 2013.
+[35] 崔素芳. 变化环境下大沽河流域地表水一地下水联合模拟与预测[D]. 济南: 山东师范大学, 2015.
+[36] 胡胜. 基于 SWAT 模型的北洛河流域生态水文过程模拟与预测研究[D]. 西安: 西北大学, 2015.
+[37] 黎明. 基于 SWAT 的北江流域土地覆盖及气象条件变化的水文响应模拟研究[D]. 广州:中国科学院研究生院(广州地球化学研究所), 2015.
+[38] 周舒晗. 滦河流域径流量变化及水文干旱的识别研究[D]. 天津: 天津大学, 2016.
+[39] 张同. 基于 SWAT 模型的大汶河流域不同分辨率数据组合下地表径流的模拟研究[D]. 泰安: 山东农业大学, 2017.
+[40] 龙煊婷. 土地利用变化对大宁河流域面源污染的影响研究[D]. 武汉: 华中师范大学, 2018.
+[41] 武守环. 基于 SWAT 模型的乐安河香屯集水区径流模拟及参数不确定性分析[D]. 南昌:南昌工程学院, 2018.
+[42] 王中根，刘昌明，黄友波. SWAT 模型的原理、结构及应用研究[J]. 地理科学进展, 2003, (01): 79-86.
+[43] 刘昌明，李道峰，田英等. 基于 DEM 的分布式水文模型在大尺度流域应用研究[J]. 地理科学进展, 2003, (05): 437-445+541-542.
+[44] 张雪松，郝芳华，杨志峰等. 基于 SWAT 模型的中尺度流域产流产沙模拟研究[J]. 水土保持研究, 2003, (04): 38-42.
+[45] 王中根，朱新军，李尉等. 海河流域地表水与地下水耦合模拟[J]. 地理科学进展, 2011, 30(11): 1345-1353.
+[46] 张永勇，王中根，于磊等. SWAT 水质模块的扩展及其在海河流域典型区的应用[J]. 资源科学, 2009, 31(01): 94-100.
+[47] 李建新，朱新军，于磊. SWAT 模型在海河流域水资源管理中的应用[J]. 海河水利, 2010,
+
+(05): 46-49+54.
+[48] 刘贵花, 栗兆擎, 阎百兴等. 基于 SWAT 模型的三江平原沼泽性河流的径流模拟[J]. 水文, 2014, 34(01): 46-51.
+[49] 项瑛, 张余庆, 程婷. 基于 SWAT 模型的里下河平原区水文模拟[J]. 资源科学, 2015, 37(06): 1181-1189.
+[50] 刘伟, 安伟, 马金锋. SWAT 模型径流模拟的校正与不确定性分析[J]. 人民长江, 2016, 47(15): 30-35+62.
+[51] 陈晓丽, 黄国如. 基于 SWAT 模型的北江飞来峡流域径流模拟[J]. 水资源与水工程学报, 2017, 28(05): 1-7.
+[52] 王宏伟, 韩露, 王晓菡等. 基于 SWAT 模型的细河流域径流模拟研究[J]. 辽宁师范大学学报(自然科学版), 2017, 40(04): 558-562.
+[53] 王蕾, 魏晓妹, 降亚楠等. 关中平原灌区 SWAT 模型基础数据库的构建[J]. 水电能源科学, 2017, 35(07): 13-17.
+[54] 苏欣, 李强坤, 常布辉等. SWAT 模型在青铜峡灌区的应用研究[J]. 节水灌溉, 2018, (06): 86-90+96.
+[55] 苏欣, 陈震. SWAT 模型在青铜峡灌区水循环的应用研究 II :模型应用[J]. 节水灌溉, 2019, (01): 18-21.
+[56] 李蔚, 陈晓宏, 何艳虎等. 改进 SWAT 模型水库模块及其在水库控制流域径流模拟中的应用[J]. 热带地理, 2018, 38(02): 226-235.
+[57] 余文君, 南卓钢, 赵彦博等. SWAT 模型融雪模块的改进[J]. 生态学报, 2013, 33(21): 6992-7001.
+[58] 孟现勇, 古晓楠, 刘志辉等. SWAT 模型融雪模块的改进与应用研究[J]. 自然资源学报, 2014, 29(03): 528-539.
+[59] 骆月珍, 顾婷婷, 潘姬英等. 基于 CMADS 驱动 SWAT 模型的富春江水库控制流域水量平衡模拟[J]. 气象与环境学报, 2019, 35(04): 106-112.
+[60] 周铮, 吴则锋, 杨蕴等. 基于 SWAT 模型的北山水库流域地表径流模拟[J]. 南水北调与水利科技: 1-15.
+[61] 蔡庆拟. 基于 SWAT 模型的径流模拟与参数不确定性分析[J]. 广东水利水电, 2019, (08): $1-6+28$.
+[62] 罗映雪, 徐长春, 杨秋萍等. 基于 SWAT 模型的开都河上游未来土地利用变化对径流的影响[J]. 灌溉排水学报, 2019, 38(11): 100-108.
+[63] 闫宇会, 薛宝林, 张路方. 基于 SWAT 模型的海拉尔河上游土地利用与气候变化对径流的影响[J]. 聊城大学学报(自然科学版), 2020, 33(02): 89-96.
+[64] 葛若凡. 京津冀的协同发展机遇与问题研究[J]. 现代经济信息, 2014, (14): 445.
+[65] 李爱贞. 生态环境保护概论[M]. 北京:气象出版社, 2001.
+[66] 朱梅, 吴敏学. 海河流域种植业非点源污染特征分析[J]. 农业环境与发展, 2010, 27(02): 52-58.
+[67] 王晓霞, 徐宗学, 纪一鸣等. 海河流域降水量长期变化趋势的时空分布特征[J]. 水利规划与设计, 2010, (01): 35-38.
+[68] 张利茹, 贺永会, 唐跃平等. 海河流域径流变化趋势及其归因分析[J]. 水利水运工程学报, 2017, (04): 59-66.
+[69]国家统计局. 中华人民共和国 2019 年国民经济和社会发展统计公报 [N]. 2020-02-29.
+[70] 国家统计局北京调查总队、北京市 2019 年国民经济和社会发展统计公报 [N]. 2020-03-02.
+
+[71]国家统计局河北调查总队. 河北省 2019 年国民经济和社会发展统计公报 [N]. 2020-02-28.
+[72] 张熠博. 京津冀水资源一体化现状及对策研究[J]. 价值工程, 2018, 37(12): 57-58.
+[73] 冯巧. 区域水资源合理配置评价指标体系及评价模型研究[D]. 南京: 河海大学, 2006.
+[74] 李文体, 刘向华, 冯谦诚. 河北省地下水超采区划分及超采状况分析研究[J]. 水资源保护, 2001, (04): 26-30+72.
+[75] 刘兆旋. 石家庄市平原区地下水位变化特征分析及预测研究[D]. 郑州: 华北水利水电大学, 2017.
+[76] 金杰. SWAT 模型在漳河上游流域的应用研究[D]. 邯郸: 河北工程大学, 2014.
+[77] 吴江, 胡胜. DEM 分辨率对 SWAT 模型水文模拟的影响研究[J]. 灌溉排水学报, 2016, 35(11): 18-23.
+[78] 高大鹏, 孙智阳. DEM 分辨率对 SWAT 模型输出的影响[J]. 内蒙古水利, 2017, (09): 50-52.
+[79] 王晓云. 流域土地利用变化对径流影响问题的研究[D]. 天津: 天津大学, 2008.
+[80] 欧春平, 夏军, 王中根等. 土地利用/覆被变化对 SWAT 模型水循环模拟结果的影响研究 ——以海河流域为例[J]. 水力发电学报, 2009, 28(04): 124-129.
+[81] 栗勇建. 基于 SWAT 模型的勘江流域径流变化分析[D]. 郑州: 河南农业大学, 2017.
+[82] 王磊. 清水河流域土地利用变化对径流的影响研究[D]. 保定: 河北农业大学, 2018.
+[83] 喻晓. 亚流域划分与雨量点分布对 SWAT 模型模拟结果的影响研究[D]. 咸阳：西北农林科技大学, 2018.
+[84] 李雪. 土地利用数据集精度与 CFSR 降水数据订正对 SWAT 模型降雨径流模拟研究[D]. 咸阳：西北农林科技大学，2019.
+[85] 齐贞, 杜丽平, 刘晓冰等. SWAT 模型中气象数据库和土壤数据库的构建方法[J]. 河南科学, 2011, 29(12): 1458-1463.
+[86] 刘钦, 王雯涛. SWAT 模型土壤物理属性数据库构建方法探究[J]. 水科学与工程技术, 2015, (06): 40-42.
+[87] 朱烨, 方秀琴, 王凯. SWAT 模型数据库的构建[J]. 地理学间信息, 2016, 14(12): 15-17+17.
+[88] 舒博宁, 时青, 李栋. 基于 ArcGIS 的土壤信息数据库构建[J]. 山东水利, 2018, (02): 17-19.
+[89] 徐冬梅, 胡昊, 王文川等. SWAT 模型土壤物理属性数据库本土化构建研究[J]. 华北水利水电大学学报(自然科学版), 2018, 39(01): 36-41.
+[90] 王妍溪, 刘琼琼. 基于 SWAT 模型的海河南系独流减河流域基础数据库构建[J]. 中国资源综合利用, 2019, 37(07): 191-193.
+[91] 孟现勇, 师春香, 刘时银等. CMADS 数据集及其在流域水文模型中的驱动作用——以黑河流域为例[J]. 人民珠江, 2016, 37(07): 1-19.
+[92] 张利敏, 王浩, 孟现勇. 基于 CMADS 驱动的 SWAT 模型在辽宁浑河流域的应用研究[J]. 华北水利水电大学学报(自然科学版), 2017, 38(05): 1-9.
+[93] 张春辉, 王炳亮. CMADS 与传统气象站数据驱动下的 SWAT 模型模拟效果评价——以苦水河流域为例[J]. 中国农村水利水电, 2018, (06): 52-57.
+[94] Thom Thi Vu, Li L, Jun K S. Evaluation of Multi-Satellite Precipitation Products for Streamflow Simulations: A Case Study for the Han River Basin in the Korean Peninsula, East Asia[J]. Water, 2018, 10(5).
+[95] Dong N, Yang M, Meng X, et al. CMADS-Driven Simulation and Analysis of Reservoir Impacts on the Streamflow with a Simple Statistical Approach[J]. Water, 2019, 11(1).
+[96] Schaefli B, Gupta H V. Do Nash values have value?[J]. Hydrological Processes, 2007, 21(15): 2075-2080.
+
+[97] VALIDATION OF THE SWAT MODEL ON A LARGE RIVER BASIN WITH POINT AND NONPOINT SOURCES [J]. Jawra Journal of the American Water Resources Association, 2007, 37(5): 1169-1188.
+
+中国知网 https://www.cnki.net
+
+# 致 谢 
+
+时光荏䓦，岁月如梭，三年时间转瞬即逝，硕士研究生的学习即将结束，回首三年的点点滴滴，我的心中充满了温暖与感激。感谢一直以来关心我、帮助我、支持我的所有人。
+
+首先，我要感谢我的导师洪梅教授，洪老师学识渊博、平易近人，对学术一丝不苟，对学生循循善诱。从我的论文定题直到完成的每一步老师都倾注了大量的心血。在我攻读硕士研究生期间，深深受益于洪老师的关心和教导。洪老师作为老师，为学生点播迷津、诲人不倦，让人如沐春风；作为长辈，对后辈和蔼可亲、关怀备至，让人倍感温暖。师从洪老师是我莫大的荣幸，在此我向洪老师表达我最诚挚的敬意和感谢。
+
+同时，我也要感谢污染场地修复与控制课题组所有的老师。三年来，在课题组的组会上，我收获了老师们对每位同学学术上的指导，更收获了老师们对同学们在人生观、价值观上的教诲，课题组的组会不仅拓宽了我的学术视野更教会了我做人的道理。在此，我要向课题组的每一位老师表达我的感谢，感谢老师们营造的学术氛围，感谢老师们提供的学术平台，感谢老师们为将每一位学生培养成一名优秀的人才所做出的努力。
+
+此外，我也要感谢我的师兄师姐、我的同学还有我的师弟师妹们。感谢杨慧萍、韩旭师姐对我的指导和帮助；感谢任璇师兄、魏涛、贾甜丽、林青华师姐三年来对我的包容和关心，感谢在我学术和生活上的帮助；感谢杨雁惠、徐瑞阳、郭明亮能够包容我的缺点，共同学习和成长；感谢贾艾媛、赵明明、孙振权、陈韶音对我的帮助。感谢我的室友鲁松、王博、李晨光，感谢你们带给我的温暖与快乐，三年同寝时光过的很快乐。感谢 17 级环境工程硕士的每一位同学，同窗之谊，终生难忘。
+
+最后，特别感谢我的家人，感谢我的父母给我生命，感谢你们二十多年来在我背后对我的支持和付出，感谢你们给我一个温暖的家，让我有勇气面对这世界上的一切。也要感谢我的亲人们，感谢你们从小对我的疼爱，让我看到了这个世界最美好的一面，感谢你们为我所做的一切。
+
+谢谢你们！

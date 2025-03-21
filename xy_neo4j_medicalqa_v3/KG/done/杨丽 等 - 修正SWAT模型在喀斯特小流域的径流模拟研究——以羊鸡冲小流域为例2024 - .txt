@@ -1,0 +1,297 @@
+杨丽，杨广斌，李亦秋，等. 修正 SWAT 模型在喀斯特小流域的径流模拟研究——以羊鸡冲小流域为例[J]. 中国岩溶，2024，43(2): 291-301.
+DOI: $10.11932 /$ karst2024y011
+
+# 修正 SWAT 模型在喀斯特小流域的径流模拟研究 ——以羊鸡冲小流域为例 
+
+杨 丽 ${ }^{1,2}$ ，杨广斌 ${ }^{1,2}$ ，李亦秋 ${ }^{1}$ ，李 曼 ${ }^{1,2}$<br>（1. 青州师范大学地理与环境科学学院，青州 青阳 550025；2. 青州省山地资源与<br>环境递感应用重点实验室，青州 青阳 550025 )
+
+
+
+摘 要：在贵州喀斯特地区，地表径流通过土壤裂隙、岩浴管道等途径流失，限制了地表径流的形成。文章以龙里羊鸡冲小流域为研究区，基于2013—2019年的实测数据，修正 SWAT（Soil and Water Assessment Tool）模型的裂隙流模块，修改了裂缝入渗的表示方法，对修正前后的日径流模拟进行对比分析。结果表明：举定期内纳什系数由 0.32 提升到 0.60 ，决定系数由提高 0.37 提升到 0.58 。在验证期内，纳什系数由 0.52 提高到 0.55 ，决定系数由 0.56 提高到 0.60 ，修正后的模型与原模型相比具有更好的适用性。修正后模型的径流时间序列与实测数据更吻合，能合理估算研究区的入渗水量，为喀斯特小流域的水资源管理提供参考依据。
+关键词：SWAT 模型修正；喀斯特小流域；土壤裂隙模块；径流模拟
+创新点：修正了 SWAT 模型在喀斯特地区土壤裂隙的计算方法；采用入渗量、土壤含水量、降雨量来评估修正模型的可靠性。
+中国分类号: P333.1 文献标识码: A
+文章编号: 1001-4810（2024）02-0291-11
+开放科学（资源服务）标识码（OSID）：
+
+
+## 0 引 言
+
+贵州省是典型的生态脆弱区，喀斯特地层出露面积 $109084 \mathrm{~km}^{2}$ ，占全省国土总面积的 $61.9 \%{ }^{[3]}$ 。这一区域喀斯特发育，降雨渗漏性强，水文过程变化迅速，储水能力较低，导致水资源环境变得异常脆弱 ${ }^{[4]}$ 。探究喀斯特地区地表径流的变化趋势和产流规律，对于该地区生态环境的保护和水土流失治理具有重要意义。
+
+水文模型是研究水文现象和过程的有效工具 ${ }^{[4]}$ 。
+
+SWAT 模型是由美国农业部农业研究中心（USDAARS）开发的分布式水文模型 ${ }^{[5]}$ ，广泛应用于不同环境下的流域径流、泥沙、水质等的模拟和预测。但由于喀斯特地区的溶蚀与侵蚀作用，使得水系发育、水文动态上表现出与非喀斯特地区的巨大差异 ${ }^{[6]}$ ，因此，国内外学者对 SWAT 模型进行了改进，使其更适用于喀斯特流域 ${ }^{[7]}$ 。张程鹏等 ${ }^{[9]}$ 提出了一种基于数字高程模型和流域自动识别功能相结合的方法，将复杂的地表和地下二元结构简化为地表一元结构，有效提升了 SWAT 模型在流域划分方面的合理性。
+
+[^0]
+[^0]:    资助项目：贵州省科技重大计划项目（黔科合重大专项[2022]001）；贵州省科技支撑项目（黔科合支撑［2023］—般 176）；贵州省基础研究（自然科学）项目（黔科合基础-ZK[2024] —般 445）
+    第一作者简介：杨丽（2000-），女，硕士研究生，研究方向：3S 技术与水土保持。E-mail: 1125832457@qq.com.
+    通信作者：杨广斌（1973-），男，教授，研究方向：地理信息系统与遥感。E-mail: ygbyln@163.com.
+    收稿日期: $2023-11-10$
+
+赖格英等 ${ }^{[10]}$ 针对喀斯特水系统特征，引入落水洞、伏流、暗河的水文过程以及主要营养盐的输移过程，建立了适合于喀斯特流域的非点源污染模型和相应的模拟方法；梁桂星等 ${ }^{[11]}$ 在 SWAT 模型中添加了表层岩浴带模块，模拟了喀斯特区水循环过程，包括快速流和慢速流进入浅层地下水，符合喀斯特流域的特点。Nguyen 等 ${ }^{[12]}$ 修改了 SWAT 模型以说明喀斯特地区流域间的地下水流量，使用多站点径流数据和卫星获得的实际蒸散量进行模型校准，构建两个概念模型对喀斯特区和非喀斯特区的水文过程进行了模拟，结果表明修正后的模型可以更好地反映流域水量平衡。这些研究证明修正后的 SWAT 模型在喀斯特地区的适用性。总体而言，学者对 SWAT 模型的修正主要集中在喀斯特特征的建模 ${ }^{[13]}$ ，然而，很少有研究关注 SWAT 模型在湿润条件下土壤裂隙对径流的影响。
+
+贵州地处亚热带季风气候区，降水集中，干湿变化交替，而且土壤主要由碳酸盐岩风化形成，富含黏粒，主要由膨胀性黏土矿物蛭石构成，具有强烈的膨胀和收缩特性 ${ }^{[12-13]}$ ，因此在降雨期间，土壤裂隙产生裂隙流，使地表水很快到达土壤深层，而且通过裂隙内表面积增大了人渗面积，提高了人渗速度 ${ }^{[14-16]}$ ，也有研究者发现即使在重新湿润后，土壤裂隙并不会闭合，导致大量的水分下渗 ${ }^{[17]}$ ，进而影响地表产流。这表明，有必要修正 SWAT 模型的土壤裂隙流模块，使地表径流模拟结果更加接近湿润喀斯特地区的实际情况。目前，尽管 SWAT 模型对于月尺度和日尺度的应用广泛，但对于日尺度径流模拟效果不佳 ${ }^{[18]}$ 。
+
+鉴于此，本文以龙里县羊鸡冲小流域为研究区，采用 2013-2019年的长期监测的气象、水文数据，通过改进 SWAT 模型，对土壤裂隙的计算进行修正，以更真实地表示在湿润条件下喀斯特流域的径流人渗过程，然后计算并比较修改前后的 SWAT 模型在预测径流方面的性能，以期为喀斯特地区水资源管理和调控及生态水文过程研究提供科学依据。
+
+## 1 材料与方法
+
+## 1.1 研究区概况
+
+羊鸡冲小流域位于贵州省黔南州龙里县（图1），平均海拔 1330 m ，控制流域面积为 $11.89 \mathrm{~km}^{2}$ ，系喀
+
+斯特中低山丘陵地貌，地势高低起伏，西南部较高，东北部较低，中部地势较为平坦；气候类型为亚热带湿润季风气候，干湿季分明，多年年均气温为 $14.8^{\circ} \mathrm{C}$ ，多年平均降雨量 1089 mm ，地处苗岭山脉中段，黔中隆起南缘，属长江与珠江的分水岭地带，主要出露泥盆、石炭系碳酸盐岩间夹非碳酸盐岩地层，成土母岩主要为石灰岩、砂页岩。土壤类型以黄壤为主，富铝化作用明显，具有明显的发生层次，质地多为黏重的壤土和黏壤土，少量为石灰土、黄棕土和水稻土。主要植被类型包括亚热带石灰岩常绿栃林以及常绿落叶阔叶混交林。该小流域属乌江水系三沅河支流，常年有地表径流，底部存在不透水层。周边有许多喀斯特洼地，溶蚀作用强烈，地下河系统发育广泛。降雨经过土壤、岩溶孔洞、裂隙以及落水洞最终汇入地下暗河，该区域以水力侵蚀为主，属于轻度水土流失区。
+
+## 1.2 SWAT 模型构建
+
+SWAT(soil and water assessment tool) 模型近年来已被广泛应用于流域水文过程模拟以及流域在气候和土地利用变化下的水文响应等 ${ }^{[19]}$ 。输入数据包括数字高程模型（DEM）、土壤、土地利用、气象和水文数据，本文所使用的数据及其来源详见表1。首先，使用 DEM 数据生成河网水系和分割子流域，划分出 23 个子流域；再通过叠加各子流域的土地利用数据、土壤数据和坡度数据，将这三者的阈值均设置为 $10 \%$ ，共生成 239 个水文响应单元（HRUs，Hydrologic Response Units），最后输人逐日气象数据。SWAT模型在径流过程模拟时，遵循水量平衡方程，其计算公式为 ${ }^{[20]}$ ：
+
+$$
+S W_{t}=S W_{0}+\sum_{i=1}^{t}\left(R_{\text {day }}-Q_{\text {surf }}-E_{o}-W_{\text {deep }}-Q_{\mathrm{gn}}\right) \text { (1) }
+$$
+
+式中： $S W_{t}$ 为土壤最终含水量 $(\mathrm{mm})$ ； $S W_{0}$ 为土壤初期含水量； $t$ 为时间步长（d）；Rday 为降雨量 $(\mathrm{mm})$ ； $Q_{\text {surf }}$为地表径流量； $E_{o}$ 为地表蒸发量 $(\mathrm{mm})$ ； $W_{\text {deep }}$ 为透过土壤层的渗透量和侧流量 $(\mathrm{mm})$ ； $Q_{\mathrm{gn}}$ 为地下水含量 $(\mathrm{mm})$ 。
+
+## 1.3 SWAT 模型改进
+
+在喀斯特地区，干湿交替的条件和碳酸盐岩成土特殊的胀缩特性易形成土壤裂隙 ${ }^{[22]}$ 。裂隙流可以代表土壤剖面中的快速流动过程，在产生地表径流时，进入裂缝的水量等于裂缝的体积，而流
+
+
+
+图1 研究区地理位置示意图
+Fig. 1 Geographical location of the study area
+
+表 1 数据详情及来源
+Table 1 Data details and sources
+
+| 数据类型 | 数据描述 | 数据来源 |
+| :--: | :--: | :--: |
+| 数字高程模型 | DEM数据分辨率 $10 \mathrm{~m} \times 10 \mathrm{~m}$ | 由 $1: 10000$ 地形图采集生成 |
+| 土壤类型和属性数据 | $10 \mathrm{~m} \times 10 \mathrm{~m}$ | 查阅自《贵州土种志》 ${ }^{[21]}$ 、中国土壤属性库 |
+| 土地利用数据 | $10 \mathrm{~m} \times 10 \mathrm{~m}$ | 高分辨率影像解译与实地调查验证获取 |
+| 气象数据 | 2013-2019年逐日气象数据（降雨量、最高和 | 国家气象科学数据中心（http://data.cma.cn） |
+| 水文数据（龙里羊鸡冲站） | 2013-2019年逐日流量数据 | 龙里羊鸡冲监测站提供 |
+
+人土壤剖面的水量取决于土壤中的裂隙体积，这些裂隙会储存和传输水分，影响下渗水量和地表径流 ${ }^{[23]}$ 。喀斯特地区具有特殊的二元水文地质结构，地表水渗漏性较强，降水通过土壤孔隙进入岩溶裂隙，其余降水转化为坡面径流。降雨过程中及雨后，人渗雨水部分储蓄在土体裂隙中 ${ }^{[24]}$ 。值得注意的是，即使在降雨时裂隙仍然存在。在原始 SWAT 模型中，潮湿条件下的 volcr（裂隙体积）默认闭合 ${ }^{[25]}$ ，导致无法下渗，为了使 SWAT 模型的条件更接近喀斯特流域的真实条件，对 SWAT 模型的裂隙体积的计算进行修正，以平衡干湿土壤条件，防止裂隙闭合，并确保在湿润的土壤中也能形成土壤裂隙。本文采用 Fortran 语言编写程序，嵌入到 SWAT 源代码中，并在重新编译后生成 SWAT 运行的核心程序（图2）。计算裂隙体积的公式为 ${ }^{[26]}$ :
+$\operatorname{volcr}_{(i j, d)}=\operatorname{crlag} \times \operatorname{volcr}_{(i j, d-1)}+(1 .-\operatorname{crlag}) \times$ volcrnew
+式中：volcr为土层裂隙体积（mm）； crlag 是每天的滞后因子；volcrnew是基于新水分条件的土层裂隙体积 $(\mathrm{mm}) ; \mathrm{j}$ 是 HRU 编号; 1 是数目， d 为天数。
+
+其中，volcrnew是基于新水分条件的土层裂隙体积，可表示为：
+
+$$
+\operatorname{volcrnew}=\operatorname{crk}_{\max , \mathrm{ly}} \times \frac{\operatorname{coef}_{\mathrm{crk}} \times\left|\mathrm{FC}_{\mathrm{ly}}-\mathrm{SW}_{\mathrm{ly}}\right|}{\operatorname{coef}_{\mathrm{crk}} \times \mathrm{FC}_{\mathrm{ly}}}
+$$
+
+式中：volcrnew为模拟日新水分条件的土层裂隙体积 （ mm ）； $\operatorname{crk}_{\text {max, }}$ 为土层最大裂隙体积（ mm ）； $\operatorname{coef}_{\text {crk }}$ 为旁通流调整系数，默认为 $0.1 ; S W_{\text {ly }}$ 为模拟日土壤含水量 $(\mathrm{mm}) ; F C_{\mathrm{ly}}$ 为模拟日土壤田间持水量 $(\mathrm{mm}) ; \mathrm{ly}$为土层 $(\mathrm{mm})$ 。
+
+# 1.4 模型率定与验证 
+
+模型在 2013-2014年作为预热期，2015-2018
+
+
+
+图2 SWAT 模型修正流程
+Fig. 2 Modification process of SWAT model
+年作为校准期，2019年作为验证期。本文选取纳什效率系数 NSE（Nash-Suttcliffe），决定性系数 $\mathrm{R}^{2}$ 和偏差百分比（PBIAS）来评价模型在研究区的适用性。效率系数（NSE）表示模型的模拟值和实测值的拟合度，决定性系数（ $\mathrm{R}^{2}$ ）表示变量模拟值和实测值的波动性变化，NSE 和 $\mathrm{R}^{2}$ 越接近 1 意味着模型模拟效果较好；偏差百分比（PBIAS）表示模拟值相对于实测值的偏差趋势百分比，接近 $0 \%$ 的 PBIAS 值表示较好的模拟效果。对于径流模拟的模型效果评价标准 （NS， $\mathrm{R}^{2} \gg 0.5$ ，PBIAS $\leqslant \pm 25 \%$ ），则认为是满意的模型效果评价 ${ }^{[27]}$ 。各指标的计算公式：
+
+$$
+\begin{gathered}
+R^{2}=\frac{\left[\sum_{i=1}^{n}\left(O_{i}-\bar{O}\right)(S_{i}-\bar{S})\right]^{2}}{\sum_{i=1}^{n}\left(O_{i}-\bar{O}\right)^{2} \sum_{i=1}^{n}\left(S_{i}-\bar{S}\right)^{2}} \\
+E_{N S}=1-\frac{\sum_{i=1}^{n}\left(O_{i}-S_{i}\right)^{2}}{\sum_{i=1}^{n}\left(O_{i}-\bar{O}\right)^{2}} \\
+\text { PBIAS }=\frac{\sum_{i=1}^{n}\left(O_{i}-S_{i}\right)}{\sum_{i=1}^{n} O_{i}}
+\end{gathered}
+$$
+
+式中： $\varrho$ 为模拟结果的平均值； $O_{i}$ 为模拟值； $\xi$ 为实测结果平均值； $S_{i}$ 为实测值； $n$ 为观测数据个数 ${ }^{[28]}$ 。
+
+## 2 结果与分析
+
+### 2.1 参数敏感性分析
+
+本文使用 SWAT-CUP 对修正前后的模型参数进行敏感性分析，校准算法是 SUFI-2，敏感性的强弱用 t -Stat 和 P -value2 个检验值来表示，t -Stat 绝对值越大且 P -value 值越接近于 0 , 参数敏感性则越高 ${ }^{[29]}$ 。每次迭代运行模型 200 次。每次迭代结束后，基于 SWAT-CUP 工具建议的新参数及其合理的物理范围更新各参数的取值范围。这一过程反复进行，直至无法进一步提升模型性能。模型修正前后，使用了相同的参数集，以确保模型变化仅源自裂隙流模块的修正。共选择了 21 个参数进行敏感性分析，最终确定了前 9 个敏感性参数，敏感性参数见表2。
+
+在原始 SWAT 模型中，HRU_SLP、CH_N2、SOL_ CRK、BIOMIX、ESCO、CANMX、SOL_BD 参数被识别为敏感参数。可以看出，HRU_SLP 是原始 SWAT 模型中对径流模拟最敏感的参数。而在修正后的模型中，土壤相关参数如 SOL_BD 和 SOL_CRK对地表径流量影响最为显著，此外，CANMX、CN2、 GW_DELAY、LAT_TTIME 等参数也表现出较高的敏感性。SWAT 和修正后的 SWAT 模型中，各参数的敏感性排序明显不同。SOL_BD、SOL_CRK、 CANMX、CN2 和 GW_DELAY 在修正 SWAT 模型中排在前五位，而它们在原始 SWAT 模型中分别排名第七、第三、第六、第十和第十六。因此，参数灵
+
+表2 参数敏感性分析结果对比
+Table 2 Comparison of parameter sensitivity
+
+| 参数名称 | 参数含义 | 取值范围 | 修正SWAT |  |  | 原始SWAT |  |  |
+| :--: | :--: | :--: | :--: | :--: | :--: | :--: | :--: | :--: |
+|  |  |  | t-Stat | P-Value | 排名 | t-Stat | P-Value | 排名 |
+| SOL_BD(..).sol | 土壤表层湿容重 | $[-0.5,0.5]$ | 9.14 | 0.00 | 1 | 0.89 | 0.38 | 7 |
+| SOL_CRK.sol | 土壤剖面潜在或最大裂隙体积 | $[0,1]$ | 2.61 | 0.01 | 2 | 1.24 | 0.23 | 3 |
+| CANMX.hru | 最大根系深度 | $[0,100]$ | 2.07 | 0.04 | 3 | $-0.90$ | 0.38 | 6 |
+| CN2.mgt | SCS径流曲线数 | $[-0.5,0.5]$ | $-1.44$ | 0.15 | 4 | 0.30 | 0.77 | 16 |
+| GW_DELAY.gw | 地下水滞后时间 | $[1,500]$ | 1.40 | 0.16 | 5 | $-0.76$ | 0.45 | 10 |
+| LAT_TTIME.hru | 侧向流的运动时间 | $[0,180]$ | 1.33 | 0.19 | 6 | 0.21 | 0.84 | 17 |
+| SLSUBBSN.hru | 平均坡长 | $[10,150]$ | $-0.98$ | 0.33 | 7 | 0.01 | 0.99 | 21 |
+| HRU_SLP.hru | 平均坡度 | $[0,0.6]$ | 0.8 | 0.42 | 8 | $-4.02$ | 0.00 | 1 |
+| $\mathrm{CH}_{2} \mathrm{~N} 2, \mathrm{fte}$ | 主河道曼宁系数值 | $[0,0.3]$ | 0.05 | 0.96 | 9 | 1.37 | 0.18 | 2 |
+
+敏度的变化与模型算法的修改有关，尤其是参数 SOL_BD、SOL_CRK、CANMX 是影响土壤裂隙体积的重要参数。
+
+### 2.2 模型修正前后对比
+
+利用修改后的 SWAT 模型对流域出口观测的日径流数据进行率定和验证。原模型和修正后的模型各指标如表 3 所示。使用 2015 年 1 月 1 日至 2018年 12 月 31 日的数据对模型参数进行校准，原始模型的 R2 为 0.37 , NSE 为 0.32 ; 而修正后模型的 R2为 0.58 , NSE 为 0.60 。可以看出, 修正后的模型显著
+
+提升了可靠性。此外，使用 2019 年 1 月 1 日至 2019年 12 月 31 日的数据进行验证，修正模型的验证期R2 为 0.60 , NSE 为 0.55 , 而原始模型的验证期 R2 为 0.56 , NSE 为 0.52 。两种模型的 PBLAS 均小于 $25 \%$ 。结果表明，修正后的 SWAT 模型优于原始 SWAT 模型，并且修正的模型满足了模拟精度的要求 ${ }^{[59]}$ 。因此，通过裂隙流模块的修正，模型更适用于喀斯特地区的径流估算。一方面是由于校准敏感性参数，更重要的是引入了湿润条件下土壤裂隙体积的计算，更真实地代表了岩溶小流域复杂的水文过程。
+
+表 3 模型日径流模拟评价指标
+Table 3 Evaluation index of daily runoff simulation of the model
+
+|  | 率定期 |  |  |  |  |  |
+| :-- | :--: | :--: | :--: | :--: | :--: | :--: |
+|  | NSE | $\mathrm{R}^{2}$ | PBIAS | NSE | $\mathrm{R}^{2}$ | PBIAS |
+| 原始 SWAT | 0.32 | 0.37 | $22.5 \%$ | 0.52 | 0.56 | $19.9 \%$ |
+| 修正 SWAT | 0.60 | 0.58 | $21.0 \%$ | 0.55 | 0.60 | $21.0 \%$ |
+
+模型日径流模拟过程线如图3所示，修正后的 SWAT 模拟的径流序列与实测数据进行了比较，可以观察到模拟与实测的流量基本趋势一致，改良后的 SWAT 模型的模拟值优于原始 SWAT 模型的径流模拟值。然而，对较大洪峰模拟效果不太理想。通过 2017 年径流量模拟对比图可知，修正后模拟的峰值与实测的峰值拟合度较差，主要表现在模拟的极大峰值偏小，低估了高流量（图4），这是由于喀斯特地貌具有丰富的开裂和孔隙系统，强降雨导致水分迅速向下传输，增强了流域的下漆能力。
+
+图5 展示了修正后的 SWAT 模型与 SWAT 模型在日尺度上的流量值散点图。相关系数被用来衡量地表径流在时间序列上的相似性，反映了径流实测数据与模拟模型值之间的关系 ${ }^{[11]}$ 。结果显示：修正后的 SWAT 模型在率定期和验证期的相关系数分别为 0.61 和 0.67 ，高于原始 SWAT 模型。修正的 SWAT 模型的决定系数 $\left(\mathrm{R}^{3}\right)$ 表现出模拟值和观测值之间的良好相关性。此外，根据散点图中流量值的分布情况可以看出，修正后的模型的径流峰值优于原模型的模拟效果。
+
+
+图3 SWAT 模型修正前后径流量模拟对比
+Fig. 3 Simulation comparison of runoff capacity before and after the modification of SWAT model
+
+
+
+图42017年径流量模拟对比图
+Fig. 4 Comparison of runoff simulation in 2017
+
+
+图5 SWAT 模型修正前后径流模拟散点图
+Fig. 5 Scatter plot of runoff simulation before and after the modification of SWAT model
+
+# 2.3 入渗量的评估 
+
+土体裂隙中的水分表现出明显的随季节性干湿交替变化的特点，这对土壤的人渗速率产生影响。当降水到达地面后，其中一部分以地表径流的方式流出，另一部分则通过人渗进人地下，被称为人渗量 ${ }^{[32]}$ ，土壤人渗是指降雨渗人土体形成土壤水的基本水文过程，土壤渗透能力影响着地表径流和土壤侵蚀强度 ${ }^{[33]}$ 。为了更好地分析土壤裂隙对人渗量的影响，探究了 HRU 人渗量与土壤含水量以及地表径流的变化关系，如表 4 所示，在修正后的模型中，土壤含水量与人渗量呈正比关系，而地表径流与人渗量呈反比关系。日平均的人渗量由 0.23 mm 增加到 0.84 mm ，增加了 3.65 倍；产生的日均地表径流由 3.98 mm 减少到 3.14 mm ，人渗量明显增加，地表径流减少。同时，土壤含水量由 139.53 mm 增加到
+
+表 4 HRU 在模型修正前后的入渗量和地表径流
+Table 4 Infiltration and surface runoff of HRU before and after the modification of SWAT model
+
+| 模型 | 人渗量 $/ \mathrm{mm}$ | 土壤含水量 $/ \mathrm{mm}$ | 地表径流 $/ \mathrm{mm}$ |
+| :-- | :--: | :--: | :--: |
+| SWAT | 0.23 | 139.53 | 3.98 |
+| 修正 SWAT | 0.84 | 158.30 | 3.14 |
+
+158.30 mm , 增加了 18.77 mm 。在月尺度上（图6），土壤人渗与地表径流的比例发生了变化，人渗量的比例增加，导致地表径流的比例降低。在模型修正之前，子流减的月平均人渗量为 27.57 mm ，地表径流为 242.82 mm ，而在模型修正之后，月平均人渗量增加到 102.38 mm ，地表径流减少至 191.64 mm 。相对而言，修正后的模型使人渗量增加了 74.81 mm ，地表径流减少了 51.18 mm 。这与预期的结果一致，说明在产生持续降雨时，土壤裂隙体积仍然存在，地表径
+
+
+
+图6 模型修正前后的月均入渗量与地表径流的变化
+Fig. 6 Changes of average monthly infiltration and surface runoff before and after the modification of SWAT model
+流持续下渗，改善了土壤的水分入渗能力，从而增加了入渗量并抑制了地表径流的形成。这进一步验证了修正后的 SWAT 模型在模拟喀斯特地区的径流过程上的可靠性。
+
+降雨强度及其变化是决定入渗补给量的关键 ${ }^{[34]}$ 。喀斯特表层岩浴带发达，覆盖于表层岩浴带上方的土壤裂隙是土壤水分的漏失通道。由于土壤水分运动迅速，对降雨响应敏感 ${ }^{[33]}$ 。由图7可以看出，降水在年内呈现季节性变化，雨季丰沛的降水有利于补给的形成；相反，旱季降水较少，土壤较为干旱，难以形成有效的补给。修正后的模型显示入渗量有明显增加，并呈现明显的季节性差异。夏季的人渗量远
+
+大于春季和冬季，尤其是在降雨较为集中的 5-8 月份，渗漏量高达 563.50 mm ，其中 6 月的人渗量最大，达到 196.47 mm ，这是因为夏季的河流量大，降水充足。相比之下，而 2 月份的渗漏量最小，入渗量仅为 38.87 mm 。入渗补给是一个逐渐变化的动态过程，与降雨量的变化趋势基本相似。不同降雨量对土壤的人渗补给程度存在差异，整个渗漏补给过程表现为数量上的变化。降水在不同时间尺度上的变化特征造成了入渗补给规律的复杂性。总体而言，当降雨使得表层土壤饱和时，降雨量越大，入渗补给量越多，入渗作用更为显著。
+
+
+图7 SWAT 模型修正前后月入渗量随降雨量的变化
+Fig. 7 Changes of monthly infiltration with rainfall before and after the modification of SWAT model
+
+# 3 讨 论 
+
+通过修正 SWAT 模型的裂隙流模块，旨在更准确地模拟喀斯特地区的地表径流与土壤裂隙入渗。
+
+结果表明，修正后的模型模拟的径流值与实测数据更接近，修正后 SWAT 模型率定期的 NSE 为 0.60 ， $\mathrm{R}^{2}$ 为 0.58 ，验证期为 NSE $0.55, \mathrm{R}^{2}$ 为 0.60 ，因此，在喀斯特小流域具备一定的适用度。类似地，Reza Eini
+
+使用修正后的 SWAT 模型模拟产沙产流的结果表明此模型在喀斯特流域同样适用 ${ }^{[26]}$ 。尽管修正后的 SWAT 模型提高了径流值，该方法的适用性应用仍有待进一步验证。研究区流域上游无明确出口集雨面积 $3.70 \mathrm{~km}^{2}$ ，并且存在地下水出口两处，降雨易形成地下水通道，导致模拟结果出现误差。
+
+在参数敏感性方面，修改前后模型的参数敏感性存在一定差异，主要表现为修改后的 SOL_BD、 SOL_CRK、CANMX 及 CN2 参数敏感度上升。裂隙体积的计算取决于土壤中可能存在的最大裂隙体积，植被可利用水量、土壤水分以及 SOL_CRK 系数。 SOL_CRK 系数是衡量土壤孔隙度的指标，对于估计土壤裂隙至关重要。因此，修改后模型 SOL_BD、 SOL_CRK 敏感度较高。这与 Jafari 模拟的参数敏感性结果一致 ${ }^{[36]}$ ；修改后 CANMX 敏感度提高的原因可能与研究区的植被覆盖有关，流域中林地和耕地是最常见的土地利用类型，占总流域面积的 $91 \%$ ，作物冠层对降水进行了重新分配，这使得 CANMX 成为流域的关键参数；CN2 是影响径流模拟最直接的参数。
+
+在具有地表地下双层空间结构的喀斯特山区，黏性土的胀缩性导致土体产生裂缝，大部分降水以渗漏的形式通过裂隙输送到地下。地表渗漏性较强，降雨人渗高，在修正 SWAT 模型后与岩溶 HRU 的标准 $\operatorname{SWAT}(0.23 \mathrm{~mm}$ )相比，修改后的模型估计的人渗值（ 0.84 mm ）更高，这反映了岩溶流域更合理的降雨补给水平。土壤的干缩裂隙会影响降雨在陆地水文的循环过程 ${ }^{[37]}$ ，这些裂缝在某些地区会因高降雨量和高蒸发量而加剧，导致水分渗漏和养分流失，不利于植被生长。
+
+## 4 结论与展望
+
+（1）SWAT 模型修正后参数敏感性排序与原始 SWAT 模型有明显的差异。对于修正后的模型， SOL_BD 和 SOL_CRK 是对地表径流量估算影响最大的参数。此外，CANMX、CN2、GW_DELAY、 LAT_TTIME 也是非常敏感的参数，这表明参数敏感度的变化与模型算法的修改有关。
+（2）使用修正的 SWAT 模型对喀斯特小流域进行日尺度的模拟，结果表明：径流率定期 $\mathrm{R}^{2}$ 提升了 0.26 , NSE 提高了 0.23 , 验证期 $\mathrm{R}^{2}$ 提高到 0.60 , NSE
+
+提高到 0.55 。各项指标都符合评价标准，说明修正后的 SWAT 模型相关结果可对喀斯特地区小流域的径流模拟提供一定参考。
+（3）和原始 SWAT 模型相比，模型修正后 HRU降雨人渗量增加了 0.61 mm ，地表径流相对减少 0.84 mm ，土壤含水量增加了 18.77 mm ，说明修正后的 SWAT 模型更符合岩溶地区的补给情况。并且人渗量呈季节性变化，在汛期降雨量充足时，人渗量随之倍增。
+
+本研究采用改进的 SWAT 模型对喀斯特水循环过程进行模拟，对于喀斯特流域具备一定的适用性。然而，研究中改进 SWAT 模型仅在裂隙流模块进行考虑，而忽略了壤中流、侧向流、地下径流等多种形式的水文过程，同时也未考虑蒸散发量的影响。此外，研究区小流域的集水面积较小，并且受到地形和植被覆盖等因素的影响，导致径流变化相对不稳定。尽管使用日尺度的数据，但由于数据周期不够长，径流模拟的精度相对较低。在未来的研究中，可以从水量收支、污染物随土壤裂隙迁移、水土流失等方面展开更深人的探索，以提高模型的全面性和准确性，推广至更大面积的喀斯特流域。
+
+## 参考文献
+
+[1] 熊康宁, 池永宽. 中国南方喀斯特生态系统面临的问题及对策 [J]. 生态经济, 2015, 31(1): 23-30.
+XIONG Kangning, CHI Yongkuan. The problems in Southern China karst ecosystem in southern of China and its countermeasures[J]. Ecological Economy, 2015, 31(1): 23-30.
+[2] 卢卫中. 岩溶流域水文模型初步研究 [J]. 水文, 1995(2): 29-33.
+[3] 杨杨, 赵良杰, 潘晓东, 夏日元, 曹建文. 西南岩溶山区地下水资源评价方法对比研究：以寒底地下河流域为例[J]. 中国岩溶, 2022, 41(1): 111-123.
+YANG Yang, ZHAO Liangjie, PAN Xiaodong, XIA Riyuan, CAO Jianwen. Comparative study on evaluation methods of groundwater resources in karst area of Southwest China: Taking Zhaidi underground river basin as an example[J]. Carsologica Sinica, 2022, 41(1): 111-123.
+[4] Pang S, Wang X, Melching C S, Feger K H. Development and testing of a modified SWAT model based on slope condition and precipitation intensity[J]. Journal of Hydrology, 2020, 588: 125098.
+[5] Arnold J G, Srinivasan R, Muttiah R S, Williams J R. Large area hydrologic modeling and assessment part I: Model development [J]. JAWRA Journal of the American Water Resources Association, 1998, 34(1): 73-89.
+
+[6 ] 杨明德，谭明，梁虹. 喀斯特泼域水文地貌系统[M]. 北京：地质出版社，1998.
+[7] 刘文冲，赵良杰，拓亚莉，曹建文，王莹，李美玲. 基于 SWATMODFLOW 地表-地下水耦合模型的结构与应用研究[J]. 中国岩浴, 2023, 42(6): 1131-1139.
+LIU Wenchong, ZHAO Liangjie, CUI Yali, CAO Jianwen, WANG Ying, LI Meiling. Structure and application of SWATMODFLOW coupling model for surface-groundwater[J]. Carsologica Sinica, 2023, 42(6): 1131-1139.
+[8] 张金存, 芮孝芳. 分布式水文模型构建理论与方法述评[J]. 水科学进展, 2007(2): 286-292.
+ZHANG Jincun, RUI Xiaofang. Discussion of theory and methods for building a distributed hydrologic model[J]. Advances in Water Science, 2007(2): 286-292.
+[9] 张程鹏, 张凤璌, 耿新新, 龚俊杰, 陈永康. 岩浴地下河在 SWAT 中的模化方法：以华节倒天河泼域为例[J]. 中国岩浴， 2020, 39(5): 665-672.
+ZHANG Chengpeng, ZHANG Feng'e, GENG Xinxin, JI Junjie, CHEN Yongkang. Generalization method of karst underground river in SWAT: An example of the Daotian riverwatershed in Bijie, Guizhou[J]. Carsologica Sinica, 2020, 39(5): 665-672.
+[10] 赖格英，易铁琨，刘维，盛盖盈，彭小娟，熊家庆，潘思怡，吴肯.基于修正 SWAT 模型的岩浴地区非点源污染模拟初探：以横道河泼域为例[J]. 湖泊科学, 2018, 30(6): 1560-1575.
+LAI Geying, YI Shukun, LIU Wei, SHENG Yingying, PENG Xiaojuan, XIONG Jiaqing, PAN Siyi. WU Qing. Non-point source pollution simulation in karst region based on modified SWAT Model: A case study in Henggang river basin[J]. Journal of Lake Sciences, 2018, 30(6): 1560-1575.
+[11] 梁桂星，覃小群，拓亚莉，陈爽，黄奇波. 分布式水文模型在岩浴地区的改进与应用研究[J]. 水文地质工程地质, 2020, 47(2): 60-67.
+LIANG Guixing, QIN Xiaoqun, CUI Yali, CHEN Shuang, HUANG Qibo. Improvement and application of a distributed hydrological model in karst regions[J]. Hydrogeology and Engineering Geology, 2020, 47(2): 60-67.
+[12] Nguyen V T, Dietrich J, Uniyal B. Modeling interbasin groundwater flow in karst areas: Model development, application, and calibration strategy[J]. Environmental Modelling \& Software, 2020, 124: 104606.
+[13] 马平红，张科利. 西南喀斯特地区土壤侵蚀研究进展与展望 [J]. 地球科学进展, 2018, 33(11): 1130-1141.
+MA Qianhong, ZHANG Keli. Progresses and prospects of the research on soil erosion in karst area of Southwest China[J]. Advances in Earth Science, 2018, 33(11): 1130-1141.
+[14] 张家俊，萧壁卫，胡波，周小文，王军. 干湿循环作用下膨胀土裂隙演化规律试验研究[J]. 岩土力学, 2011, 32(9): 27292734.
+
+ZHANG Jiajun, GONG Biwei, HU Bo, ZHOU Xiaowen, WANG Jun. Study of evolution law of fissures of expansive clay under wetting and drying cycles[J]. Rock and Soil Mechanics,
+
+2011, 32(9): 2729-2734.
+[15] 罗舒玉，邓羽松，陈洪松，王金悦，廖达兰. 干湿交替条件下喀斯特峰丛洼地土壤裂隙发育规律[J]. 应用生态学报, 2023, 34(2): 387-395.
+LUO Shuyu, DENG Yusong, CHEN Hongsong, WANG Jinyue, LIAO Dalan. Development law of soil cracks in karst peak-cluster depressions under dry and wet alternations[J]. Chinese Journal of Applied Ecology, 2023, 34(2): 387-395
+[16] Novák V, Simunek J Jirka, Van Genuchten M. Infiltration of water into soil with cracks[J]. Journal of Irrigation and Drainage Engineering, 2000, 126: 41-47.
+[17] Tuong T P, Cabangon R J, Wopereis M C S. Quantifying flow processes during land soaking of cracked rice soils[J]. Soil Science Society of America Journal, 1996, 60(3): 872-879.
+[18] 王晓明，乔飞，雷坤，任广军，王小龙. SWAT 模型在我国的研究和应用进展[J]. 中国农村水利水电, 2015(5): 109-113.
+WANG Xiaopeng, QIAO Fei, LEI Kun, REN Guangjun, WANG Xiaolong. Research on and application of SWAT model in China[J]. China Rural Water and Hydropower, 2015(5): 109113 .
+[19] 谢晖, 顾嘉丽, 董建炜, 高田田, 赖锡军. 泼域水文模型在面源污染模拟与管控中的应用研究进展[J]. 生态学报, 2022, 42(15): 6076-6091.
+XIE Hui, QIU Jiali, DONG Jianwei, GAO Tiantian, LAI Xijun. Research of the HSPF model on nonpoint source pollution modeling and management: Progresses and perspectives[J]. Journal of Ecology, 2022, 42(15): 6076-6091.
+[20] 景网星，毛欢，宋进喜，黄鹏，吴琮，庞国伟. 总位沟泼域汛期径流模拟及地表产流特征分析[J]. 水土保持研究, 2023, 30(1): 62-69.
+JING Kexing, MAO Huan, SONG Jinxi, HUANG Peng, WU Qiong, PANG Guowei. Simulation of runoff in flood season and analysis of surface runoff characteristics in Chabagou watershed[J]. Research of Soil and Water Conservation, 2023, 30(1): 62-69.
+[21] 贵州省土壤普查办公室. 贵州土种志[M]. 贵阳：贵州科技出版社, 1994.
+[22] Zhang J M, Luo Y, Zhou Z, Chong L, Victor C, Zhang Y F. Effects of preferential flow induced by desiccation cracks on slope stability[J]. Engineering Geology, 2021, 288: 106164.
+[23] 张中彬，彭新华. 土壤裂隙及其优先流研究进展[J]. 土壤学报， 2015, 52(3): 477-488.
+ZHANG Zhongbin, PENG Xinhua. A review of researches on soil cracks and their impacts on preferential flow[J]. Acta Pedologica Sinica, 2015, 52(3): 477-488.
+[24] 陈洪松，杨静，傅伟，何非，王龙林. 桂西北喀斯特峰丛不同土地利用方式坡面产流产涉特征[J]. 农业工程学报，2012， 28(16): 121-126.
+CHEN Hongsong, YANG Jing, FU Wei, HE Fei, WANG Kelin. Characteristics of slope runoff and sediment yield on karst hillslope with different land-use types in northwest Guangxi[J].
+
+Transactions of the Chinese Society of Agricultural Engineering, 2012, 28(16): 121-126.
+[25] Salmani H, Javadi S, Eini M R, Golmohammadi G. Compilation simulation of surface water and groundwater resources using the SWAT-MODFLOW model for a karstic basin in Iran[J]. Hydrogeology Journal, 2023, 31(3): 571-587.
+[26] Reza Eini M, Javadi S, Delavar M, Gassman P W, Jarihani B. Development of alternative SWAT-based models for simulating water budget components and streamflow for a karstic-influenced watershed[J]. Catena, 2020, 195: 104801.
+[27] Santhi C, Arnold J G, Williams J R, Hauck L M, Dugas W A. Application of a watershed model to evaluate management effects on point and nonpoint source pollution[J]. Transactions of the ASAE, 2001, 44(6): 1559.
+[28] 桑灿, 李兆华, 冯学高, 张热. 白莲河流域总碑关键探区识别与最佳管理措施 (BMPs) 研究 [J]. 长江流域资源与环境, 2024, 33(2): 374-386.
+SANG Can, LI Zhaohua, FENG Xuegao, ZHANG Jin. Identification of phosphorus emission critical source areas and evaluation of best management practices in Bailian river basin based on SWAT model[J]. Resources and Environment in the Yangtze Basin, 2024, 33(2): 374-386.
+[29] 袁江, 李瑞, 舒栋才, 黄凯, 盘礼东, 张琳卿. 基于 SWAT 模型的喀斯特流域产流特征对石漠化治理措施的响应[J]. 水土保持学报, 2021, 35(6): 151-160.
+YUAN Jiang, LI Rui, SHU Dongcai, HUANG Kai, PAN Lidong, ZHANG Linqing. Response of runoff characteristics of karst watershed to rocky desertification control measures based on SWAT model[J]. Journal of Soil and Water Conservation, 2021, 35(6): 151-160.
+[30] Moriasi D N, Arnold J G, Van Liew M W, Bingner R D, Harmel R D, Veith T L. Model evaluation guidelines for systematic quantification of accuracy in watershed simulations[J]. Transactions of the ASABE, 2007, 50(3): 885-900.
+[31] 董力轩, 常顺利, 张毓涛. SWAT 模型在天山林区林冠截留过程中的改进应用[J]. 生态学报, 2022, 42(18): 7630-7640.
+
+DONG Lixuan, CHANG Shunli, ZHANG Yutao. Improvement and application of SWAT model in canopy interception in Tianshan forest area[J]. Acta Ecologica Sinica, 2022, 42(18): 76307640 .
+[32]许昆. 跨水星与地下水补给星的关系分析[J]. 地下水, 2004(4): 272-274.
+XU Kun. Analysis on relationship between the precipitation \& groundwater replenishment[J]. Ground Water, 2004(4): 272-274.
+[33] 李占斌, 朱冰冰, 李鹏. 土壤侵蚀与水土保持研究进展[J]. 土壤学报, 2008(5): 802-809.
+LI Zhanbin, ZHU Bingbing, LI Peng. Advancement in study on soil erosion and soil and water conservation[J]. Acta Pedologica Sinica, 2008(5): 802-809.
+[34] 郭思远, 靳孟贵. 不同降水及灌溉条件下的地下水入渗补给规律[J]. 水文地质工程地质, 2015, 42(5): 6-13, 21.
+HUO Siyuan, JIN Menggui. Effects of precipitation and irrigation on vertical groundwater recharge[J]. Hydrogeology \& Engineering Geology, 2015, 42(5): 6-13, 21.
+[35] 冈钻全, 刘琦, 郑大鹏, 王涵. 表层岩浙裂隙带土壤地表流失:地下漏失室内模拟实验[J]. 中国岩浙, 2022, 41(2): 240-248.
+YAN Yiquan, LIU Qi, DENG Dapeng, WANG Han. Laboratory simulation study on soil surface loss and underground leakage in the epikarst fissure zone[J]. Carsologica Sinica, 2022, 41(2): 240-248.
+[36] Jafari T, Kiem A S, Javadi S, Nakamura T, Nishida K. Fully integrated numerical simulation of surface water-groundwater interactions using SWAT-MODFLOW with an improved calibration tool[J]. Journal of Hydrology: Regional Studies, 2021, 35: 100822.
+[37] 李航, 郑丽萍, 甘永德, 王涛涛, 吴玉绳, 李凯杰, 调立. 影胀性土壤干缩裂隙对入渗产流影响[J]. 中国农村水利水电, 2023(10): 114-120.
+LI Hang, ZHENG Liping, GAN Yongde, WANG Shangtao, WU Yushuai, LI Runjie, GUO Li. Influence of swelling soil shrinkage cracks on rainfall infiltration tests[J]. China Rural Water and Hydropower, 2023(10): 114-120.
+
+# Runoff simulation of modified SWAT model in karst watershed: A case study of Yangjichong sub-watershed 
+
+YANG Li ${ }^{1,2}$, YANG Guangbin ${ }^{1,2}$, LI Yiqiu ${ }^{1}$, LI Man ${ }^{1,2}$<br>( 1. School of Geography and Environmental Science, Guizhou Normal University, Guiyang, Guizhou 550025, China; 2. Key Laboratory of Remote Sensing Application for Mountain Resources and Environment in Guizhou Province, Guiyang, Guangxi 550025, China )
+
+Abstract In the karst area of Guizhou, many factors can limit the formation of surface runoff, such as developed karst structures, strong rainfall leakage, rapidly changing hydrological processes, low water storage capacities, and lost surface runoff through soil fissures, karst pipes and other pathways. Therefore, for the protection of the ecological environment and the control of soil erosion in this area, it is of great significance for us to investigate the variation of surface runoff in karst areas and the law of flow production. The model of Soil and Water Assessment Tool (SWAT) is
+
+a distributed hydrological model developed by the Agricultural Research Center, United States Department of Agriculture (USDA-ARS), and it is widely used in the simulation and prediction of watershed runoff, sediment, water quality and so on in different environments. However, due to the dissolution and erosion in karst areas, the development of water systems and hydrological dynamics show great differences from non-karst areas. In general, scholars' modification of the SWAT model mainly focuses on the modeling of karst features, but the SWAT model has seldom been used in the study of the effect of soil fissures on runoff under wet conditions. Guizhou is located in the subtropical monsoon climate zone, with concentrated precipitation, alternating wet and dry conditions. The soil in Guizhou is characterized by strong expansion and contraction. Consequently, the fissure flow is developed from soil fissures during rainfall. Even after rewetting, the soil fissures will not close, leading to significant water infiltration, which in turn will affect surface-produced flows. However, in the original SWAT model, volume of fissures (volcr) under wet conditions will close by default, and hence water cannot infiltrate. In order to make the conditions of SWAT model closer to the real situation in the karst watershed, the calculation of the fissure volume in the SWAT model was modified in this study to balance the wet and dry soil conditions to prevent fissure closure and to ensure that soil fissures can be formed in wet soils as well. The modification process is as follows: the crack flow module was firstly activated; then the maximum crack volume of the soil layer was calculated; finally, the crack volume on the simulation day was modified in crackvol.f. Taking Yangjichong sub-watershed in Longli county as the study area, this study modified the fissure flow module of the SWAT model and the representation of fissure infiltration, based on the measured data from 2013 to 2019. Subsequently, a comparative analysis of daily runoff simulation before and after the modification was carried out so as to make the results of surface runoff simulation closer to the actual situation of the humid karst region.
+
+The study results show as follows: (1) The Nash coefficient increased from 0.32 to 0.60 and the coefficient of determination from 0.37 to 0.58 in the period of determining rate. In the validation period, the Nash coefficient increased from 0.52 to 0.55 and the coefficient of determination from 0.56 to 0.60 . These data indicate that the runoff time series of the modified model is more consistent with the measured data, which can show a better applicability of the modified model than the original one. (2) There are some differences in the parameter sensitivity of the model before and after the modification, and the parameters SOL_BD, SOL_CRK, and CANMX are important to affect the soil fissure volume. (3) The modified model improved the water infiltration capacity of the soil. The soil moisture content was positively correlated with infiltration, and the surface runoff was negatively correlated with infiltration. The average daily infiltration increased from 0.23 mm to 0.84 mm , an increase of 3.65 times; the average daily surface runoff decreased from 3.98 mm to 3.14 mm , with a significant increase in infiltration and a decrease in surface runoff. At the same time, the soil water content increased from 139.53 mm to 158.30 mm , an increase of 18.77 mm . (4) The modified model showed a significant increase in infiltration and obvious seasonal differences, which was basically similar to the variation of rainfall, that is, the larger the rainfall is, the more infiltration recharge becomes, and the more significant infiltration is. The results of the study provide reference for water resource management in the karst subwatershed.
+
+Key words modification of SWAT model, karst sub-watershed, soil fissure module, runoff simulation
+(编辑杨杨)

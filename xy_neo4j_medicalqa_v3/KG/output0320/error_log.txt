@@ -1,0 +1,3 @@
+余小波 等 - 基于CN05.1数据集驱动SWAT模型的玉龙喀什河流域径流模拟2024 - .txt: 'KnowledgeGraphEngine' object has no attribute '_add_new_relation'
+余小波 等 - 基于CN05.1数据集驱动SWAT模型的玉龙喀什河流域径流模拟2024 - .txt: 'KnowledgeGraphEngine' object has no attribute '_add_new_relation'
+刘婕 - 基于SWAT模型的沩水流域径流模拟2021 - .txt: 'KnowledgeGraphEngine' object has no attribute '_add_new_relation'

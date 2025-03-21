@@ -1,0 +1,277 @@
+# 基于 SWAT 模型的滇池流域不同时间尺度径流模拟 
+
+石建杨, 李向新<br>（昆明理工大学国土资源工程学院, 云南 昆明 650093）
+
+
+#### Abstract
+
+摘要：基于 SWAT 分布式水文模型，使用 HWSD 数据库对研究区域土壤参数率定，构建土壤数据库，结合 GlobeLand30 地表覆被数据，进行水文响应单元划分，利用 CFSR 气象数据集对滇池流域不同时间尺度的径流过程进行模拟，并用 ArcSWAT-CUP 基于 SUFI2 算法对研究区域敏感性参数进行率定分析。使用相对误差 $R_{s}$, 决定性系数 $R^{s}$ 和纳什系数 $N_{\text {soll }}$ 评定模拟效果。模拟结果显示，日、月、年径流模拟均符合模拟精度要求，SWAT 模型敏感性参数分析显示，影响流域径流模拟效果的前 3 个参数为 CN2、ALPHA、DF、 GW、DELAY，请参后 $\left|R_{s}\right|$ 均小于 $10 \%, R^{S}, N_{\text {soll }}$ 均大于 0.9 ，说明 SWAT 模型对滇池流域径流模拟的适用性较好，可为滇池流域水文监测预报、水资源合理规划与管理提供参考。关键词：SWAT 模型；滇池流域；水文响应单元；时间尺度；径流模拟中图分类号：P208；TV121 文献标志码：A 文章编号：1000-7709（2022）08-0037-04
+
+
+## 1 概况
+
+滇池流域位于云贵高原中部，地处长江、珠江和红河三大水系分水岭地带。滇池流域面积宽广，多年平均年径流量 $7.5 \times 10^{8} \mathrm{~m}^{3}$ ，以海口河为出水口，包含滇池及注入滇池的多条河流及支流 （图1）。盘龙江是流入滇池的主要水源，多年平均年径流量为 $1.65 \times 10^{8} \mathrm{~m}^{3}$ 。海口河是滇池唯一的出湖河流，从富民注入普渡河，汇入金沙江。滇池流域年平均气温 $15.1^{\circ} \mathrm{C}$ ，年均降雨量 1075 mm ，年均日照 $2200 \mathrm{~h} ，$ 无霜期 240 d 以上。滇池
+
+
+图1 滇池流域
+Fig. 1 Bianchi lake watershed
+
+流域属于热带湿润气候，雨量集中在夏季，且多大雨、暴雨，降水量占全年的 $60 \%$ 以上，故易发生洪涝灾害。全年降水量在时间分布上明显地分为干湿两季， $5 \sim 10$ 月为雨季，降水量占全年的 $85 \%$ 左右；11月至次年 4 月为干季，降水量仅占全年的 $15 \%$ 左右。滇池流域土壤类型繁多，层次结构复杂，分布不均，土地利用类型主要为林地，其次为城镇用地和耕地。本文基于 SWAT 模型模拟滇池流域年、月、日的径流变化过程，并使用 ArcS-WAT-CUP 对流域敏感性参数进行率定，以期提高流域径流模拟精度，为流域水文监测预报、水资源合理配置优化提供参考。
+
+## 2 水文响应单元分析
+
+水文响应单元（HRU）是 SWAT 模型进行水文模拟计算的基本单元 ${ }^{(1)}$ 。水文响应单元主要依据流域内的土地利用情况、土壤类型分布、坡度大小等进行划分 ${ }^{(2)}$ ，水文响应单元的划分是分布式水文模型进行水文计算的关键环节，其划分的精度决定了水文模型计算的准确性与适用性 ${ }^{(3)}$ 。本文使用 ArcSWAT 的水文响应分析模块对滇池流域水文响应单元进行划分。
+
+收稿日期：2021-09-11，修回日期：2021-10-22
+作者简介：石建杨（1994-），男，硕士研究生，研究方向为地理信息技术开发与应用、数字流域水文模拟，E-mail： 2629095507@qq.com
+通讯作者：李向新（1963-），男，副教授，研究方向为 3 S 技术集成及工程应用，E-mail：243008386@qq. com
+
+## 2.1 土地利用
+
+土地利用影响着径流的模拟，滇池流域土地利用以林地为主（图2）。研究使用土地利用数据来源于 GlobeLand30 全球地表覆盖数据，空间分辨率为 30 m 。
+
+
+图2 滇池流域土地利用类型
+Fig. 2 Land use types in Dianchi lake watershed
+使用土地利用分类规则将研究区域数据重分类为符合 SWAT 模型的土地利用数据，见表1。
+
+表 1 GlobeLand30 将 SWAT 模型土地利用 Tab. 1 GlobleLand30 to SWAT model land use
+
+| 分类代码 | GlobeLand30 土地利用类型 | SWAT 土地利用类型 |
+| :--: | :-- | :-- |
+| 10 | 耕地 (Cropland) | AGRL |
+| 20 | 林地 (Forest) | FRST |
+| 30 | 草地 (Grass) | RNGE |
+| 40 | 漫木地 (Shrub) | RNGB |
+| 50 | 湿地 (Wetland) | WETL |
+| 60 | 水体 (Water) | WATR |
+| 70 | 苔源 (Tundra) | SWRN |
+| 80 | 人造地表 (Impervious) | URBN |
+| 90 | 棣地 (Bareland) | BARR |
+| 100 | 冰川和永久积雪 (Snow/ice) | WETN |
+
+### 2.2 土壤数据库构建
+
+土壤数据是 SWAT 模型输入的重要数据，研究区域土壤数据来源于世界粮农组织（FAO）和维也纳国际应用系统研究所（IIASA）构建的世界土壤数据库（HWSD），见图3。
+
+
+图3 滇池流域土壤类型
+Fig. 3 Soil types in Dianchi lake watershed
+
+### 2.2.1 土壤参数率定
+
+在构建 SWAT 土壤数据库过程中需要计算土壤湿重度、田间有效持水量、土壤饱和导水率、土壤侵蚀性因子、水文分组等参数。使用 SPAW
+
+软件，根据 HWSD 数据库中土壤的沙土含量、粘土含量、砾石含量及有机碳含量分别率定 SWAT模型所需的参数 ${ }^{[1]}$ 。
+
+### 2.2.2 土壤水文分组
+
+土壤水文分组依据土壤下渗率的大小分为 A、B、C、D四类（表2），水文分组体现的是在降雨与地表覆被条件相同的情况下，处于同一水文组别的土壤的产流能力。
+
+表 2 USDA 土壤调查水文分组标准
+Tab. 2 USDA standard for soil survey and
+hydrology grouping
+
+| 划分标准 | 水文组类别 |  |  |  |
+| :--: | :--: | :--: | :--: | :--: |
+|  | A | B | C | D |
+| 表层饱和导水率/ $\left(\mathrm{mm} \cdot \mathrm{h}^{-1}\right)$ | $>254.0$ | $54.0 \sim 254.0$ | $8.4 \sim 54.0$ | $<8.4$ |
+| 土壤最小下渗率/ $\left(\mathrm{mm} \cdot \mathrm{h}^{-1}\right)$ | $7.6 \sim 11.4$ | $3.8 \sim 7.6$ | $1.3 \sim 3.8$ | $0 \sim 1.3$ |
+
+水文分组的经验性计算公式为：
+
+$$
+G=(20 R)^{1.8}
+$$
+
+其中 $\quad R=(\rho / 10) \times 0,03+0,002$
+式中， $G$ 为水文分组组别； $R$ 为土壤的平均粒径， $\mathrm{mm} \mathrm{~s} \rho$ 为土壤砂粒的含量， $\%$ 。
+
+### 2.2.3 土壤侵蚀性因子
+
+土壤侵蚀性因子计算采用 SHARPLY A N等 ${ }^{[2]}$ 在 EPIC 模型中提出的土壤侵蚀性因子估算方法，该方法简单实用，只需要土壤颗粒组成参数和土壤有机碳含量。具体计算公式为：
+
+$$
+\begin{gathered}
+K_{\text {USLE }}=f_{\text {coand }} f_{\text {cl-ai }} f_{\text {oage }} f_{\text {hismal }} \\
+f_{\text {coand }}=0,2+0,3 \mathrm{e}^{-0,0256 m_{c}\left(1-m_{a l l t} / 100\right)} \\
+f_{\text {cl-ai }}=\left[m_{\text {alit }} /\left(m_{c}+m_{\text {alit }}\right)\right]^{0,3} \\
+f_{\text {oage }}=1-\left[0,25 \rho_{\text {oage }} /\left(\rho_{\text {oage }}+\mathrm{e}^{0.75 \sim 2,50 \rho_{\text {oage }}}\right)\right] \\
+f_{\text {hismal }}=1-\frac{0,7\left(1-m_{c} / 100\right)}{\left(1-m_{c} / 100\right)+\mathrm{e}^{-0,31 \sim 25,511-m_{c} / 100}}
+\end{gathered}
+$$
+
+式中， $K_{\text {USLE }}$ 为土壤侵蚀性因子； $m_{c}$ 为土壤砂粒含量； $m_{\text {alit }}$ 为壤土含量； $m_{c}$ 为粘土含量； $\rho_{\text {oage }}$ 为土壤中有机质含量。
+
+### 2.2.4 土壤反射率
+
+土壤反射率是裸土表面对太阳辐射反射的能力。土壤反射率估算公式 ${ }^{[3]}$ 为：
+
+$$
+\alpha=0,6 / \mathrm{e}^{0.4 \rho_{\text {oage }}}
+$$
+
+研究区域土壤数据参数率定结果见表 3 。
+
+### 2.3 坡度分级
+
+坡度是影响径流速度的重要因子，本文将研究区域坡度划分为 3 个等级，分别对应 $0 \sim 10^{\circ}$ ， $10^{\circ} \sim 25^{\circ}$ 及大于 $25^{\circ}$ 。
+
+基于土地利用数据、土壤数据库、坡度等级对滇池流域水文响应单元进行划分，并对每类数据较小单元进行剔除，研究中剔除数据阈值均设置为 $10 \%$ ，最终研究区水文响应单元划分为 605 个。
+
+表3 研究区第一层土壤参数率定结果
+Tab. 3 The results of soil parameter calibration in the first layer of the study area
+
+| 土壤高 | 土壤 | 水文 | 土壤湿 | 田间有效 | 饱和水力 | 地表 | 谁饱饱 |
+| :--: | :--: | :--: | :--: | :--: | :--: | :--: | :--: |
+| 型壤码 | 名称 | 分组 | 密度 | 持水量 | 传导系数 | 反射率 | 因子 |
+| 11341 | FlLe | C | 1,37 | 0,14 | 18,27 | 0,47 | 0,35 |
+| 11366 | LXf | C | 1,20 | 0,14 | 5,08 | 0,35 | 0,25 |
+| 11377 | RGc | B | 1,37 | 0,12 | 18,77 | 0,44 | 0,29 |
+| 11404 | PHh | B | 1,23 | 0,15 | 26,21 | 0,28 | 0,24 |
+| 11605 | ATc | C | 1,29 | 0,15 | 18,74 | 0,38 | 0,33 |
+| 11663 | GLe | B | 1,32 | 0,15 | 19,57 | 0,39 | 0,29 |
+| 11809 | ACh | B | 1,36 | 0,11 | 18,83 | 0,40 | 0,23 |
+| 11831 | CMx | B | 1,36 | 0,12 | 19,54 | 0,41 | 0,25 |
+| 11839 | ALh | B | 1,32 | 0,14 | 19,27 | 0,38 | 0,27 |
+| 11864 | LVb | B | 1,36 | 0,14 | 19,73 | 0,45 | 0,30 |
+| 11925 | UR | D | 1,44 | 0,14 | 16,88 | 0,60 | 0,00 |
+| 11927 | WR | D | 1,44 | 0,14 | 16,88 | 0,60 | 0,00 |
+
+## 3 基于 SWAT 模型的滇池流域径流模拟
+
+研究主要对滇池流域年、月、日径流进行模拟，在径流模拟中主要采用相对误差 $R_{c}$ 、决定性系数 $R^{2}$ 和纳什系数 $N_{\text {NSE }}$ 作为模拟精度的评定指标。 $R_{c}$ 表示模拟值与实测值偏离程度， $R^{2}$ 表示实际值与模拟值之间趋势的一致性， $N_{\text {NSE }}$ 表示实际值与模拟值的拟合程度。综合这 2 个评价指标，一般认为 $\left|R_{c}\right|<20 \%, R^{2}>0,7, N_{\text {NSE }}>0,6$ 时模型模拟精度符合要求。计算公式分别为：
+
+$$
+\begin{aligned}
+& R_{c}=\sum_{i=1}^{n}\left(Q_{\text {sim }, i}-Q_{\text {obs }, i}\right) / \sum_{i=1}^{n} Q_{\text {obs }, i} \\
+& R^{2}=\frac{\left[\sum_{i=1}^{n}\left(Q_{\text {obs }, i}-Q_{\text {obs,eng }}\right)\left(Q_{\text {sim }, i}-Q_{\text {sim,eng }}\right)\right]^{2}}{\sum_{i=1}^{n}\left(Q_{\text {obs }, i}-Q_{\text {obs,eng }}\right)^{2} \sum_{i=1}^{n}\left(Q_{\text {sim }, i}-Q_{\text {sim,eng }}\right)^{2}} \\
+& N_{\text {NSE }}=1-\frac{\sum_{i=1}^{n}\left(Q_{\text {obs }, i}-Q_{\text {sim }, i}\right)^{2}}{\sum_{i=1}^{n}\left(Q_{\text {obs }, i}-Q_{\text {obs,eng }}\right)^{2}}
+\end{aligned}
+$$
+
+式中， $Q_{\text {obs }, i}$ 为第 $i$ 个观测值； $Q_{\text {sim }, i}$ 为第 $i$ 个模拟值； $Q_{\text {obs,eng }}$ 为观测数据平均值； $Q_{\text {sim,eng }}$ 为模拟数据平均值。
+
+## 3.1 气象数据
+
+使用的气象数据来源于 Climate Forecast System Reanalysis(CFSR) 气象数据集。文献[7]比较了 CFSR 气象数据集与实测气象数据的精度，并用 SWAT 模型模拟径流与蒸发，结果表明使用 CFSR 数据集进行径流模拟表现较好。
+
+## 3.2 子流域划分
+
+将流域划分为水文性质相近的子流域可以减小气象条件空间分布不均的影响。使用 SWAT
+
+子流域划分模块对滇池流域进行子流域划分，共划分为 126 个子流域。
+
+## 3.3 径流模拟结果
+
+从径流模拟结果可看出， $7 \sim 8$ 月日径流呈上升趋势（图4），这是由于研究区域从 6 月开始进入雨季，降雨逐渐增多；月径流类似余弦函数图像 （图5），6～10月为雨季，径流量持续增大，11月到次年 5 月为枯水季节，径流量逐渐减小；年径流波动不大（图6）。
+
+
+图4 2020年7～8月日径流模拟
+Fig. 4 Daily runoff simulation in July-August 2020
+
+
+图5 2019～2020年月径流模拟
+Fig. 5 Monthly runoff simulation in 2019-2020
+
+
+图6 2014～2020年径流模拟
+Fig. 6 Annual runoff simulation in 2014-2020
+ArcSWAT-CUP 可以根据研究区域观测数据率定 SWAT 模型的参数，以提高 SWAT 模型模拟的精度，研究使用流域出水口海口河径流数据基于 SUFI2 算法进行参数率定。结果见表4。
+
+表4 径流模拟结果表现指数
+Tab. 4 Performance indices of runoff simulation results
+
+| 时间 | $R_{c}{ }^{2} \%$ |  | $R^{2}$ |  | $N_{\text {NSE }}$ |  |
+| :--: | :--: | :--: | :--: | :--: | :--: | :--: |
+| 尺度 | 校正期 | 验证期 | 校正期 | 验证期 | 校正期 | 验证期 |
+| 日 | 16 | 9 | 0,76 | 0,93 | 0,69 | 0,90 |
+| 月 | 13 | 9 | 0,90 | 0,96 | 0,81 | 0,92 |
+| 年 | 6 | 3 | 0,89 | 0,97 | 0,65 | 0,90 |
+
+校正期表现指数 $R_{c} 、 R^{2} 、 N_{\text {NSE }}$ 均符合模型模拟精度要求，表明 SWAT 模型能较好地模拟滇池流域不同时间尺度的径流过程；经过敏感性参数率定后，验证期模拟精度均有所提高。
+
+# 3.4 模型参数敏感性分析 
+
+采用 ArcSWAT 提供的 LH-OAT 模块进行参数敏感性分析，量化各参数对滴池流域径流模拟的影响程度。分级标准见表 5 ，结果见表 6 。
+
+表 5 参数敏感性分级标准
+Tab. 5 Classification standard of parameter sensitivity
+
+| 喷砸 | 敏感值 | 敏感性 | 喷砸 | 敏感值 | 敏感性 |
+| :--: | :--: | :--: | :--: | :--: | :--: |
+| I | $<0.05$ | 低 |  |  |  |
+| II | $0.05 \sim 0.2$ | 中 |  | $>1.0$ | 喷高 |
+
+表6 流域主要参数率定结果及敏感性
+Tab. 6 The calibration results and sensitivity of main watershed parameters
+
+| 参数名称 | 敏感值 | 初始值 | 取值范围 | 率定值 | 调参 | 参数变化 |
+| :--: | :--: | :--: | :--: | :--: | :--: | :--: |
+| 顺湿条件下 SCS 径流盘线数（CN2） | 1.78 | $-0.17$ | $-0.2 \sim 0.2$ | 0.15 | R | $+$ |
+| 濒流系数（ALPHA_BF） | 1.47 | 0.125 | $0 \sim 1$ | 0.625 | V | $+$ |
+| 地下水迟源（GW_DELAY）/d | 1.25 | 355.5 | $30 \sim 450$ | 439.5 | V | $+$ |
+| 地下水再蒸发系数（GW_BEVAP） | 0.90 | 0.025 | $0 \sim 0.2$ | 0.145 | V | $+$ |
+| 土壤蒸发补偿系数（ESCO） | 0.77 | 0.8950 | $0.8 \sim 1$ | 0.875 | V | - |
+| 干流有效水力传导率（ $\mathrm{CH} \_\mathrm{B} 2 /(\mathrm{mm} \cdot \mathrm{h}^{-1})$ | 0.72 | 26.875 | $5 \sim 130$ | 83.125 | V | $+$ |
+| 土壤可供水量（SOL_AWC） $/(\mathrm{mm} \cdot \mathrm{~mm}^{-1})$ | 0.31 | 0.355 | $-0.2 \sim 0.4$ | $-0.005$ | R | - |
+| 土壤饱和水利传导度（SOL_K） $/(\mathrm{mm} \cdot \mathrm{h}^{-1})$ | 0.20 | 0.76 | $-0.8 \sim 0.8$ | 0.36 | R | $+$ |
+| 土壤饱和容量（SOL_DD） $/(\mathrm{mg} \cdot \mathrm{m}^{-3}$ ) | 0.17 | $-0.308$ | $-0.5 \sim 0.6$ | $-0.4725$ | R | - |
+| 融雪温度（SFTMP） $/(\mathrm{mm} \cdot \mathrm{C} \mathrm{C}^{-1} \cdot \mathrm{~d}^{-1}$ ) | 0.03 | 1.75 | $-5 \sim 5$ | 2.25 | V | $+$ |
+
+注：调参方式 $R$ 代表使用给定的参数乘以率定值与 $I$ 的和 $I V$ 代表将参数替换为率定值；调参的变化，" + "表示参数调整后增大，一表示谋参后参数减小。
+
+由率定参数敏感性可知，CN2、ALPHA_BF和 GW_DELAY 的敏感值均大于 1 ，对流域径流模拟效果影响较大，其他参数对径流模拟效果均有影响。
+
+## 3.5 模拟误差分析
+
+(1) CFSR 气象数据集高估了日尺度与月尺度的降水 ${ }^{[8]}$ ，降雨是影响径流的主要因素，从日、月径流的模拟结果可看出多数天数、月份模拟径流量大于实测径流量。
+（2）研究区域以林地为主，且阳光充足，年均日照 2200 h ，蒸发强烈，植物截留、蒸腾作用较大，这也是实测径流偏小的一个因素。
+(3) HWSI) 土壤数据库中土壤在垂直方向上仅划分为两层，且深度均匀，研究区位于云南地区，地形地貌复杂、土壤种类繁多、层状结构复杂、深浅不一，易形成多层壤中径流，影响径流模拟的精度。
+（4）由表 6 中各参数的敏感性可知，前 8 个参数对滴池流域径流模拟效果都有高敏感性，对参数进行不同调整后，表现指数均有所改善，表明不同敏感性参数对径流模拟的效果具有影响。
+
+## 4 结论
+
+a. SWAT 模型的表现指数 $R 、, R^{2} 、 N_{\text {SSE }}$ 均符合模型模拟精度要求，表明 SWAT 模型能较好地模拟滴池流域的径流过程，可为流域水文监测预报、水资源合理配置优化提供参考。
+b. SWAT 模型敏感性参数率定后，模拟精度
+
+均有改善；参数敏感性分析得出 CN2、ALPHA_BF和 GW_DELAY 的敏感值均大于 1 ，对流域径流模拟效果影响较大。
+c. 径流模拟误差主要来源于气象数据高估降水；HWSD 数据库中土壤数据垂直方向划分为两层，深度均匀，不能满足研究区域复杂土壤构造；且研究区域位于高原，辐射较大、蒸散发作用较强；敏感参数对模型模拟结果亦有影响。在今后的研究中可以比较其他气象数据集与 CFSR 气象数据集之间的差异，以选择更优的气象数据集及更精细的土地利用划分，构建更完善的土壤数据库、降低参数的敏感性，使径流模拟更加精确。
+
+## 参考文献：
+
+[1] LIU XIAOJUN, ZHANG YI, LI ZHANBIN, et al. Response of water quality to land use in hydrologic response unit and riparian buffer along the Dan River, China[J]. Environmental science and pollution research international,2021,28(22), DOI, 10. 1007/ s11356-021-12636-2.
+[2] POBLETE DAVID, AREVALO JORGE, NICOLIS ORIETTA, et al. Optimization of hydrologic response units (HRUs) using gridded meteorological data and spatially varying parameters[J]. Water, 2020,12(12), DOI, 10.3390/w12123558.
+[3] 赵霞. 黄土沟壑区水文响应单元选取对 Ann AGNPS 模型模拟精度的影响[D]. 北京：中国农业大学, 2006.
+[4] 侯伟, 廖晓勇, 张岩, 等. 三峡库区典型小流域 SWAT模型基础数据库构建[J]. 西藏大学学报（自然科学版），2015，30(2)，118-124.
+（下转第 53 页）
+
+热岛效应研究[D]. 沈阳：沈阳农业大学，2019.
+[14] 王恩，章银柯，林佳莎，等. 杭州西湖风景区绿地货币化生态效益评价研究[J]. 西北林学院学报， 2011,26(1):209-213.
+[15] 陈龙, 谢高地, 盖力强, 等. 道路绿地消减噪声服务功能研究——以北京市为例[J]. 自然资源学报,
+
+2011,26(9):1526-1534.
+[16] 谢高地, 甄霖, 鲁春霞, 等. 一个基于专家知识的生态系统服务价值化方法[J]. 自然资源学报， 2008(5):911-919.
+
+【17】国务院. 国务院关于兰州市城市总体规划的批复 [Z]. 中华人民共和国国务院公报, 2003.
+
+# Analysis of Rainwater Utilization Benefit of Lanzhou City Under Sponge City Concept 
+
+TIAN Min,REN Jian-min,BAI Ya-jun,WU Jing
+(School of Civil Engineering, Lanzhou Jiaotong University, Lanzhou 730070, China)
+Abstract: In order to quantify the comprehensive benefit of rainwater utilization in Lanzhou city, a comprehensive benefit model of rainwater utilization in sponge city was established by coupling function and demand of sponge city and identifying benefit factors in combination with norms. Taking Lanzhou city built-up area as the research object, rainwater utilization monetization calculation method was established. The comprehensive benefits of Lanzhou in the live research years from 2010 to 2020 are 1, 16234 billion yuan, 1, 2314 billion yuan, 1, 2532 billion yuan, 1, 1787 billion yuan, respectively. The average proportion of economic benefit, ecological benefit and social benefit are $29,60 \%, 59,49 \%$ and $10,91 \%$, respectively. The utilization of rainwater resources in Lanzhou city can produce considerable comprehensive benefits, which is worth planning and layout of sponge facilities, and can be further studied and promoted.
+
+Key words: comprehensive benefit; rainwater utilization; sponge city; Lanzhou city
+$\star \circ \star \circ \star \circ \star \circ \star \circ \star \circ \star \circ \star \circ \star \circ \star \circ \star \circ \star \circ \star \circ \star \circ \star \circ \star \circ \star \circ \star \circ \star \circ \star \circ \star \circ \star \circ \star \circ \star \circ \star \circ \star \circ \star \circ \star \circ \star \circ \star \circ \star \circ \star \circ \star \circ \star \circ \star \circ \star \circ \star \circ \star \circ \star \circ \star \circ \star \circ \star$
+(上接第 40 页)
+[5] SHARPLY A N, WILLIAMS J R. EPIC-erosion/ productivity impact calculator; model documentation[R]. Washington D C; U S Dept-ment of agriculture, agricultural research service, 1990 .
+[6] 余炜敏. 三峡库区农业非点源污染及其模型模拟研究[D]. 雅安:西南农业大学, 2005.
+
+## Simulation of Runoff at Different Time Scales in Dianchi Watershed Based on SWAT Model
+
+SHI Jian-yang, LI Xiang-xin
+(School of Land and Resources Engineering, Kunming University of Science and Technology, Kunming 650093, China)
+Abstract: Based on the SWAT distributed hydrological model, HWSD database was used to calibrate the soil parameters in the study area, and construct the soil database. Combined with GlobeLand30 surface cover data, the hydrological response units were divided. The runoff process of Dianchi Basin at different time scales was simulated by using CFSR meteorological data set. The sensitivity parameters of the study area were calibrated by ArcSWAT-CUP and SUFIZ algorithm. The relative error $R_{\mathrm{c}}$, decisive coefficient $R^{2}$ and Nash coefficient $N_{\text {sis }}$ were used to evaluate the simulation effect. The results show that the daily, monthly and annual runoff simulation meet the simulation accuracy requirements. The sensitivity parameter analysis of SWAT model shows that the first three parameters affecting the runoff simulation effect are CN 2 and ALPHA_BF and GW_Delay. After the parameter adjustment, $\left|R_{\mathrm{c}}\right|$ is less than $10 \%$, and $R^{2}$ and $N_{\text {sis }}$ are greater than 0.9 , which demonstrates that the SWAT model has good applicability for runoff simulation in Dianchi Basin. Thus, it can provide a reference for hydrological monitoring and prediction, rational planning and management of water resources in Dianchi Basin.
+
+Key words: SWAT model; Dianchi Watershed; hydrological response unit; time scale; runoff simulation
+$\star \circ \star \circ \star \circ \star \circ \star \circ \star \circ \star \circ \star \circ \star \circ \star \circ \star \circ \star \circ \star \circ \star \circ \star \circ \star \circ \star \circ \star \circ \star \circ \star \circ \star \circ \star \circ \star \circ \star \circ \star \circ \star \circ \star \circ \star \circ \star \circ \star \circ \star \circ \star \circ \star \circ \star \circ \star \circ \star \circ \star \circ \star \circ \star \circ \star \circ \star \circ \star \circ \star \circ \star \circ \star \circ \star \circ \star \circ \star \circ \star \circ \star \circ \

@@ -1,22 +1,24 @@
 from py2neo import Graph, Node, Relationship, NodeMatcher, RelationshipMatcher
+import re
 
 color = {
-    "地理问题": "#5470c6",    # 蓝色
-    "地理场景": "#91cc75",    # 绿色
-    "对象系统": "#fac858",    # 黄色
-    "系统机理": "#ee6666",    # 红色
-    "时空数据": "#73c0de",    # 浅蓝
-    "数据来源": "#3ba272",    # 深绿
-    "处理方法": "#fc8452",    # 橙色
-    "集成模型": "#9a60b4",    # 紫色
-    "基础模型": "#ea7ccc",    # 粉色
-    "开发步骤": "#5470c6",    # 蓝色
-    "评价方法": "#91cc75",    # 绿色
-    "评价结果": "#fac858",    # 黄色
-    "模型应用": "#ee6666",    # 红色
-    "应用结果": "#73c0de",    # 浅蓝
-    "总结讨论": "#3ba272",    # 深绿
-    "other": "#666666"       # 灰色
+    "地理问题": "#1f77b4",    # 深蓝色
+    "地理场景": "#2ca02c",    # 深绿色
+    "对象系统": "#ff7f0e",    # 橙色
+    "系统机理": "#d62728",    # 红色
+    "时空数据": "#17becf",    # 青色
+    "数据来源": "#8c564b",    # 棕色
+    "处理方法": "#e377c2",    # 粉色
+    "集成模型": "#9467bd",    # 紫色
+    "基础模型": "#bcbd22",    # 黄绿色
+    "开发步骤": "#7f7f7f",    # 灰色
+    "评价方法": "#ff9896",    # 浅红色
+    "评价结果": "#98df8a",    # 浅绿色
+    "模型应用": "#ffbb78",    # 浅橙色
+    "应用结果": "#aec7e8",    # 浅蓝色
+    "总结讨论": "#c49c94",    # 浅棕色
+    "地理概念": "#c5b0d5",    # 浅紫色
+    "other": "#c7c7c7"       # 中灰色
 }
 
 
@@ -97,8 +99,26 @@ def get_all_relation(start, relation, end):
 
     for nodes_relations in nodes_data_all:
         print("----")
-        start_lable = str(nodes_relations['n'].labels).replace(":", "")
-        end_lable = str(nodes_relations['b'].labels).replace(":", "")
+        # 正确提取节点的标签作为类别
+        # 去除冒号并确保只获取第一个标签作为类别名称
+        try:
+            # 将标签字符串转换为更清晰的格式
+            raw_start_label = str(nodes_relations['n'].labels)
+            raw_end_label = str(nodes_relations['b'].labels)
+            
+            # 从类似 "frozenset(['地理问题'])" 的格式中提取实际标签名
+            start_label_match = re.search(r"'([^']+)'", raw_start_label)
+            end_label_match = re.search(r"'([^']+)'", raw_end_label)
+            
+            start_lable = start_label_match.group(1) if start_label_match else "未知类型"
+            end_lable = end_label_match.group(1) if end_label_match else "未知类型"
+            
+            print(f"节点标签解析: 起始节点={start_lable}, 目标节点={end_lable}")
+        except Exception as e:
+            print(f"解析标签出错: {e}")
+            start_lable = str(nodes_relations['n'].labels).replace(":", "")
+            end_lable = str(nodes_relations['b'].labels).replace(":", "")
+        
         start = dict(nodes_relations['n'])
         end = dict(nodes_relations['b'])
         relation = "relation"

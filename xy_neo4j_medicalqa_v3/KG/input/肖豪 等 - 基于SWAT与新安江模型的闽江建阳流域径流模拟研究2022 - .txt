@@ -1,0 +1,292 @@
+# 基于 SWAT 与新安江模型的闽江建阳流域径流模拟研究 
+
+肖 秦 ${ }^{1}$ ，周春辉 ${ }^{2}$ ，尚艳丽 ${ }^{3}$ ，杨海祥 ${ }^{4}$ ，郑何声园 ${ }^{1}$ ，翟思献 ${ }^{1}$ ，石 朋 ${ }^{1}$<br>（1. 河海大学水文水资源学院, 江苏 南京 210024;<br>2. 国网新源水电有限公司富春江水力发电厂, 浙江 杭州 310000;<br>3. 山东省泰安市水文中心, 山东 泰安 271000;<br>4. 水利部南京水利水文自动化研究所, 江苏 南京 210008 )
+
+
+
+摘 要：采用 SWAT 模型对闽江建阳流域的日径流过程进行模拟计算，利用研究区1993年～1997年的实测流量数据进行模型参数率定，1998年～2000年的实测流量数据进行模型检验，并与三水源新安江模型的模拟结果进行对比，采用纳什效率系数 $N S$ 、相对误差 $R E$ 和决定性系数 $R^{2}$ 作为模型模拟精度的评价指标。研究结果表明，两个模型在建阳流域日径流模拟中都具有较好的适用性，且均能很好地用于该流域的径流预测与防洪规划。进一步分析建阳流域降雨和径流空间分布与变化特征的结果表明，该流域多年平均降雨量从西北向东南递减，径流空间分布与降雨空间分布相似，差异较明显；研究区总体径流呈增加趋势，但径流深的空间分布差异性呈减小趋势。
+关键词：日径流模拟；空间分布；新安江模型；SWAT 模型；闽江建阳流域
+
+## Runoff Simulation in Jianyang Watershed of Minjiang River Based on SWAT and Xin'anjiang Model
+
+XIAO Hao ${ }^{1}$, ZHOU Chunhui ${ }^{2}$, SHANG Yanli ${ }^{3}$, JI Haixiang ${ }^{4}$, ZHENG Heshengyuan ${ }^{1}$, QU Simin ${ }^{1}$, SHI Peng ${ }^{1}$ (1. College of Hydrology and Water Resources, Hohai University, Nanjing 210024, Jiangsu, China;
+2. Fuchunjiang Hydropower Plant of State Grid Xinyuan Hydropower Co., Ltd., Hangzhou 310000, Zhejiang, China;
+3. Taian Hydrology Center of Shandong Province, Taian 271000, Shandong, China; 4. Nanjing Automation
+
+Institute of Water Conservancy and Hydrology, Ministry of Water Resources, Nanjing 210008, Jiangsu, China)
+Abstract: The SWAT model is used to simulate and calculate the daily runoff process in Jianyang Watershed of Minjiang River. The measured discharge data from 1993 to 1997 in the study area are used to calibrate SWAT model parameters, and the measured discharge data from 1998 to 2000 are used to test SWAT model parameters. The daily runoff simulation results of the SWAT model are compared with that of the three-source Xin'anjiang model, and the Nash-Sutcliffe efficiency coefficient $N S$, the relative error $R E$ and the deterministic coefficient $R^{2}$ are used as the evaluation indexes of model simulation accuracy. The results show that both Xin'anjiang model and SWAT model have good applicability in daily runoff simulation of Jianyang Watershed and can be used for runoff prediction and flood control planning. The spatial distribution and variation characteristics of rainfall and runoff in Jianyang Watershed are further analyzed by using SWAT model, and the results show that, (a) the average annual rainfall in the watershed decreases from northwest to southeast, the spatial distribution of runoff in the watershed is similar to that of rainfall, and the spatial distribution difference is obvious; and (b) the overall runoff depth in the study area presents an increasing trend, but the spatial distribution difference of runoff depth presents a decreasing trend.
+Key Words: daily runoff simulation; spatial distribution; Xin'anjiang model; SWAT model; Jianyang Watershed of Minjiang River
+
+中国分类号：TV121.2
+文献标识码：A
+文章编号：0559-9342（2022）10-0019-07
+
+[^0]
+[^0]:    收稿日期：2022-03-25
+    基金项目：国家重点研发计划（2019YFC0409000）；国家自然科学基金资助项目（52179011）；浙江省水利厅科技项目（RA1903，RC1958，
+
+    RR1926)
+    作者简介：肖蒙（1997—），男，湖北大治人，硕士研究生，研究方向为水文物理规律模拟及水文预报；翟思敏（通讯作者）。
+
+## 0 引 言
+
+闽江流域地处福建省北部，河长 577 km ，面积约 6 万 $\mathrm{km}^{2}$ ，流域的水资源变化深刻的影响着福建省的经济和环境。该流域属亚热带季风湿润气候，雨量充沛，洪水频发。近年来，流域内的水循环和水资源在全球气候变化和人类活动的影响下发生了重大的变化。实时精确的径流模拟和流域尺度上的环境变化深刻影响着径流时空分布的影响研究。流域水文模型是对流域的水文过程进行模拟分析。在洪水预报、防洪减灾、水资源开发利用、径流对变化环境响应研究等方面得到了广泛的应用 ${ }^{[1]}$ 。目前，在我国应用最广泛的流域水文模型是新安江模型。根据研究实践，新安江模型适用于我国南方湿润地区 ${ }^{[2]}$ ，被用在我国各大流域评估气候变化和人类活动对径流的影响 ${ }^{[3,4]}$ 。美国农业部研发的 SWAT 模型是一个大尺度分布式水文模型，自开发以来在国内外得到了广泛的认可和应用 ${ }^{[4-22]}$ ，被广泛用于水流、泥沙、水质模拟及变化环境的径流响应研究 ${ }^{[15-16]}$ 。比如，朱炬明等 ${ }^{[8]}$ 在双桥流域探讨了新安江模型、 SWAT 模型和 BTOPMC 模型在不同流量级下的日径流模拟效果。刘柏君等 ${ }^{[7]}$ 划分青海省主要流域并构建 SWAT 模型进行径流模拟，分析了模型的适用性。林若兰等 ${ }^{[8]}$ 基于 SWAT 模型评估北江流域生态径流调节效果并分析径流调节量的时空变化。但是，在闽江流域，同时利用新安江模型和 SWAT 模型进行径流模拟并基于模拟结果评估径流时空变化特征的研究并不多见。
+
+为了提高闽江流域径流模拟精度并分析变化环境对径流时空分布影响，本文以福建闽江上的建阳流域作为研究区域，利用空间数据和属性数据构建 SWAT 模型，研究 SWAT 模型在研究区的适用性和模拟精度，并与三水源新安江模型的日径流模拟结果进行对比分析；再利用 SWAT 模型的输出结果，分析研究区径流的时空分布变化特征，为研究流域的防洪减灾和水资源规划提供技术支持。
+
+## 1 流域概况及资料
+
+## 1. 1 建阳流域概况
+
+本文选择福建闽江上游的建阳流域作为研究区 （见图1）。研究区流域面积 $4848 \mathrm{~km}^{2}$ ，范围为东经 $117^{\circ} 31^{\prime} \sim 118^{\circ} 19^{\prime}$ ，北纬 $27^{\circ} 10^{\prime} \sim 28^{\circ} 5^{\prime}$ 。流域位于福建省北部，属亚热带季风湿润气候，降雨充足，多年平均降水量 1702 mm ，降雨年际变化较大，空间分布不均匀，总体趋势从北向南递减，流域内多年平均径流系数为 0.56 。该流域植被较好，地下水埋
+
+深较浅，是典型的山丘区地形，洪水大多数是由暴雨形成 ${ }^{[15-18]}$ 。流域内有武夷山、兴田等 17 个雨量站和建阳水文站（见图1）。
+
+
+图1 建阳流域水系及站点分布
+
+## 1. 2 流域资料情况
+
+流域内的水文资料包括建阳水文站的日径流数据以及 17 个雨量站 1993 年～2000 年的日降水数据；气象资料有研究区内及周边的气象站数据。新安江模型计算时选用了研究区内的雨量站数据和水文站数据来率定和检验参数。
+
+构建 SWAT 模型需要输入的数据除了属性数据以外，还需要空间数据。此外，因为流域内气象站数据序列时间长短不一致。本文综合考虑选取流域内及周边邵武、武夷山、浦城 3 个气象站点的数据用于构建 SWAT 模型的天气发生器。研究区内及周边站点的分布如图 1 所示。
+
+本文所使用的数据格式、来源及其用途如表 1所示。
+
+## 2 流域水文模型及评价指标
+
+## 2. 1 新安江模型
+
+新安江模型是河海大学赵人俊教授等人于 1973年提出并逐渐完善起来的分布式概念性降雨径流水文模型 ${ }^{[19]}$ 。该模型结构简单，可以分为蒸散发计算、产流计算、分水源计算和汇流计算 4 个层次。蒸散发计算采用 3 层蒸发模式，产流计算采用蓄满产流，分水源计算采用自由水蓄水库，利用线性水库计算坡地汇流，分段马斯京根法计算河网汇流。模型的参数具有明确的物理意义。计算采用的方法和参数见表 2 。具体计算公式可参考文献[20]。
+
+## 2. 2 SWAT 模型
+
+SWAT（Soil and Water Assessment Tool）模型是美国农业部研发的一个具有很强物理机制的分布式水
+
+表1 原始数据说明
+
+| 数据类型 | 分辨率 | 数据来源 |  | 用途 |
+| :--: | :--: | :-- | :-- | :-- | :-- |
+| 数字高程图 | $90 \mathrm{~m} \times 90 \mathrm{~m}$ | 地理空间数据云（http:// www. Gocloud. cn/）SRTM 数据 | 生成水系，划分子流域 |  |
+| 土地利用分布图 | $1 \mathrm{~km} \times 1 \mathrm{~km}$ | 中间科学院资源环境科学数据中心 | 土地利用和土壤分布叠加分析，生成水文 |  |
+| 土壤分布图 | $1 \mathrm{~km} \times 1 \mathrm{~km}$ | 南京土壤所第二次全因土地调查数据 | 响促单元 HRUs |  |
+| 气象数据 | 1 d | 中间地面气候资料日值数据集 | 构建天气发生器，输入降雨数据、模型参 |  |
+| 水文数据 | 1 d | 水文年鉴 | 数率定和检验 |  |
+
+表2 新安江模型计算方法与参数
+
+| 计算层次 | 蒸散发计算 | 产流计算 | 分水测计算 | 汇流计算 |  |
+| :--: | :--: | :-- | :--: | :-- | :--: |
+|  |  |  |  | 增地汇流 | 河网汇流 |
+| 方法 | 三层蒸发模式 | 耍满产流 | 自由水蓄水库 | 线性水库 | 分段马斯京根法 |
+| 参数 | $K C, W U M, W L M, C$ | $W M, B$ | $S M, E X, K L, K G$ | $C S, C I, C G$ | $K E, X E$ |
+
+文模型 ${ }^{[21]}$ 。该模型基于地理信息系统（GIS）并利用遥感（RS）和 GIS 提供的研究流域的空间信息，叠加分析土壤类型和土地利用方式，模拟复杂流域的水文物理过程从而分析下垫面在流域水循环的作用。模型包含气象、水文、泥沙输移、植被生长、营养物质、污染物和农作物管理等模块 ${ }^{[22-23]}$ ，本研究主要应用的是模型的水文模拟模块。
+
+模型计算包括地表径流、下渗计算、蒸散发计算、河道汇流计算。地表径流量采用径流曲线数法（ SCS runoff curve number）；下渗采用土壤蓄水演算技术；蒸散发分为土壤水蒸发和植物蒸腾；河道汇流计算使用变动存储系数模型或 Muskingum 方法，计算模块和部分参数见表3。
+
+### 2.3 模拟评价指标
+
+本文选用纳什效率系数 $N S$ 、相对误差 $R E$ 和决定性系数 $R^{2}$ 来评价模型模拟精度。
+（1）纳什效率系数 $N S$ ，表征模型模拟径流过程与实测径流过程之间拟合程度。 $N S$ 取值范围为负无穷到 1 ；越接近于 1 ，则认为模拟的流量过程越接近观测值。一般 $N S \geqslant 0.6$ 时，模拟结果可以接受。计算公式为
+
+$$
+N S=1-\sum_{i=1}^{T}\left(Q_{i}^{\prime}-Q_{w}^{\prime}\right)^{2} / \sum_{i=1}^{T}\left(Q_{i}^{\prime}-Q_{w}\right)^{2}
+$$
+
+式中， $T$ 为流量序列长度； $Q_{i}^{\prime}$ 为实测流量系列； $Q_{w}^{\prime}$为模拟流量系列； $Q_{i}$ 为实测流量的平均值； $Q_{w}$ 为模拟流量的平均值。
+（2）相对误差 $R E$ ，反应了径流总量模拟值和实测值之间的吻合程度。一般认为 $R E$ 在 $\pm 20 \%$ 以内，模拟结果具有可信度。计算公式为
+
+$$
+R E=\left[\left(\sum_{i=1}^{T} Q_{w}^{\prime}-\sum_{i=1}^{T} Q_{i}^{\prime}\right) / \sum_{i=1}^{T} Q_{i}^{\prime}\right] \times 100 \%
+$$
+
+（3）决定性系数 $R^{2}$ ，用于体现模型模拟值与实测值的相关性， $R^{2}$ 越接近 1 ，表明模型模拟值与实
+
+测值的拟合程度越高，一般 $R^{2}>0.6$ 可认为拟合效果较好。计算公式为
+
+$$
+R^{2}=\frac{\left[\sum_{i=1}^{T}\left(Q_{i}^{\prime}-\bar{Q}_{w}\right)\left(Q_{w}^{\prime}-\bar{Q}_{w}\right)\right]^{2}}{\sum_{i=1}^{T}\left(Q_{i}^{\prime}-\bar{Q}_{w}\right)^{2} \sum_{i=1}^{T}\left(Q_{w}^{\prime}-\bar{Q}_{w}\right)^{2}}
+$$
+
+## 3 参数率定与模拟结果分析
+
+两个模型均采用 1993 年～1997年的日资料进行模型参数率定，1998年～2000年的日资料进行模型检验。
+
+## 3. 1 新安江模型参数率定
+
+由建阳流域的地理位置、降雨特性和植被条件等因素可以看出，研究区的降雨径流关系满足耍满产流条件，故使用新安江模型进行径流模拟。采用系统微分响应方法对模型参数进行率定 ${ }^{[24-26]}$ ，结果见表 4 。
+
+## 3. 2 SWAT 模型参数率定
+
+（1）构建 SWAT 模型。对空间数据进行重分类，重分类结果如图 2a、2b。土壤属性数据参考世界土壤数据库 HWSD 中的数据。SWAT 模型根据 DEM、河网数据，综合选取 $10000 \mathrm{~hm}^{2}$ 为阈值将研究区划分为 31 个子流域，如图 2 c 所示。其中，流域出口位于第 28 号子流域。然后，根据坡度、土壤类型数据、土地利用数据并分别取 $10 \%$ 的阈值进行叠加分析，将流域划分为 171 个水文响应单元（Hydrologic response units, HRUs），再根据气象数据构建天气发生器，进行模拟计算。
+（2）参数率定。SWAT 模型参数共有 200 多个，为提高模型参数率定的工作效率，本文选取了 11 个参数进行率定。参数的率定基于 SWAT-CUP（SWATCalibration and Uncertainty Programs）软件，采用 SUFI2 算法进行模型参数率定，率定结果见表 5 。
+
+表 3 SWAT 模型计算模块和参数
+
+| 计算模块 | 地表径流 | 下渗 | 质散发 | 地下水 | 河道汇流 |
+| :--: | :--: | :--: | :--: | :--: | :--: |
+| 计算参数 | $\begin{gathered} \mathrm{r}_{-} \mathrm{CN} 2 \\ \mathrm{v}_{-} \mathrm{CH}_{-} \mathrm{K} 2 \end{gathered}$ | $\begin{gathered} \mathrm{r}_{-} \mathrm{SOI}_{-} \mathrm{K} \\ \mathrm{r}_{-} \mathrm{SOI}_{-} \mathrm{AWC} \end{gathered}$ | $\begin{gathered} \mathrm{v}_{-} \mathrm{ESCO} \\ \mathrm{v}_{-} \mathrm{GW}_{-} \mathrm{REVAP} \end{gathered}$ | $\begin{gathered} \mathrm{v}_{-} \mathrm{GW}_{-} \mathrm{REVAP} \\ \mathrm{v}_{-} \mathrm{GW}_{-} \mathrm{DELAY} \end{gathered}$ | $\begin{gathered} \mathrm{v}_{-} \mathrm{CH}_{-} \mathrm{N} 2 \\ \mathrm{v}_{-} \mathrm{ALPHA}_{-} \mathrm{BF} \\ \mathrm{r}_{-} \mathrm{SLSUBBSN} \end{gathered}$ |
+
+表 4 建阳流域新安江模型参数率定结果
+
+| 新安江模型参数 | 参数物理意义 | 取值范围 | 率定值 |
+| :--: | :--: | :--: | :--: |
+| $K C$ | 流域蒸散发折算系数 | $0.5 \sim 1.3$ | 0.91 |
+| WUM | 上层张力水容量 $(\mathrm{mm})$ | $5 \sim 30$ | 12 |
+| WLM | 下层张力水容量 $(\mathrm{mm})$ | $60 \sim 90$ | 88 |
+| C | 深层蒸散发折算系数 | $0.09 \sim 1.2$ | 0.17 |
+| WM | 流域平均张力水蓄水容量 $(\mathrm{mm})$ | 深圳地区为 $120 \sim 150$ <br> 半深圳地区为 $150 \sim 200$ | 120 |
+| $B$ | 张力水蓄水容量曲线方次 | $0.10 \sim 0.6$ | 0.2 |
+| SM | 去层自由水蓄水容量 $(\mathrm{mm})$ | $5 \sim 30$ | 20 |
+| EX | 去层自由水蓄水容量曲线方次 | $1.0 \sim 1.5$ | 1.5 |
+| KG | 去层自由水蓄水库对地下水的日出流系数 | $0.2 \sim 0.4$ | 0.35 |
+| KJ | 去层自由水蓄水库对壤中流的日出流系数 | $0.3 \sim 0.6$ | 0.35 |
+| CG | 地下水消退系数 | 0.995 以上 | 0.995 |
+| CI | 壤中流消退系数 | $0.7 \sim 0.9$ | 0.9 |
+| CS | 地面径流消退系数 | $0.5 \sim 0.7$ | 0.7 |
+| KE | 马斯京根法演算参数 $(\angle \mathrm{r})$ | 1 | 1 |
+| XE | 马斯京根法演算参数 | $0 \sim 0.5$ | 0.3 |
+
+
+
+图2 建阳流域土地利用、土壤类型、子流域分布
+
+# 3. 3 模拟结果比较与分析 
+
+两个模型率定期和检验期模拟结果详见表 6 和图3-4。从日径流模拟结果可以看出，新安江模型和 SWAT 模型在建阳流域的模拟效果都较好，仅有个别年份的相对误差较大。其中率定期，新安江模型的计算结果比 SWAT 模型的计算结果好一些，检验期新安江型计算结果的相对误差略大于 SWAT 模型计算的相对误差。从图3和图4可以看出，率定期和检验期两种模型模拟与实测的径流过程拟合较
+
+好，纳什效率系数较高。率定期，新安江模型平均纳什效率系数 0.78 ，SWAT 模型平均纳什效率系数 0.73 ；检验期，新安江模型平均纳什效率系数 0.79 ， SWAT 模型平均纳什效率系数 0.73 ，均大于 0.6 。
+
+## 4 径流时空分布变化特征分析
+
+## 4. 1 径流时空变化分析方法
+
+由日径流模拟结果可以看出，SWAT 模型在建
+
+表 5 建阳流域 SWAT 模型参数率定结果
+
+| SWAT 模型参数 |  | 参数物理意义 | 初始范围 | 率定值 |
+| :--: | :--: | :--: | :--: | :--: |
+| $\mathrm{r}_{\text {_ }}$ CN2 |  | 水分条件里时的初始 SCS 径流曲线数 | $-0.2 \sim 0.2$ | 0.13 |
+| $\mathrm{v}_{-} \mathrm{CH}_{-} \mathrm{K} 2$ |  | 主河道河床有效水力传导度，mm/h | $5 \sim 130$ | 128.24 |
+| $\mathrm{r}_{-}$ SOI $_{m}$ K |  | 土壤饱和渗透系数，mm/h | $-0.8 \sim 0.8$ | 0.37 |
+| $\mathrm{r}_{-} \mathrm{SOI}_{m}$ AWC |  | 土壤有效含水量， mm/mm | $-0.5 \sim 0.5$ | 0.14 |
+| $\mathrm{v}_{-}$ GWQMN |  | 发生间归流所需的浅层含水层水位阈值， mm | $0 \sim 2$ | 1.29 |
+| $\mathrm{v}_{-}$ ESCO |  | 土壤蒸发补偿系数 | $0 \sim 1$ | 0.34 |
+| $\mathrm{v}_{-} \mathrm{CH}_{-} \mathrm{N} 2$ |  | 主河道曼宁系数 | $-0.01 \sim 0.30$ | 0.3 |
+| $\mathrm{v}_{-}$ GW $_{m}$ REVAP |  | 地下水再蒸发系数 | $0.02 \sim 0.20$ | 0.01 |
+| $\mathrm{v}_{-}$ GW $_{m}$ DELAY |  | 地下水滞后系数， d | $30 \sim 450$ | 210.03 |
+| $\mathrm{v}_{-}$ ALPHA $_{m}$ BF |  | 河岸调蓄基流消退系数 | $0 \sim 1$ | 0.98 |
+| $\mathrm{r}_{-}$ SLSUBBSN |  | 平均域长， m | $-0.4 \sim 0.4$ | $\sim 0.18$ |
+
+注：在利用 SWAT-CI/P 率定模型参数时，首字母 v 代表率定参数值， $v$ 代表默认参数值的率定增量。
+表 6 新安江模型与 SWAT 模型计算结果
+
+| 率定与检验 | 年份 | 新安江模型 |  |  | SWAT 模型 |  |  |
+| :--: | :--: | :--: | :--: | :--: | :--: | :--: | :--: |
+|  |  | NS | RE/% | $R^{2}$ | NS | RE/% | $R^{2}$ |
+| 率定期 | 1993 | 0.82 | $\sim 2.78$ | 0.82 | 0.60 | 18.40 | 0.76 |
+|  | 1994 | 0.85 | $\sim 6.75$ | 0.85 | 0.78 | $\sim 1.06$ | 0.80 |
+|  | 1995 | 0.76 | $\sim 2.86$ | 0.76 | 0.79 | $\sim 0.27$ | 0.79 |
+|  | 1996 | 0.68 | 8.89 | 0.75 | 0.66 | 10.28 | 0.70 |
+|  | 1997 | 0.81 | 9.26 | 0.81 | 0.81 | $\sim 11.24$ | 0.83 |
+|  | 平均 | 0.78 | 1.15 | 0.80 | 0.73 | 3.22 | 0.78 |
+| 检验期 | 1998 | 0.79 | $\sim 1.62$ | 0.80 | 0.77 | 5.14 | 0.82 |
+|  | 1999 | 0.80 | 0.79 | 0.81 | 0.77 | $\sim 1.07$ | 0.77 |
+|  | 2000 | 0.79 | 20.58 | 0.81 | 0.66 | 1.02 | 0.68 |
+|  | 平均 | 0.79 | 6.58 | 0.81 | 0.73 | 1.70 | 0.76 |
+
+
+
+图3 率定期模型计算结果
+阳流域模拟效果较好。因此，利用 SWAT 模型输出不同年份各个子流域上的 $i^{201}$ 水量，得出研究区径流的空间分布，并结合 Sen 坡度和空间变异系数 $C v$ 来研究径流的空间分布变化。
+（1）坡度 $S e n^{i 201}$ 估计法，用于确定样本系列变化趋势程度的大小，可用 $\boldsymbol{\beta}$ 表示趋势变化情况。计算公式为
+
+$$
+\beta=\operatorname{Median}\left(\frac{R_{i}-R_{i}}{j-i}\right), \quad \forall j>i
+$$
+
+
+
+图4 检验期模型计算结果
+式中， $R_{i} 、 R_{i}$ 为样本系列中任选两个年份的径流深数据； $i$ 和 $j$ 为相应数据的序号。
+（2）空间变差系数 $C v^{i 301}$ ，表现变量在空间分布上的离散程度。 $C v$ 越大，表明变量空间分布越不均匀，差异较大。计算公式为
+
+$$
+C v=\sqrt{\frac{1}{T} \sum_{i=1}^{T}\left(R_{i}-\bar{R}\right)^{2} / \bar{R}}
+$$
+
+式中， $T$ 为径流序列长度； $R_{i}$ 为子流域径流深； $\bar{R}$ 为
+
+
+
+图5 建阳流域1993年～2000年多年平均降雨量、径流量空间分布
+
+
+图6 不同年份建阳流域径流空间分布
+
+径流深的平均值。
+
+## 4. 2 径流时空分布变化
+
+计算研究区内 17 个雨量站 1993 年～2000年的多年平均降雨量，采用反距离权重插值法，绘制多年平均降雨量空间分布图（见图5a），再利用降雨插值数据进行分区统计，得到每个子流域的多年平均降水量（见图5b）。
+
+从图5可以看出，多年平均降雨量呈现从西北向东南逐级递减的态势，多年平均降水量最大的区域位于流域西部；多年平均降水量最小的区域位于东南部。
+
+利用 SWAT 模型输出子流域逐日产流量，绘制各个子流域多年平均径流量分布图，见图5c。对比图 5 b 和 5 c 可以看出，径流的分布规律与降雨的空间分布规律相似，空间分布差异明显，总体上呈现从西北向东南递减的趋势。
+
+利用不同年份的降雨量和下垫面资料模拟得到不同时期建阳流域各子流域径流空间分布图（见图6）。
+
+从图6中可以看出，不同年份下径流的空间分布略有不同，但整体上流域东南部的径流深相对较小，西北部年径流深较大。
+
+由坡度计算可得，流域内 $82.7 \%$ 的区域年径流
+
+深表现为较大程度的增加趋势，仅有 $17.3 \%$ 的区域年径流深表现为减少趋势，表现为减少趋势的子流域为 8 号和 9 号子流域， 9 号子流域为多年平均径流深最大的子流域，说明研究区径流深最大值有减少表现，但流域整体径流深表现为增加。
+
+变差系数的变化如图7所示。从图7中可以看出，径流空间变差系数呈减少趋势，表明径流的空间差异性在减少。
+
+
+图7 建阳流域径流空间变差系数变化趋势
+
+5 结 论
+本文将 SWAT 模型与新安江模型应用于建阳流
+
+域日径流模拟中，并利用 SWAT 模型输出结果研究径流的时空分布变化，得到如下结论：
+（1）从日径流模拟结果来看，两种模型在建阳流域日径流模拟表现都比较好，平均纳什效率系数均大于 0.7 ，平均相对误差均小于 $5 \%$ ；从而表明采用这两个模型对建阳流域的日径流进行模拟具有一定的可靠性，可用于建阳流域径流模拟。
+（2）流域径流空间分布与降雨空间分布相似，差异较明显，表现为由西北部向东南部涨域的趋势。
+（3）多年平均径流量最大的子流域的径流有减少趋势，但研究区总体径流呈增加趋势，空间分布差异性呈减小趋势。
+
+## 参考文献:
+
+[1] 何长高, 崔增川, 陈卫宾. 流域水文模型研究综述[J]. 江西水利科技, 2008, 34(1) : 20-25.
+[2] 赵人俊, 王佩兰. 新安江模型参数的分析[J]. 水文, 1988(6): 2-9.
+[3] 王婕, 宋晓猛, 张建云, 等. 中小尺度流域洪水模型模拟比较研究[J]. 中国农村水利水电, 2019(7) : 72-76.
+[4] 刘佩坻, 郝振纯, 王国庆, 等. 新安江模型和改进 BP 神经网络模型在闹江水文预报中的应用[J]. 水资源与水工程学报, 2017, 28 (1) : 40-44.
+[5] YANG Chunsheng, LI Qiongfang, WEN Haiyan, et al. Simulation of soil and water loss in the upper Huaibe River Basin using the Xinanjiang Model[J]. Procedia Engineering, 2012, 28: 501-505.
+[6] 朱彤明, 周买春. 不同水文模型在双桥流域的应用比较[J]. 人民黄河, 2016, 38(4) : 22-26.
+[7] 刘柏君, 权锦, 杨超慧, 等. 基于 SWAT 模型的青海省主要流域径流模拟[J]. 水资源保护, 2016, 32(6) : 39-44.
+[8] 林若兰, 卓文珊, 高延康, 等. 基于 SWAT 模型的北江流域生态径流调节服务评估[J]. 水资源保护, 2020, 36(6) : 131-136.
+[9] KHALILIAN S, SHAHVARI N. A SWAT evaluation of the effects of climate change on renewable water resources in Salt Lake Sub-Basin, Iran[J]. Agricultural Engineering, 2019, 1(1): 44-57.
+[10] 赵娜娜, 王贺年, 张贝贝, 等. 若尔盖湿地流域径流变化及其对气候变化的响应[J]. 水资源保护, 2019, 35(5) : 40-47.
+[11] 张东, 张卫昌, 朱利, 等. SWAT 分布式流域水文物理模型的改进及应用研究[J]. 地理科学, 2005(4) : 432-440.
+[12] 刘庄, 尾建辉, 张丽, 等. 中国非点源污染负荷计算研究现状与存在问题[J]. 水科学进展, 2015, 26(3) : 432-442.
+[13] 张永勇, 王中根, 于磊, 等. SWAT 水质模块的扩展及其在海河流域典型区的应用[J]. 资源科学, 2009, 31(1) : 94-100.
+[14] 欧春平, 夏军, 王中根, 等. 土地利用/罹被变化对 SWAT 模型水循环模拟结果的影响研究——以海河流域为例[J]. 水力发电学报, 2009, 28(4) : 124-129.
+[15] 张永勇, 夏军, 陈军锋, 等. 基于 SWAT 模型的阐用水量水质优化调度模式研究[J]. 水力发电学报, 2010, 29(5) : 159-164, 177.
+[16] 魏冲, 胡彩虹, 陈杰, 等. SWAT 模型基于不同坡度林地径流调节作用的实现与应用[J]. 水力发电学报, 2014, 33(3) : 98-105, 111.
+[17] 杨娜娜, 包为民, 杨小强, 等. 微分响应在降雨误差修正中的应用[J]. 中国农村水利水电, 2015(1) : 75-79.
+[18] 董丰城, 石朗, 陆美霞, 等. 分布式地银瞬时单位线在闹江流域的应用探究[J]. 三峡大学学报(自然科学版), 2020(1): 1-6.
+[19] 张桂娇, 刘小琴. 应用流域水文模型分析配套雨量站数[J]. 水文, 1989(2) : 8-10.
+[20] ZHAO Reujun. The Xinanjiang model applied in China[J]. Journal of Hydrology, 1992, 135(1-4): 371-381.
+[21] ARNOLD J G, SRINIVASAN R, MUTTIAH R S, et al. Large area hydrologic modeling and assessment part I: model development[J]. Journal of the American Water Resources Association, 1998, 34 (1) : 73-89.
+[22] NEITSCH S L, ARNOLD J G, KINIRY J R, et al. Soil and water assessment tool theoretical documentation version 2005[R]. Grassland, Soil and Water Research Laboratory of Agricultural Research Service, Blackland Research Center of Texas Agricultural Experiment Station, 2005.
+[23] Di LLIZIO M, SRINIVASAN R, ARNOLD J G. A GIS-coupled hydrological model system for the watershed assessment of agricultural nonpoint and point sources of pollution[J]. Transactions in GIS, 2004, 8(1): 113-136.
+[24] 包为民, 张小琴, 赵丽平. 基于参数函数曲面的参数率定方法 [J]. 中国科学：技术科学，2013，43(9)：1050-1062.
+[25] BAO Weimin, ZHAO Liping. Application of linearized calibration method for vertically mixed runoff model parameters[J]. Journal of Hydrologic Engineering, 2014, 19(8), 04014007.
+[26] 包为民. 新安江模型参数的自动率定[J]. 河海大学学报, 1986 (4) : 22-30.
+[27] 包为民, 赵丽平, 王金忠, 等. 张向混合产流模型参数的线性化率定[J]. 水力发电学报, 2014, 33(4): 85-91.
+[28] 包为民, 李倩, 李億松, 等. 基于灵敏度的条件日标函数构建方法研究[J]. 水力发电学报, 2013, 32(2) : 27-34.
+[29] HIRSCH R M, SLACK J R, SMITH R A. Techniques of trend analysis for monthly water quality data[J]. Water Resources Research, 1982, 18(1): 107-121.
+[30] 王栋, 吴栋栋, 解效白, 等. 耆河源区水文气象要素时空变化特征分析[J]. 人民珠江, 2020, 41(3): 66-72, 84.
+(责任编辑 陈 萍)

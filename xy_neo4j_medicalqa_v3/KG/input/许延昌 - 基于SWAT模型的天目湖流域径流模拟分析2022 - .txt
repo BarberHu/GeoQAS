@@ -1,0 +1,189 @@
+# 基于 SWAT 模型的天目湖流域径流模拟分析 
+
+## 许延昌 ${ }^{1,2}$
+
+(1. 江苏海洋大学海洋技术与测绘学院, 江苏 连云港 222000;2. 中国科学院南京地理与湖泊研究所, 江苏 南京 210000 )
+[摘 要] SWAT 模型作为一种分布式水文模型已被国内外学者广泛应用于流域尺度的水文模拟分析。本文以天目湖流域为研究区，用 DEM，土地利用等空间数据及 CMADS 中的气象数据等属性数据，在 SWAT - CUP 中通过率定、验证等方法，对该流域2009-2018 年的径流进行了模拟。本次率定的决定系数 $\mathrm{R}^{2}$ 为 0.68 , Nash - Suttcliffe 效率系数 NS 为 0.66 , 验误的 $\mathrm{R}^{2}$ 为 0.70 , NS 为 0.65 。率定和验证的两个评价系数都大于 0.5 ，说明本次模拟结果较好，对天目湖流域内总响、总氢等污染物的模拟数据进行分析是可行的，这可为当地的水资源规划和水资源可持续发展提供参考。
+
+[芙键词] 天目湖流域； SWAT 模型；径流模拟
+[中国分类号] P334 ${ }^{\circ} .2$ [文献标识码] A [文意编号] 1004 - 1184(2022)03 - 0187 - 03
+
+## Simulation analysis of runoff in Tianmu Lake Basin based on SWAT Model
+
+## XU Yan - chang ${ }^{1,2}$
+
+(1. Jiangsu Ocean University, Lianyungang 222000, China;2. Nanjing Institute of Geography and Limnology, Chinese Academy of Sciences, Nanjing 210000, China)
+
+Abstract: As a distributed hydrological model, SWAT model has been widely used by domestic and foreign scholars in hydrological simulation analysis at the basin scale. In this paper, the Tianmu Lake basin is used as the research area, using DEM, Land Use Spatial Data and meteorological data in CMADS, etc. Through calibration and verification methods in SWAT - CUP, the runoff of the basin from 2009 to 2018 was simulated. The determination coefficient $\mathrm{R}^{2}$ of this calibration is 0.68 , the Nash - Suttcliffe efficiency coefficient NS is 0.66 , the verified $\mathrm{R}^{2}$ is 0.70 , and the NS is 0.65 . Both the calibration and verification evaluation parameters are greater than 0.5 , indicating that the simulation results are good, and it is feasible to analyze the simulation data of total phosphorus, total nitrogen and other pollutants in the Tianmu Lake basin. This can provide references for local water resources planning and sustainable development of water resources.
+
+Key words: Tianmu Lake basin; SWAT model; runoff simulation
+
+## 0 引言
+
+随着社会经济的快速发展，人们的生活水平日益提高，但出现的问题也日趋明显，其中比较突出的一个就是水环境问题 ${ }^{[1]}$ 。近几年来，天目湖流域随着种植业、水产养殖业等产业的蓬勃发展，产生的污染物致使流域内很多湖泊、河流等都受到了不同程度的污染，出现了藻类大量繁殖、富营养化等现象，甚至有进一步恶化的趋势，这就很需要一种合适的方法对该流域的污染情况等进行分析，从而提出有效的对策。在研究水环境的众多方法中，SWAT（Soil and Water Assessment Tool）水文模型模拟分析法应用较为广泛。Woo So - Young ${ }^{[2]}$ 等利用 SWAT 模型，选取 8 种水量水质相关情景，分析了 IBWT（跨流域调水）对受纳流域水质的影响； $\mathrm{M}^{3}$
+
+Hamed Boufala ${ }^{[3]}$ 等采用水农 SWAT 模型，对 $\mathrm{M}^{3}$ dez 流域等高线耕作、梯田等最佳管理措施（BMPs）进行评价，量化了水土平衡和土壤侵蚀及其空间分布；马新洋 ${ }^{[4]}$ 等基于 SWAT模型预测了未来 2 种土地利用变化模式下的径流量变化。故本次研究选择 SWAT 模型，结合天目湖流域土地利用等相关数据，对该流域的径流进行了模拟。
+
+## 1 研究区概况
+
+天目湖流域主要位于江苏省溧阳市南部，小部分位于安徽广德、郎溪境内，介于 $119^{\circ} 18^{\prime} \mathrm{E}-119^{\circ} 29^{\prime} \mathrm{E} 、 31^{\circ} 8^{\prime} \mathrm{N}-31^{\circ}$ $25^{\prime} \mathrm{N}$ 之间，见图 1 ，地势整体上南高北低。其中的天目湖是国家 5 A 级景区、生态旅游示范区，流域面积 $246 \mathrm{~km}^{2}$ ，有大溪、沙河两座国家级水库。流域内有多种地貌类型，且四季
+
+[^0]
+[^0]:    [收稿日期] 2021 - 12 - 29
+    [基金项目] 国家重点研发计划项目（2018YFD1100102）；国家自然科学基金项目（42101318、42001028）；中央级公益性科研院所基本科研业务费专项资金（Y121007）；江苏省水利科技项目（2021030）
+    [作者简介] 许延昌（1996 -），男，山东聊城人，在读硕士研究生，主攻方向；遥感及水文水质。
+
+分明，物种丰富，雨量充沛，有包括水体、林地、茶园、农田等多种围被类型 ${ }^{[4]}$ 。
+
+
+图1 研究区示意图
+
+## 2 数据与方法
+
+## 2.1 数据来源
+
+SWAT 模型的构建主要需要两种数据，即属性数据和空间数据 ${ }^{[6]}$ 。本次研究所使用的空间数据有 DEM 高程数据、土地利用数据、土壤数据等，数据详细情况见表 1 ；属性数据主要用到的是所在研究区的降水、风速、相对湿度、温度以及太阳辐射等气象数据。
+
+表1 数据说明
+
+| 数据 | 描述 | 来源 |
+| :--: | :--: | :--: |
+| DEM | 30 m 分辨率 | 地理空间数据云 |
+| 土壤 | $1: 100$ 万精度 | 国家青藏高原科学数据中心 |
+| 土地利用 | 30 m 分辨率 | 中国科学院资源环境科学数据中心 |
+| 气象 | 逐日 | CMADS |
+
+## 2.2 研究方法
+
+SWAT 模型是由美国农业部农业研究服务中心（USDA - ARS）开发的一种基于流域尺度的分布式水文模型，该模型的原理是将参与水文循环模拟的各要素的变化进行模拟并分析，模型的物理基础较强，能综合考虑土壤、土地利用等数据来模拟多种复杂的情况 ${ }^{[7-8]}$ 。模型的率定及验证使用的是 SWAT - CUP 2012 软件，通过实测径流数据对模拟数据进行率定，通过 Sensitivity analysis 模块中的 Global Sensitivity功能进行敏感性分析，挑选出对模型模拟结果影响最敏感的参数，用新的参数及参数范围重复率定，直到满足要求为止。将率定好的参数带回 SWAT 模型，重新写入数据再次模拟，用实测径流数据验证模拟结果。本次研究选择的评价指标是决定系数 $\mathrm{R}^{2}$ 和 Nash - Suttcliffe 效率系数 NS，公式如下。式中： $Q_{m}$ 为观测流量 $\left(m^{3} / \mathrm{s}\right), Q_{s}$ 为模拟流量 $\left(m^{3} / \mathrm{s}\right), Q_{\text {avg }}$ 为观测流量平均值 $\left(\mathrm{m}^{3} / \mathrm{s}\right), Q_{\text {avg }}$ 为模拟流量平均值 $\left(\mathrm{m}^{3} /\right.$ $\mathrm{s})^{(\mathrm{s})}$ 。
+
+$$
+\begin{aligned}
+& \mathrm{R}^{2}=\frac{\left(\sum_{s=1}^{n}\left(Q_{m}-Q_{\text {avg }}\right)\left(Q_{s}-Q_{\text {avg }}\right)\right)^{2}}{\sum_{s=1}^{n}\left(Q_{m}-Q_{\text {avg }}\right)^{2} \sum_{s=1}^{n}\left(Q_{s}-Q_{\text {avg }}\right)^{2}} \\
+& \mathrm{NS}=1-\frac{\sum_{s=1}^{n}\left(Q_{m}-Q_{s}\right)^{2}}{\sum_{s=1}^{n}\left(Q_{m}-Q_{\text {avg }}\right)^{2}}
+\end{aligned}
+$$
+
+## 3 模型构建与模拟
+
+## 3.1 流域划分
+
+在地理空间数据云下载天目湖流域分辨率为 30 m 的 DEM 数据，在 ArcSWAT 的 Watershed Delineation（流域划分）功能模块中进行加载。由于洼地的存在，水流方向、汇流累积量的计算以及河道的生成都会受到影响，所以要进行填洼预处理。填洼后要确定最小流域面积，面积越小生成的子流域越多，反之生成的子流域则越少，所以选择一个合适的最小流域面积至关重要，经多次测试，发现最小面积设置在 $1000 \mathrm{~hm}^{2}$ 是比较合适的，然后选择流域总出口后即可开始子流域的划分，最后计算子流域的参数。
+
+## 3.2 水文响应单元的定义
+
+水文响应单元（Hydrologic Response Unit，HRU），由土地利用数据、土壤数据以及坡度数据共同组合而成。根据二调土地利用 SWAT 分类对照表，将土地利用类型分为耕地 （AGRL）、林地（FRST）、牧场（PAST）、水域（WATR）、居民区（URLD）以及荒地裸地（BARR），见图2（受 dem 影响，研究区北部一小部分区域在 ArcSWAT 生成流域时未生成，下同）。用天目湖流域的掩棚数据提取 HWSD 土壤数据库，流域内共有 4 种土壤类型，其中人为堆积土（Cumulic Anthrosols）占比 $30.369 \%$ ，简育低活性强般土（Haplic Acrisols）占比 $14.644 \%$ ，简育高活性潦溶土（Haplic Luvisols）占比 $47.653 \%$ ，水体（Water bodies）占比 $7.334 \%$ ，见图3。坡度代表地形陡缓的程度，用坡面的垂直高度与水平距离的比来计算，参考坡度的统计参数；平均值为 14.20 ，标准偏差为 11.58 ，将坡度分为 $7 / 36 ; 0 \sim 9 、 9 \sim 15 、 15 \sim 9999$ ，见图4。加载并设置完三种类型的数据后分别对其进行重分类，后续计算中会根据分类代码从数据库中检索相关属性值进行计算。
+
+HRU 的定义有四种方式：Dominant Land Use，Soils，Slope， Dominant HRU，Target Number of HRUs 和 Multiple HRUs，本次研究选用使用频率最高的第四种，该方式会通过设置阈值的方式，将小于阈值的部分按比重分配到大于该阈值的土地利用、土壤和坡度数据中 ${ }^{[10]}$ 。通过面积比重的比较，将土地利用、土壤和坡度数据的阈值分别设置为： $1 \%, 0 \%, 0 \%$ ，最终将研究区划分为 385 个 HRU。
+
+
+图2 土地利用 图3 土壤空间图4 坡度空间空间分布图 分布图
+
+## 3.3 气象数据的定义
+
+CMADS（The China Meteorological Assimilation Driving Datasets for the SWAT model）数据集引入了 LAPS \STMAS 算法 ${ }^{[11]}$ ，采用双线性插值，数据循环嵌套以及重采样等多种科学方法和技术手段建立，并且针对 SWAT 模型进行了格式等
+
+方面的一系列修改，使得 SWAT 模型的研究者可以直接使用本套中国大气同化驱动数据集而不需要做任何格式上的处理 ${ }^{[12]}$ ，这降低了数据集使用的难度，减少了研究人员的工作量，也使得 CMADS 的应用变的更加广泛。本次研究使用的是 CMADS VI. 2 版本，空间分辨率为 $1 / 8^{\circ} \approx 1 / 8^{\circ}$ ，时间分辨率为逐日，时间尺度为 2008 年至 2018 年，主要包括日平均相对限度（Relative - Humidity），日平均风速（Wind），日 24 h 累计降水量（Precipitation），日最高最低气温（Temperature）以及日平均太阳辐射（Solar radiation）等数据。
+
+## 3.4 模型模拟
+
+目前，CMADS 公布的最新气象数据是从2008年1月1日至2018年12月31日，故本次模拟也在该时间段内。为了使模拟结果更加准确，设置2008年为预热期进行预热，然后对天日湖流域2009至2018年的径流进行模拟。
+
+## 3.5 率定与验证
+
+### 3.5.1 模型率定
+
+SWAT - CUP2012 软件是专为 SWAT 模型的率定、验证工作开发的计算机软件，该软件集成了 SUFI - 2, MCMC, GLUE、ParaSol 和 PSO 程序，可用于 SWAT 模型的不确定性分析、敏感性分析、率定和验证等。为使率定的效果更好，本次研究使用的是最常用的 SUFI - 2 算法，该算法通过拉丁超立方体抛样法判断参数的敏感性并通过 $95 \mathrm{PPU}(95 \%$ 置信水平上的不确定性区间带）来表示参数的不确定性 ${ }^{[13]}$ 。
+
+SWAT - CUP 里的 Sensitivity analysis 模块中的 Global Sensitivity 功能可进行参数的敏感性分析，由 t - Stat 和 P Value 两个参数来判定， $t$ - Stat 代表敏感性的程度，绝对值越大说明参数越敏感， P - Value 表示了敏感性的显著性，值越接近于零就越显著。率定数据采用的是2010年，2011年和 2012 年的实测径流数据，经率定及敏感性分析，测得 ALPHA _BF（基流消退系数），GW_REVAP（地下水再蒸发系数）等 8个参数对天日湖流域径流的模拟结果影响最大，见表 2 。本次研究选择的评价指标是决定系数 $\mathrm{R}^{2}$ 和 Nash - Suttcliffe 效率系数 NS，其中 $\mathrm{R}^{2}$ 反映的是模拟值与实测值的吻合程度，取值范围是 $[0,1]$ ，当 $\mathrm{R}^{2}>0.5$ 时说明模拟结果是合理的，另一个评价指标 NS 反映的是观测径流过程与模拟径流过程间的拟合程度，取值范围是 $(--=, 1]$ ，当 $\mathrm{NS}>0.5$ 时表明模拟结果是满足要求的。本次率定的 $\mathrm{R}^{2}$ 为 0.68 , NS 为 0.66 ，说明率定效果满足要求，率定效果图见图5。
+
+表2 敏感参数说明
+
+| 参数名称 | 中文释义 | $\begin{gathered} \mathrm{t}- \\ \text { Stat } \end{gathered}$ | $\begin{gathered} \mathrm{P}- \\ \text { Value } \end{gathered}$ | 类 <br> 型 | $\begin{gathered} \text { 方 } \\ \text { 法 } \end{gathered}$ |
+| :--: | :--: | :--: | :--: | :--: | :--: |
+| ALPHA_BF | 基流消退系数 | 6.36 | 0.00 | gw | v |
+| GW_REVAP | 地下水再蒸发系数 | 1.50 | 0.15 | gw | v |
+| GWQMN | 浅层地下水回流阈值 | 1.19 | 1.19 | gw | v |
+| CH_N2 | 主河道的曼宁值 | 1.04 | 0.31 | rte | v |
+| GW_DELAY | 地下水延迟时间 | 0.79 | 0.44 | gw | v |
+| SOL_BD | 土壤饱和容量 | 0.67 | 0.51 | sol | r |
+| ALPHA_BNK | 河道槽蓄补给系数 | 0.58 | 0.57 | rte | v |
+| SOL_K | 土壤饱和水力传导系数 | 0.52 | 0.61 | sol | r |
+
+### 3.5.2 模型验证
+
+率定完成后，将 SWAT - CUP 软件校准输出中 Best_Par里敏感参数的 Fitted_Value 代回 SWAT 模型中。AreSWAT 中 Manual Calibration 功能中有三种参数校正方法，分别是 Multi$\mathrm{ply}(\mathrm{r}), \operatorname{Add}(\mathrm{a})$ 和 Replace Value ( v )。Multiply By 运算是将原参数值乘以（Fitted_Value +1），Add 运算是将原参数值加 Fitted_Value, Replace Value 是将原参数值用 Fitted_Value 替换。
+
+参数校正完成后重新写入输入文件中，再次执行模拟，用2016年和2018年两年的实测径流数据在 SWAT - CUP 软件中验证模拟结果。本次验证决定系数 $\mathrm{R}^{2}$ 为 0.70 ，Nash Suttcliffe 效率系数 NS 为 0.65 ，验证效果见图6。
+
+
+
+图5 率定结果
+
+
+
+图6 验证结果
+
+## 4 结语
+
+（1）本次研究通过 DEM 数据、土地利用数据、土壤数据和气象数据等构建了天日湖流域 SWAT 水文模型，并利用该流域的实测径流数据对模拟结果进行了率定及验证，结果表明：率定阶段决定系数 $\mathrm{R}^{2}$ 为 0.68 ，Nash - Suttcliffe 效率系数 NS 为 0.66 ，验证阶段 $\mathrm{R}^{2}$ 为 0.70 ，NS 为 0.65 ，4 值均大于 0.5 ，说明本次模拟结果是满足要求的，构建的 SWAT 模型能较好的反映天日湖流域的产汇流规律，可以用于以后的水文规律的预测等工作。另外，之所以会有较好的模拟结果，一个主要的原因便是 SWAT 模型采用了把流域划分成下垫面相似的子流域进行分块计算的计算方式。
+（2）从参数敏感性分析结果中可以看出，敏感度最高的参数是基流消退系数 ALPHA_BF，它是地下水对补给变化的一个直接指数，其 t - Stat 值为 6.36 ，远大于地下水再蒸发系数 GW_REVAP 等 7 个参数，P - Value 为 0 ；而敏感度最低的参数是土壤饱和水力传导系数 SOL_K，其 t - Stat 值为 0.52 ， P - Value 为 0.61 。
+（3）率定期（2010 - 2012 年）和验证期（2016年、2018年）的观测值和模拟值能够较好的吻合，且观察折线图能够看出，每一年的 5 - 9 月份的径流量都明显高于其他月份，一个很重要的原因是 5 - 9 月份降雨比较多，这符合现实情况，也从一个侧面反映了本次模拟结果较好。
+（4）本次研究后续可以根据模拟结果中 hnu（水文响应单元）数据表，rcb（河道）数据表以及 sub（子流域）数据表中模拟的总碑，总説等数据进行污染物输移等相关分析，为找出污染天日湖流域水质的因子及为相关部门制定水质保护措施等方面提供帮助。
+
+## 参考文献
+
+[1] 周红颖. 农村水环境存在的问题及治理对策[J]. 乡村科技. 2017. 143 (11): 79 - 80.
+[2] Woo So - Young, Kim Seong - Joon, Lee （下转第303页）
+
+排水管，间排距 1.5 m 设置。水流经消力池后流入下游原河道。反弧段及消力池均采用 C20 混凝土衬砌，T 型墩材料采用 C25 混凝土。考虑水流出消力池后对下游河床的冲刷，在鼻坎后设 C15 块石砼护坦，护坦高程为 773.75 m 。
+
+## 4. 2.3 交通桥设计
+
+陇西水库原有跨溢洪道交通便桥一座，连接大坝坝顶及左岸进村道路。本次除险加固设计拟在原址新建一座连续实心板桥，通过车辆以农用车辆为主，主要供人行通过，设计最大载荷 5 t 。
+
+跨溢洪道交通桥设计桥面全长 8.2 m ，桥梁全宽 4 m ，桥面净宽 3.5 m ，最大跨度 6.9 m ，净跨 5.3 m ，桥墩高 3.1 m ，采用 C20 混凝土现浇。桥墩与基础连接处设砂石垫层 200 mm 。桥面两侧采用结实倒管栏护，护栏高度为 0.8 m 。
+
+## 4. 3 放水建筑物加固
+
+## 4. 3.1 方案拟定
+
+陇西水库自建成以来，经过多次检查维修。2007年4月 3 日，经现场检查，右岸放水卧管塌顶，卧管堵塞，不能正常运行。放水涵洞有坍塌的情况，出口位于大坝下游坝面，水流直接冲刷大坝，严重地影响了水库大坝的安全。根据安鉴意见，需要对放水建筑物进行修缮或改造处理。
+
+具体方案拟定：拆除原卧管，在原基础上新建卧管。疏通坝下放水涵管，涵管出口接过坝明渠，水流经明渠后引入原河道。
+
+### 4.3.2 方案设计
+
+新放水建筑物布置在大坝左岸，由卧管、原放水涵管、放水明渠组成。
+（1）卧管：新建卧管需拆除原有卧管，在原基础上新建卧管。新建卧管全长 13.05 m ，纵比降 1:2，采用 C20 混凝土修建。卧管宽度 1.2 m ，共有 12 阶 5 个取水孔，采用侧开门式。取水孔尺寸为 $0.4 \mathrm{~m} \times 0.4 \mathrm{~m}($ 长 $\times$ 宽 $)$ ，最高取水孔底高程为 780.20 m ，最低取水孔底高程为 776.20 m ，取水孔口设置控制闸门，尺寸为 $0.5 \mathrm{~m} \times 0.5 \mathrm{~m}($ 长 $\times$ 宽 $)$ 。水流坝卧管流入底部跌水池，经跌水池消脆后，以弯段连接至放水涵管。跌水池深 3.0 m ，宽 0.8 m ，底部高程为 773.30 m 。
+
+放水涵管进口高程为 774.34 m ，出口高程为 771.80 m ，
+(上接第 189 页)
+Ji - Wan, Kim Se - Hoon, Kim Yong - Won. Evaluating the impact of interbasin water transfer on water quality in the recipient river basin with SWAT[ J]. Science of the Total Environment. 2021. 776.
+[3] M' Hamed Boufala, Abdellah El Hmaidi, Ali Essahlaoui, Khalid Chadli, Abdelhadi ElOuali, Abdelhakim Lahjouj. Assessment of the best management practices under asemi - arid basin using SWAT model ( case of $\mathrm{M}^{\prime}$ dez watershed, Morocco) [ J]. Modeling Earth Systems and Environment. 2021 (prepublish).
+[4]马新萍，武海，余玉泽。基于 SWAT 模型的汉江上游流域径流情景预测研究[J]. 国土资源遥感. 2021. 33(01):174-182.
+[5] - 1 亚序，师变，李亮富. 2000 年以来天目湖流域茶园分布变化及趋势模拟[J]. 湖泊科学. 2013. 25(6):799-808.
+[6]赵刚，徐宗学，董晴晴，等. 不同管理措施对密云水库流域水量水质变化的影响[J]. 南水北调与水利科技. 2017. 15(2):80-88.
+[7]史晓亮，杨志勇，严登华，等. 淮河流域土地利用/覆被变化的水文响应[J]. 水科学进展. 2014. 25(1):21-27.
+
+全长 56.30 m ，纵坡为 $i=0.07$ 。
+卧管取水口设置平板铸铁控制闸门，尺寸为 $0.5 \mathrm{~m} \times 0.5$ m ，共设有 5 个。
+（2）放水明渠：放水涵管出口后接过坝放水明渠，采用预制 U 型砼明渠，全长 29.50 m ，纵坡为 $\mathrm{i}=0.4$ ，进口高程为 771.80 m ，出口高程为 742.90 m 。平面布置上：桩号渠 $0+$ $0.00 \mathrm{~m} \sim$ 渠 $0+14.90 \mathrm{~m}$ 为直线段，桩号渠 $0+14.90 \sim$ 渠 0 +18.40 m 为圆弧转弯段，转弯半径为 5.0 m ，转角 $45.7^{\circ}$ ，桩号渠 $0+18.4 \sim$ 渠 $0+22.66 \mathrm{~m}$ 为直线段。均采用预制 U 型砼明渠，明渠与原涵管搭接 300 m ，接口采用 C20 砼浇筑成洞股，保证链接紧密。渠与与大坝连接处采用 PE 复合土工膜防渗。明渠出口与消力池相接，消力池长 3 m ，深 0.6 m ，宽 1.4 m 。水流经消力池消脆后与原河道相接。
+
+## 4. 4 大坝坝基渗漏分析
+
+水库建成运行以来，坝前驶积层厚度已达 8.0 m 左右，游泥质土属弱 $\sim$ 微透水层，厚度较大，已形成天然储蓄全部库盆。所以已不存在坝基渗漏的地质条件，现状条件下也未发现坝基渗漏问题。
+
+## 4. 5 绕坝渗漏问题及防渗处理措施
+
+大坝背水坡右岸坡脚有渗水现象，渗水点高程 768.11 m ，流量 $\mathrm{q}=3 \mathrm{~L} / \mathrm{min}$ 。根据本次勘探资料分析，右坝肩强风化基岩未全部清除，残留的强风化基岩，渗透系数偏大，是形成绕坝渗漏的主要原因。渗漏范围位于右坝肩结合处，宽度 15 $\sim 20 \mathrm{~m}$ ，厚度 $3.0 \sim 5.0 \mathrm{~m}$ 。建议采用复合土工膜进行斜墙铺蓄防渗或灌浆处理。
+
+## 5 结语
+
+通过对陇西水库运行现状及存在问题进行分析，结合库区实际情况和周围自然环境条件，研究了水库除险加固的必要性，提出切实可行的最佳除险加固方案，有针对性的提出除险加固的具体施工技术措施。除险加固措施付诸实施后，可极大限度的消除病险水库的问题与隐患，增强大坝稳定性、牢固性，能准确有效的消除水库存在的隐患或问题，提高水库的防洪标准和灌溉能力，充分发挥水库综合效益，为发展现代农业，壮大区域经济提供重要水资源保障。
+[8]赵怒，苏保林，申前前，等. 一种 SWAT 模型参数识别的改进方法[J]. 南水北调与水利科技. 2017. 15(4):49-53.
+[9]田扬，肖桂荣。基于 CMADS 窂动下 SWAT 模型的鼓江流域径流模拟[J]. 长江科学院院报. 2020. 37(11):27-32.
+[10]蓝雪春，完颜晟，张真奇. SWAT 模型在浙江小流域径流计算中的应用[J]. 人民炼订. 2020.41(12):27-31, 52.
+[11] Meng, X. ; Wang, H. ; Wu, Y. ; Long, A. ; Wang, J. ; Shi, C. ; Ji, X. Investigating spatiotemporal changes of theland - surface processes in Xinjiang using high - resolution CLM3. 5 and CLDAS; Soil temperature. Sci. Rep. 2017.7. 13286.
+[12] Meng, X. Y. , Wang, H. ; Shi, C. ; Wu, Y. ; Ji, X. Establishment and Evaluation of the China Meteorological Assimilation Driving Datasets for the SWAT Model (CMADS). Water . 10. 1555. (2018).
+[13]梁等，栗晓玲. 基于 SWAT 的全塔河流域综合干旱指数构建及其适用性分析[J]. 西北农林科技大学学报（自然科学版）。 2021. (10): $1 \sim 9$.

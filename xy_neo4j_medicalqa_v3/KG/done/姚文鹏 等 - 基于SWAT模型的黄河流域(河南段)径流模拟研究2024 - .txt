@@ -1,0 +1,131 @@
+# 基于 SWAT模型的黄河流域(河南段)径流模拟研究 
+
+姚文鹏 ${ }^{1}$ 孙新华 ${ }^{1}$ 周家龙 ${ }^{2}$ 张宇笑 ${ }^{1}$<br>(1.河南省地质研究院, 河南 郑州 450016;2.华北水利水电大学, 河南 郑州 450046)
+
+
+#### Abstract
+
+摘 要：[目的]水土资源不平衡严重制约着河南省经济社会高质量发展，开展径流模拟是进行水土资源合理调控的前提，对于流域水土资源高效管理具有重要意义。[方法]基于 GIS构建黄河流域（河南段）的 SWAT模型，建立流域模型的空间数据库和属性数据库，采用 SUFI-2算法对影响模拟径流结果的重要参数进行分析，选择花园口站和艾山站作为出口进行校准，模拟黄河流域（河南段）的径流过程。[结果]结果表明，参数中 SFTMP、SOL_AWC对的径流模拟结果的影响最为显著；花园口站和艾山站的 $R^{2}$和 $N S E$ 均大于 0.8 , SWAT模型在黄河流域（河南段）具有较好的适用性。[结论]研究结果可为黄河流域 （河南段）水资源量模拟提供参考，建立的模型为花园口站和艾山站未来径流变化模拟提供了借鉴。关键词: SWAT模型; 径流模拟; 花园口站; 艾山站; 黄河流域(河南段) 中国分类号:TV213 文献标志码: A 文章编号:1003-5168(2024)19-0044-04 DOI: 10.19968/j.cnki.hnkj.1003-5168.2024.19.009
+
+
+## Runoff Simulation Study of the Yellow River Basin (Henan Section) Based on the SWAT Model
+
+YAO Wenpeng ${ }^{1}$ SUN Xinhua ${ }^{1}$ ZHOU Jialong ${ }^{2}$ ZHANG Yuxiao ${ }^{1}$<br>(1.Henan Academy of Geology, Zhengzhou 450016, China; 2. North China University of Water Resources and Electric Power, Zhengzhou 450046, China)
+
+
+#### Abstract
+
+[Purposes] The imbalance of water and soil resources seriously restricts the high-quality development of economy and society in Henan Province. Runoff simulation is the premise of reasonable regulation of water and soil resources, which is of great significance for the efficient management of water and soil resources in the basin. [Methods] The SWAT model of the Yellow River basin (Henan section) was constructed based on GIS, the spatial database and attribute database of the basin model were established, SUFI-2 algorithm was used to analyze the important parameters affecting the simulated runoff results, and Huayuankou station and Aishan station were selected as the exits for calibration to simulate the runoff process of the Yellow River basin (Henan section). [Findings] The results show that among the parameters, SFTMP and SOL _ AWC have the most significant influence on the runoff simulation results. $R^{2}$ and $N S E$ of Huayuankou and Aishan stations are greater than 0.8 , and SWAT model has good applicability in the Yellow River basin (Henan section). [Conclusions] The results have some reference for the simulation of water resources in the Yellow River basin (Henan section), and the model provides a reference for the simulation of future runoff change at Huayuankou station and Aishan station.
+
+
+Keywords: SWAT model; runoff simulation; Huayuankou Station; Aishan Station; Yellow River Basin (Henan section)
+
+[^0]
+[^0]:    收稿日期:2024-04-11
+    作者简介: 姚文鹏（1994—），男，硕士，研究方向：水文地质。
+    通信作者: 孙新华（1981—），女，硕士，研究方向：环境地质、生态水文。
+
+## 0 引言
+
+2019年9月，习近平总书记在黄河流域生态保护和高质量发展座谈会上作出部署，将黄河流域生态保护和高质量发展上升为重大国家战略，指出 "治理黄河，重在保护，要在治理" ${ }^{[1-2]}$ 。随着黄河流域内人口的增加和经济的快速发展，各种用水问题逐渐凸显出来。当前，人地矛盾尖锐、耕地质量偏低、耕地退化等问题导致水土资源匹配较差，水资源过度开发利用，洪旱事件频发、农田面源污染加剧等水资源问题十分突出，严重制约着河南省高质量发展 ${ }^{[3]}$ 。为了遵循黄河流域生态保护和高质量发展的国家战略，实现水土资源的合理调控，开展黄河流域（河南段）水资源模拟研究具有重要意义。
+
+分布式水文模型能够有效探究复杂水文循环过程和机理，可真实地模拟水文循环过程，利用水文模型开展流域水资源研究，对水资源的可持续利用具有重要意义 ${ }^{[4]}$ 。在众多水文模型中， SWAT模型能有效模拟流域的水循环、土壤侵蚀和泥沙输移过程 ${ }^{[5]}$ ，可通过建立不同的情景来评估水文过程 ${ }^{[6]}$ ，是研究水资源变化使用较多的模型 ${ }^{[7]}$ 。
+
+以往采用 SWAT模型进行水资源模拟的研究，大多采用单独流域或流域内某一区域（上下游、支流等）为研究单元，本研究结合研究区行政区划，选择黄河（河南段）为统一整体，包括黄河流域中游和下游部分区域，探索 SWAT模型在分段区域间的适宜性，丰富了 SWAT模型的应用实例，研究结果也可对河南省沿黄城市的水资源合理开发利用提供参考。
+
+## 1 数据与方法
+
+## 1.1 研究区概况
+
+黄河在流经黄土高原后进入河南省，黄河流域 （河南段）（E110 ${ }^{\circ} 21^{\prime}$-E116 ${ }^{\circ} 6^{\prime}$ ，N33 ${ }^{\circ} 41^{\prime} \sim \mathrm{N} 36^{\circ} 6^{\prime}$ ）包含黄河流域的中下游区域，主要流经城市包括三门峡、洛阳、济源、焦作、郑州、新乡、开封和濮阳等 8个市。以郑州市花园口为分界点，花园口以西为中游，花园口以东为下游。模型以流域为基础建立，建模空间数据库边界包含了山西省部分支流区域，研究区如图1所示。研究区多年平均水资源量为 197.05 亿 $\mathrm{m}^{3}$ ，年均气温为 $12 \sim 16^{\circ} \mathrm{C}$ ，降雨量为 500 900 mm 。
+
+
+图1 黄河流域（河南段）区位图
+1.2 数据来源与处理
+1.2.1 数据来源。本研究建立模型所需的数据包括数字高程图DEM（图1）、土地利用数据、土壤数据、气象和径流。模型所用到数据的描述和来源见表1。
+
+表1 黄河流域（河南段）基础数据描述及来源
+
+| 数据 <br> 类型 | 数据描述 | 数据来源 |
+| :--: | :--: | :--: |
+| DEM | 中国数字高程模型 | http://www.govloud.cn/ |
+| 土地 | 2018年中国土地利用 | http://www.govdata.cn/ |
+| 利用 |  |  |
+| 土壤 | 中国土壤空间分布图 | http://www.issas.cus.cn/ |
+| 气象 | 2015-2020年逐日气象 | https://data.cma.cn/ |
+| 径流 | 2015-2020年逐月径流 | http://www.yyce.gov.cn/ |
+
+1.2.2 数据库建立。气象数据库采用天气发生器模拟，土壤属性数据库采用SPAW计算，并将计算好的数据属性导入模型数据库中。
+1.3 研究方法
+1.3.1 SWAT模型概述。SWAT模型是研究水循环使用最多的模型之一，基于 SWAT模型模拟流域水文要素主要包括陆地、水面两部分，流域水量平衡方程 ${ }^{[8]}$ 计算见式（1）。
+$S W_{i}=S W_{0}+\sum_{j=1}^{i}\left(P_{i k t e j}-Q_{t e d j}-E_{n j}-W_{m t e j}-Q_{p e j}\right)$
+式中： $S W_{i}$ 表示土壤含水量； $S W_{0}$ 表示初始时段的土壤含水量； $P_{i k t e j}$ 表示第 $j$ 天的降水量； $Q_{t e d j}$ 表示第 $j$ 天的地表径流量； $E_{n j}$ 表示第 $j$ 天的蒸散发量； $W_{m t e j}$ 表示第 $j$ 天离开土壤剖面底部的渗透量和侧流量； $Q_{p e j}$ 表示第 $j$ 天的地下水径流量， mm 。
+1.3.2 模型评价。依据 SWAT-CUP工具中的 SUFI-2 算法对 SWAT模型输出结果进行不确定性分析、敏感性分析、校准和验证。选择决定系数 $\left(R^{i}\right)$ 和纳什效率系数（ $N S E$ ）评价 SWAT模型的模拟效果。当 $R^{i}>0.6, N S E>0.5$ 时 ${ }^{[9]}$ ，表明模拟效果可以被接受。 $R^{i}$ 和 $N S E$ 计算分别见式（2）和式（3）。
+
+$$
+\begin{gathered}
+R^{2}=\frac{\left[\sum_{i=1}^{n} \int\left(Q_{m i}-Q_{m, m q}\right)\left(Q_{i j}-Q_{v m q}\right)\right]^{2}}{\sum_{i=1}^{n}\left(Q_{m i}-Q_{m, m q}\right)^{2}\left(Q_{i j}-Q_{v, m q}\right)^{2}} \\
+N S E=1-\frac{\sum_{i=1}^{n}\left(Q_{m i}-Q_{v i}\right)^{2}}{\sum_{i=1}^{n}\left(Q_{m i}-Q_{m, m q}\right)^{2}}
+\end{gathered}
+$$
+
+2 SWAT模型在黄河流域（河南段）的应用
+2.1 模型建立及运行
+
+许多研究表明，SWAT子流域划分对径流的影响较小，对泥沙、营养物质模拟的结果影响较大。根据地形和最小集水面积，本流域被划分成 282 个子流域。最大的子流域面积为 $1084.65 \mathrm{~km}^{2}$ ；最小的子流域面积仅为 $0.03 \mathrm{~km}^{2}$ 。
+
+在完成所有数据输入后，设定本次模拟的时间尺度为 2015-2020年，选 2015 年作为 SWAT模型的预热期。
+
+# 2.2 参数分析 
+
+本研究利用 SWAT-CUP 来进行参数敏感性分析，其包含两种分析类型：全局敏感性（Global Sensitivity）和一次 1 个（One-at-a-time）敏感性分析。参数敏感性分析的作用是找到影响模型输出结果的几个最关键参数，用 T-stat 和 P-value 来衡量参数的敏感性，其中 T-stat 代表敏感性程度，绝对值越大越敏感；P-value 代表参数敏感性的显著性，越接近于 0 越显著。
+
+本研究主要目的是进行水量模拟，因此只需对水文模拟参数进行敏感性分析，根据对已有文献的整理及专家建议，选取了 12 个参数对本次模拟进行敏感性分析。主要参数见表2。
+
+## 2.3 模拟结果分析
+
+月径流模拟过程评价指标计算结果显示，花园口站 $R^{2}$ 和 $N S E$ 的结果分别为 $0.93 、 0.92$ ，艾山站 $R^{2}$和 $N S E$ 的结果分别 $0.94 、 0.89$ ，模拟过程曲线如图 2所示。SWAT模型符合精度要求，模拟计算出的蒸发、降雨、土壤水含量变化等过程与实际或已有研
+
+完成果一致，模拟结果能较好地反映流域降水和径流量的年内、年际变化。流量过程线模拟结果表明，SWAT模型在黄河流域（河南段）的应用效果非常好，模拟结果能较好地反映流域降水和径流量的年分布，该模型适用于流域自然水循环的模拟。
+
+
+图2 逐月径流模拟
+
+## 3 讨论
+
+该模型所需的流域内气象数据输入是流域内其他过程模拟的驱动力，也是重要的数据之一，降雨量、气温和太阳辐射等参数对水文过程、作物生长和养分的降解、转化等都具有重要影响。该模型
+
+表2 参数栏准结果
+
+| 敏感性 | 参数名称 | $T$ | $P$ | 栏准终值 | 敏感性 | 参数名称 | $T$ | $P$ | 栏准终值 |
+| :--: | :--: | :--: | :--: | :--: | :--: | :--: | :--: | :--: | :--: |
+| 1 | SFTMP.lssn | 0.04 | 0.97 | 4.69 | 7 | TIMP.lssn | $-0.30$ | 0.76 | 1.09 |
+| 2 | SOL_AW.GL.1.sol | $-0.09$ | 0.93 | 0.60 | 8 | SLSUBBSN.hru | $-0.43$ | 0.67 | 0.11 |
+| 3 | SMFMN.lssn | 0.18 | 0.86 | 13.65 | 9 | REYAPMN.gw | $-0.44$ | 0.66 | 225.87 |
+| 4 | SURLAG.lssn | $-0.18$ | 0.86 | 0.03 | 10 | OV_N.hru | $-0.71$ | 0.48 | $-0.46$ |
+| 5 | GW_REYAP.gw | $-0.21$ | 0.84 | $-0.03$ | 11 | SOL_BIK.1.sol | 0.74 | 0.46 | 1.26 |
+| 6 | GW_DELAY.gw | 0.25 | 0.80 | 396.79 | 12 | CANMX.hru | $-0.82$ | 0.42 | $-0.08$ |
+
+数据获取具有局限性，因为气象站的分布会带来一定的误差，本流域选择的气象站点分布不均可能导致气候信息不充分，给 SWAT模拟带来不确定性。
+
+本研究将 DEM 数据和土壤数据作为长期不变的数据源输入SWAT模型，但实际上地形可能一直处于微小的变化。DEM 的这种宏观变化难以被遥感数据探测或发现，对结果可靠性存在一定的影响。假设土壤性质也不变，将土壤数据作为常量，对研究结果也有一定影响。
+
+参数的选择取决于分析者的主观认知，本次模拟选取的参数参考了相关研究者的结论，但由于研究时段的差异、研究范围的不同，以及迭代方法的计算，所得到的结果也不能完全相同，这也是造成误差的原因之一。
+
+## 4 结论
+
+(1)参数敏感性分析结果表明，在所选取的 12个与径流相关的参数中，SFTMP、SOL、AWC 最为敏感，对径流影响最为显著。
+(2)本研究建立了黄河流域（河南段）SWAT模型，模拟可以取得较满意的结果，花园口站和艾山站的 $R^{2}$ 和 $N S E$ 均大于 0.8 ，表明 SWAT模型在黄河流域（河南段）具有较好的适用性。
+
+## 参考文献:
+
+[1]夏栻，陈荃，霍明，等. 东晋源空间均衡系数计算方法及其应用[J]. 东晋源保护，2020，36（1）：52-57.
+[2] 陈宇冬，夏栻. 基于需求层论论的幸福河评价[J]. 南东丛润与东利科技（中英文），2020，18（4）：1-7,38.
+[3]王亚迪，孟其亭，刘欢，等. 河南省水土资源匹配特征及均衡性分析 [J]. 人民黄河，201840（4）：5559,64.
+[4]HAN Y P, XIA F, HUANG H P, et al. Impact of the grain for green project on water resources and ecological water stress in the Yanhe River Basin[J]. PLoS One, 2022, 17, (6):0259611.
+[5] QI J Y, ZHANG X S, LEE S, et al. A coupled surface water storage and subsurface water dynamics model in SWAT for characterizing hydroperiod of geographically isolated wetlands[J]. Advances in Water Resources. 2019, 131, 103380.
+[6]PENG S L, WANG C Y, EGUCHI S, et al. Response of hydrological processes to climate and land use changes in Hiso River watershed, Fukushima, Japan [J]. Physics and Chemistry of the Earth, 2021, 123, 103010.
+[7]霍斌，陈兴伟. 用 SWAT模拟土地利用对绿水层水的影响：以晋江西流流域为例[J]. 环境科学与技术, 2016, 39(1): 199-204.
+[8]LI Y Y, CHANG J X, LUO L F, et al. Spatiotemporal impacts of land use land cover changes on hydrology from the mechanism perspective using SWAT model with timevarying parameters [J]. Hydrology Research, 2019, 50 (1) : 244-262.
+[9]WANG H, SUN F B, XIA J, et al. Impact of LUCC on streamflow based on the SWAT model over the Wei River basin on the Loess Plateau in China [J].Hydrology and Earth System Sciences, 2017, 21, (4): 1929-1945.
+（栏目编辑：孙艳梅）

@@ -1,0 +1,214 @@
+# 基于 SWAT 模型的布尔哈通河流域径流模拟研究 
+
+李 怡，孙翼程，赵春子，朱卫红，张 达<br>(延边大学地理与海洋科学学院, 延吉 133000)
+
+
+#### Abstract
+
+摘 要：气候条件的变化对水资源影响十分显著，为探讨中新俄界河图们江流域水资源与气条候件变化的关系，以布尔哈通河流域为研究区，用土地利用数据、数字高程模型数据、土壤类型数据、水文数据和气象数据构建了连用流域的 SWAT（Soil and water assessment tool）模型。模型以 1995 2015 年为基准期，对布尔哈通河流域基准期内连月平均径流进行模拟，假设全球变化背景下 25种气候变化情景，模拟由各气候变化情景下月平均径流的变化，进而得出布尔哈通河流域水资源与气候变化的响应关系。结果表明，SWAT 模型的模拟精度高于评价标准，连用于布尔哈通河流域径流模拟；模拟分析得出，气温与年径流变化负相关，降水与年径流变化正相关，降水是影响布尔哈通河流域径流变化的主要因素。建议相关部门重点对 6 8 月降温较大的强降雨天气进行动态监测，流域内可能出现春旱和秋旱，对 3 5 月和 9 月天气的监测也需加强。关键词：SWAT 模型；布尔哈通河流域；径流模拟 中国分类号：P993 文献标志码：A 文章编号：1001-7011（2022）01-0089-07
+
+
+## Simulation of the runoff in the Buerhatong River basin based on the SWAT model
+
+LI Yi, SUN Jicheng, ZHAO Chunzi, ZHU Weihong, ZHANG Da<br>(College of Geography and Ocean Sciences, Yanbian University, Yanji 133000, China)
+
+
+#### Abstract
+
+Climate change has a significant impact on water resource. In order to explore the relationship between water resource and climate change in the transnational basin of Tumen River, Buerhatong River was taken as the study area, which was an important branch of Tumen River, and the localized SWAT ( Soil and water assessment tool) model was constructed by using land use/cover data, digital elevation model data, soil type data, hydrologic data, and meteorological data. Taking 1995 - 2015 as the reference period, the model simulated the monthly average runoff in the reference period of Burhatong River basin, assuming 25 climate change scenarios under the background of global change, simulated the change of monthly average runoff under each climate change scenario, and then obtained the response relationship between water resources and climate change in Burhatong River basin. The results showed that the simulation accuracy of the SWAT model was higher than the evaluation standard, which was suitable for simulating the runoff in the Buerhatong River basin. Meanwhile, the simulation result showed that there was a negative correlation between air temperature and annual runoff variation, and a positive corre-
+
+
+[^0]
+[^0]:    收摘日期：2020-05-09
+    基金项目：国家自然科学基金重点基金资助项目（41830643）；吉林省教育科学"十二五"规划课题（GH14044）；中央引导地方科技发展资金吉林省基础研究专项（202002024JC）；延边大学应用基础项目（延大科合字2020年第18号）
+    通讯作者：赵春子（1977-），女，副教授，主要研究方向：水文水资源，E-mail：3358281092@qq.com
+    引文格式：李怡，孙翼程，赵春子，等. 基于 SWAT 模型的布尔哈通河流域径流模拟研究 [J]. 黑龙江大学自然科学学报，2022，39（1）： $89 \sim 95$.
+
+lation between precipitation and annual runoff variation. Precipitation was the main factor affecting the runoff dynamics in the Buerhatong River basin. It is suggested that the relevant departments should focus on monitoring the heavy rainfall weather under the background of a large drop in temperature from June to August. Spring drought and autumn drought may occur, and the weather monitoring from March to May and September should also be strengthened.
+Keywords: SWAT; Buerhatong River basin; runoff simulation
+
+# 0 引 言 
+
+水资源是人类生产生活中不可缺少的自然资源，气候变化对水资源的影响最为显著。近年来，利用分布式水文模型进行关于河流流域水文问题、水资源保护与管理的研究受到学者的广泛关注 ${ }^{[1-2]}$ 。在分布式水文模型中，SWAT（Soil and water assessment tool）模型广泛应用于气候变化的水文效应研究，是对径流进行模拟的重要方法。王中根等对 SWAT 模型的原理、结构及应用进行了研究 ${ }^{[3]}$ ；龙素梅等基于 SWAT 模型对衡阳盆地 $2014 \sim 2023$ 年径流量进行了模拟和预测研究 ${ }^{[4]}$ ；罗巧等基于 SWAT 模型设置湘江流域土地利用情景模式，研究了不同土地利用方式对径流的影响程度 ${ }^{[5]}$ ；夏智宏、周伟东和王怀志等基于 SWAT 模型分别对汉江流域、福建省长汀县朱溪流域和秦淮河等流域的气候变化情景进行了模拟，并预测了径流的响应 ${ }^{[6-8]}$ ；薛宝林等构建了山东胶东半岛黄垒河流域的 SWAT 分布式水文模型，通过气候情景模拟分析了气候与土地利用变化对径流的影响 ${ }^{[9]}$ ；娄华超等选用 SWAT 分布式水文模型，通过情景分析法模拟变化环境下流域的径流响应 ${ }^{[10]}$ ；Singh 等使用 SWAT 模型模拟了印度伊布河流域的月径流量 ${ }^{[11]}$ ，dos Santos 等以巴西卡廷加/大西洋森林过渡带的一个战略盆地为研究区，运用 SWAT 模型研究了土地利用变化和气候变化对径流和沉积物产量的影响 ${ }^{[12]}$ 。
+
+图们江为中、朝、俄三国界河，布尔哈通河为图们江二级支流，贯穿延边朝鲜族自治州首府延吉市，受人类活动影响较大。本文借鉴已有研究，应用 SWAT 模型对布尔哈通河流域地表径流进行模拟，探讨不同气候条件对地表径流的影响，并模拟逐月平均径流变化，得出年内径流变化较大的月份，以期为国际界河的水资源利用与保护，以及布尔哈通河流域水资源调控、防洪抗旱等管理工作提供参考。
+
+
+图1 布尔哈通河流域地理位置
+Fig. 1 Geographical location of Buerhatong River basin
+1 研究区概况
+图们江是中、朝、俄三国界河，布尔哈通河是图们江流域的二级支流，位于吉林省东部延边朝鲜族自治州
+
+中南部，发源于安图县哈尔巴岭东麓沼泽区域，流经安图县、龙井市、朝阳川镇、延吉市主城区后，在图们市境内汇人嘎呀河，全长 242 km ，流域面积约 $6847 \mathrm{~km}^{2}$ ，河床平均坡降 $0.6 \%$ 。布尔哈通河流域（图1）属于温带大陆性季风气候，夏天温和多雨，秋天凉爽少雨，冬天寒冷，时间长。流域内降雨量空间分布不均衡，年平均降雨量为 $400 \sim 650 \mathrm{~mm}$ ，自东南向西北减少，降水多集中在 $6 \sim 8$ 月，且汇聚性强，极易发生短暂的降水性洪灾，并且季风现象明显，尤以春季最大。
+
+# 2 研究数据与方法 
+
+### 2.1 研究数据
+
+构建布尔哈通河流域的 SWAT 模型主要输入的数据包括土地利用数据、数字高程模型数据、土壤类型数据、水文数据和气象数据等，如表1所示。在模拟过程中，首先，利用 DEM（Digital elevation model）数据进行分析和处理，得到栅格格式的水流流向，自动生成河网，进而完成子流域的划分；其次，对坡度数据、土壤类型数据、土地利用数据进行叠加统计分析，形成土被组合的水文响应单元（Hydrologicresponse units, HRU）；然后，在 SWAT 模型中输入水文数据和气象数据等属性数据，分别对各水文响应单元进行径流模拟；最后，通过河网汇集得到流域径流模拟值。
+
+表1 SWAT 模型输入数据
+Table 1 Input data of SWAT model
+
+| 数据类型 | 数据描述 | 数据来源 |
+| :--: | :--: | :--: |
+| 土地利用 <br> 数据 | 选取1995、2000、2005、2010、2015年土地利用栅格数据，包括耕地、林地、水域、草地、建筑用地和未利用地等 6 个地类 | 中国科学院资源环境数据云平台（http: //www. resde. cn)，空间分辨率为 1 km |
+| 数字高程数据 | 运用 DEM 数据提取并获取高度、坡向和坡度，用于子流域的划分，并确定流域出口 | 地理空间数据云平台（http: //www. gacloud. cn/），空间分辨率为 90 m |
+| 土壤数据 | 包括土壤物理属性、化学成分和空间分布等属性数据 | HWSD 数据库 |
+| 水文数据 | 选取磨盘山水文站1995～2015年逐月流量、水位等实测径流数据，用于模型参数率定和验证，径流模拟等 | 延边朝鲜族自治州水利局水资源公报 ${ }^{[13]}$ |
+|  | 选取延吉站、龙井站、安图站 1995～2015年逐日观测数 |  |
+| 气象数据 | 酿，包括逐日降水量、气温、风速、湿度和太阳辐射等，通过天气发生源进行敏感参数的率定 | 延边朝鲜族自治州气象局 |
+
+## 2.2 模型参数敏感性分析
+
+通过敏感性分析率定对模拟结果贡献较大的参数，进而验证 SWAT 模型精度。为确定影响布尔哈通河流域径流变化模拟结果的敏感因素，提高 SWAT 模型的校准率，利用 SWAT-CUP 软件，通过 200 余次自动敏感性分析，结合人工参数调整分析，共进行 500 余次参数调整，完成参数敏感性率定。经过敏感性分析，最终获得的主要参数有 CN2、ESCO、CANMX、SOL_AWC、SOL_BD、RCHRG_DP、SOL_Z、SLSIBBSN、ALPHA_BNK、 SMTMP 和 HRU_SLP，参数含义和具体数值如表2所示。
+
+表2 SWAT 模型的主要校准参数
+Table 2 Main calibrated parameters of SWAT model
+
+| 参数名称 | 参数含义 | 输入文件 | 值域/变化范围 | 参数值 |
+| :--: | :--: | :--: | :--: | :--: |
+| CN2 | SCS 径流曲线数 | * . mgt | $0.06 \sim 0.31$ | 0.17 |
+| ESCO | 土壤蒸发补偿因子 | * . hru | $-0.70 \sim 0.07$ | $-0.44$ |
+| CANMX | 最大的树冠存储 | * . hru | $0.00 \sim 17.80$ | 11.57 |
+| SOL_AWC | 土壤可利用水量 | * sol | $-0.11 \sim 0.16$ | $-0.02$ |
+| SOL_BD | 潜容重 | * sol | $0.06 \sim 0.25$ | 0.20 |
+| RCHRG_DP | 深层含水层渗流分数 | * . gw | $0.34 \sim 0.86$ | 0.83 |
+| SOL_Z | 深度 | * sol | $-0.08 \sim 0.34$ | $-0.05$ |
+| SLSIBBSN | 平均坡长 | * . hru | $6.45 \sim 39.46$ | 22.40 |
+| ALPHA_BNK | 河岸调蓄基流因子 | * . rte | $1.20 \sim 1.83$ | 1.21 |
+
+续表
+
+| 参数名称 | 参数含义 | 输人文件 | 值域/变化范围 | 参数值 |
+| :--: | :--: | :--: | :--: | :--: |
+| SMTMP | 融雪基温 | * . lsm | $-4.16 \sim 2.64$ | 2.08 |
+| HRU_SLP | HRU 被度 | * . hru | $0.46 \sim 1.00$ | 0.96 |
+
+# 2.3 模型参数的率定、验证及适用性 
+
+布尔哈通河流域磨盘山水文数据完整，选取磨盘山水文站 1995 1996年逐月实测径流数据进行水文参数的率定，选取 1997 2015年逐月实测径流数据对率定的参数进行验证。采用 Nash-Sutcliffe 模拟效率系数 （NSE）和线性拟合系数 $R^{2}$ 对模型的模拟结果进行评价，计算方法见式（1）和式（2）：
+
+$$
+\begin{gathered}
+\mathrm{NSE}=1-\frac{\sum_{i=1}^{n}\left(x_{i}-y_{i}\right)^{2}}{\sum_{i=1}^{n}\left(x_{i}-\bar{x}\right)^{2}} \\
+R^{2}=\frac{\sum_{i=1}^{n}\left[\left(x_{i}-\bar{x}\right)\left(y_{i}-\bar{y}\right)\right]^{2}}{\sum_{i=1}^{n}\left(x_{i}-\bar{x}\right)^{2} \sum_{i=1}^{n}\left(y_{i}-\bar{y}\right)^{2}}
+\end{gathered}
+$$
+
+式中： $x_{i}$ 为实测径流量； $y_{i}$ 为模拟径流量； $\bar{x}$ 为实测径流量平均值； $\bar{y}$ 为模拟径流量平均值； $n$ 为数据序列长度。
+
+NSE 是描述模拟值对实测值拟合精度的统计参数，取值范围为 $0 \sim 1$ 。NSE 越接近 1 ，表明模拟效率越高。如果 NSE $<0$ ，说明模型模拟值比实测值可信度更低，通常取 NSE $>0.5$ 作为径流模拟效率的评价标准 ${ }^{[6]}$ 。 $R^{2}$ 越接近 1 ，模拟效率越高，说明模拟径流量对实测径流量的解释越高，即模拟径流量越接近实测径流量。众多研究将 NSE $>0.5$ 且 $R^{2}>0.5$ 作为 SWAT 模型模拟满意的准则 ${ }^{[44-15]}$ 。当 NSE 介于 $0.65 \sim 0.75$之间时，模拟结果比较好，当 NSE 达到 0.75 以上，模拟结果非常好 ${ }^{[16]}$ 。
+
+## 2.4 气候变化情景设置
+
+IPCC（Intergovernmental panel on climate change）第五次评估报告指出，2016～2035年，全球地表平均温将上升 $0.3 \sim 0.7^{\circ} \mathrm{C}$ ，本世纪末将达到 $0.3 \sim 4.8^{\circ} \mathrm{C}$ ，降水随区域的不同表现出不同的变化趋势。在《中国西部环境演变评估综合报告》中 ${ }^{[17]}$ ，秦大河院士曾指出，2020～2030年，我国平均气温将增加 $1.7^{\circ} \mathrm{C}$ ，西北地区可能增加 $1.9 \sim 2.3^{\circ} \mathrm{C}$ ，到 2050 年，全国平均温度可能增加 $2.2^{\circ} \mathrm{C}$ ，很多地区的降雨增加程度不同。以全球模式为参考，在研究区假定 25 种气候变化情景组合 ${ }^{[6]}$ ，预估未来气候变化的结果，即在图们江流域 20 年 （1995～2015年）平均日降水量，日气温的基础上，降水变化 $0 \% 、 \pm 10 \% 、 \pm 20 \%$ （正值表示增加，负值表示减少），气温变化 $0^{\circ} \mathrm{C} 、 \pm 1^{\circ} \mathrm{C} 、 \pm 2^{\circ} \mathrm{C}$ ，将降水和气温变化条件两两组合，构成 25 种气候变化情景组合，模拟月平均径流量，如表 3 所示。通过对月平均径流量的模拟，以期为布尔哈通河流域径流年际和年内变化进行预测，并为相关管理部门提供参考依据。
+
+表3 气候变化情景组合
+Table 3 Combination of climate change scenarios
+
+| 气候变化 | $(T-2)^{\circ} \mathrm{C}$ | $(T-1)^{\circ} \mathrm{C}$ | $T^{\circ} \mathrm{C}$ | $(T+1)^{\circ} \mathrm{C}$ | $(T+2)^{\circ} \mathrm{C}$ |
+| :--: | :--: | :--: | :--: | :--: | :--: |
+| $0.8 P$ | 情景 1 | 情景 2 | 情景 3 | 情景 4 | 情景 5 |
+| $0.9 P$ | 情景 6 | 情景 7 | 情景 8 | 情景 9 | 情景 10 |
+| $1.0 P$ | 情景 11 | 情景 12 | 情景 13 | 情景 14 | 情景 15 |
+| $1.1 P$ | 情景 16 | 情景 17 | 情景 18 | 情景 19 | 情景 20 |
+| $1.2 P$ | 情景 21 | 情景 22 | 情景 23 | 情景 24 | 情景 25 |
+
+## 3 结果与讨论
+
+## 3.1 模拟精度分析及评价
+
+磨盘山水文站率定期模拟评价如表 4 所示，率定期月径流模拟效率与拟合情况如图 2 和图 3 所示，验证
+
+期月径流模拟效率与拟合情况如图4和图5所示。NSE 和 $R^{2}$ 值均高于 0.82 ，说明模拟效果非常好，磨盘山水文站径流模拟评价指标在月尺度上能够满足精度要求，SWAT 模型适用于布尔哈通河流域气候变化对径流的影响。
+
+表4 1995～2015年布尔哈通河流域月径流模拟评价
+Table 4 Monthly runoff simulation evaluation of Burhatong River basin from 1995 to 2015
+
+| 站点 | 时期 | NSE | $R^{2}$ |
+| :--: | :--: | :--: | :--: |
+|  | 1995～1996年 | 0.98 | 0.98 |
+| 磨盘山 | 1997～2015年 | 0.82 | 0.82 |
+
+
+
+图2 率定期拟合图
+Fig. 2 Fitting diagram of rate period
+
+
+图 4 验证期拟合图
+Fig. 4 Fitting diagram of verification period
+
+
+图3 率定期实测/模拟径流拟合图
+Fig. 3 Fitting diagram of measured/simulated runoff during rate period
+
+
+图5 验证期实测/模拟径流拟合图
+Fig. 5 Fitting diagram of measured/simulated runoff during verification period
+
+# 3.2 情景模拟分析 
+
+### 3.2.1 不同气候情景下年径流量的变化
+
+模拟各气候情景下的月平均径流量，结果如表5所示。布尔哈通河流域月平均径流量变化与气温和降水关系密切。保持气温不变，月平均径流量随降水的增加而增加，随降水的减少而减少，两者呈正相关。当降水增加 $10 \%$ 和 $20 \%$ 时，月平均径流量分别增加 $2.45 \%$ 和 $6.80 \%$ ，径流增加率小于降水增加率；当降水减少 $10 \%$ 和 $20 \%$ 时，月平均径流量分别减少 $6.79 \%$ 和 $11.13 \%$ ，径流减少率小于降水减少率。保持降水不变，月平均径流量随气温的升高而减少，随气温的降低而增加，两者呈负相关。气温升高 1 和 $2^{\circ} \mathrm{C}$ 时，月平均径流量分别减少 $8.19 \%$ 和 $14.50 \%$ ，气温降低 $1^{\circ} \mathrm{C}$ 时，月平均径流量减少 $3.36 \%$ ，气温降低 $2^{\circ} \mathrm{C}$ 时，月平均径流量增加 $3.68 \%$ ，气温通过蒸发作用间接影响径流量的变化，总体上，气温增加，年径流量减少。因此，降水是影响布尔哈通河流域径流变化的主要因素。
+
+将不同气候变化情景和实际气象条件（情景 13）下模拟的月平均径流量对比可知，径流量减少最多的情景是气温升高 $2^{\circ} \mathrm{C}$ 且降水减少 $20 \%$ ，月平均径流量比实测月径流量减少 $15.48 \%$ ，此时流域内年径流量可能会急剧减少，水库水位下降，应注意流域降水变率大和气候变暖趋势对流域的影响，在流域管理中应加强防
+
+早上作。径流量增加最多的气候情景是气温降低 $2^{\circ} \mathrm{C}$ 且降水增加 $20 \%$ ，此时月平均径流量比实测径流量增加 $14.61 \%$ ，考虑布尔哈通河流域年内汛期流量会增加且集中，相关部门应加强对强降雨天气的动态预警，并做好相应的防洪准备。
+
+表 5 不同气候情景下月平均径流量模拟值变革（\%）
+Table 5 Variability of simulated monthly average runoff under different climatic scenarios ( \%)
+
+| ${ }^{\text {气 }}$ 侯变化 | $(T-2)^{\circ} \mathrm{C}$ | $(T-1)^{\circ} \mathrm{C}$ | $T^{\circ} \mathrm{C}$ | $(T+1)^{\circ} \mathrm{C}$ | $(T+2)^{\circ} \mathrm{C}$ |
+| :--: | :--: | :--: | :--: | :--: | :--: |
+| $0.8 P$ | -3.85 | -7.29 | -11.13 | -14.00 | -15.48 |
+| $0.9 P$ | 1.87 | -2.30 | -6.79 | -11.77 | -11.96 |
+| $1.0 P$ | 3.68 | -3.36 | 0 | -8.19 | -14.50 |
+| $1.1 P$ | 4.17 | 6.93 | 2.45 | 1.11 | -5.03 |
+| $1.2 P$ | 14.61 | 11.51 | 6.80 | 2.59 | -1.12 |
+
+# 3.2.2 不同气候情景下年内径流变化 
+
+模拟各气候情景下的逐月平均径流量，与实际气象条件下各月平均径流量进行差值计算，逐月平均径流量的差值如图6和图7所示。当气温不变时，随降水量的变化，4月、5月和 9 月模拟月平均径流量均为负增长，分别减少 $0.1506 \times 10^{8} \sim 0.2638 \times 10^{8} 、 0.1119 \times 10^{8} \sim 0.3394 \times 10^{8}$ 和 $0.0693 \times 10^{8} \sim 0.1851 \times 10^{8}$ $\mathrm{m}^{3}$ ，而 $6 \sim 8$ 月模拟月平均径流量变化幅度较大，既有增加也有减少，径流量分别在减少 $0.0288 \times 10^{8} \mathrm{~m}^{3}$ 至增加 $0.2286 \times 10^{8} \mathrm{~m}^{3}$ ，减少 $0.0755 \times 10^{8} \mathrm{~m}^{3}$ 至增加 $0.3391 \times 10^{8} \mathrm{~m}^{3}$ 和减少 $0.1551 \times 10^{8} \mathrm{~m}^{3}$ 至增加 0.0848 $\times 10^{8} \mathrm{~m}^{3}$ 范围内变化，其他月份月平均径流量总体随降水量的增加出现正增长，在降水量不变或减少 $10 \%$ 的条件下个别月份出现负增长。建议相关部门在水资源调控过程中注意 $4 \sim 9$ 月间对降雨天气的动态监测，预防可能出现的旱涝变化，并合理规划水资源。
+
+当降水量不变时，随着气温的变化， $3 \sim 5$ 月和 9 月模拟月平均径流量均为负增长，分别减少 $0.0112 \times$ $10^{8} \sim 0.0678 \times 10^{8} 、 0.1742 \times 10^{8} \sim 0.2232 \times 10^{8} 、 0.0062 \times 10^{8} \sim 0.0054 \times 10^{8}$ 和 $0.0416 \times 10^{8} \sim 0.1998 \times$ $10^{8} \mathrm{~m}^{3}$ ，6月平均径流量增加 $0.0317 \times 10^{8} \sim 0.1705 \times 10^{8} \mathrm{~m}^{3}$ 左右，7月平均径流量增加最多，仅在气温增加 $2^{\circ} \mathrm{C}$ 时月平均径流量减少，径流量在减少 $0.0141 \times 10^{8} \mathrm{~m}^{3}$ 至增加 $0.3594 \times 10^{8} \mathrm{~m}^{3}$ 范围内变化，而 8 月模拟月平均径流量变化较大，径流量在减少 $0.1493 \times 10^{8} \mathrm{~m}^{3}$ 至增加 $0.1546 \times 10^{8} \mathrm{~m}^{3}$ 范围内变化，其他月份径流量较稳定。可见，气温升高对年内径流量的削减作用较大，气温增幅越大，对各月平均径流量影响越大。
+
+
+图6 气温不变情景下逐月平均径流量模拟值与实测值差值 Fig. 6 Difference between simulated and measured monthly mean runoff values under constant temperature scenarios
+
+
+图7 降水不变情景下逐月平均径流量模拟值与实测值差值
+
+Fig. 7 Difference between simulated and measured monthly mean runoff values under constant precipitation scenarios
+
+布尔哈通河流域降水多集中在 $6 \sim 8$ 月，易出现降水性洪灾，通过不同气候情景下对年内月平均径流的模拟分析，相关部门应加强对 $6 \sim 8$ 月降温较大且可能出现的强降雨天气的监测。此外，流域内自春季开始季风显著，可能出现春旱和秋旱，对 $3 \sim 5$ 月和 9 月的气候变化也需关注。由于延迟朝鲜族自治州首府延吉市地处布尔哈通河流域，人类活动对地表径流影响较大，应在气候变化情景下注意对水资源的开发和利用，并保障水资源的可持续发展。
+
+# 4 结 论 
+
+（1）利用 SWAT 模型模拟布尔哈通河流域径流过程，通过参数的敏感性分析，率定和验证发现，模型率定期和验证期的 NSE 和 $R^{2}$ 的值均为 0.82 ，模拟精度均高于评价标准，说明本研究构建的 SWAT 模型适用研究区。
+（2）气候变化情景模拟结果表明，气温和降水变化对布尔哈通河流域径流影响均较大。当气温不变时，降水和月平均径流量变化呈正相关，径流变化对降水增加更敏感。当降水不变时，气温和月平均径流量变化呈负相关，总体上气温增加，年径流减少，说明影响布尔哈通河流域径流变化的主要因素是降水。
+（3）在气候变化条件下，相关部门应重点对 $6 \sim 8$ 月降温较大且可能出现的强降雨天气进行动态监测。此外，流域内季风显著，可能出现春旱和秋旱，对 $3 \sim 5$ 月和 9 月天气的监测也需加强。
+
+本文虽对降水和气温变化进行了径流变化的响应分析，但未明确造成模拟径流年内变化差异性的原因，还有待深人探讨。
+
+## 参考文献
+
+[1] GOLMOHAMMADI G, RUDRA R, TREVOR D, et al. Predicting the temporal variation of flow contributing areas using SWAT [J]. Journal of Hydrology, 2017, 547: 375 - 386.
+[2] 余烨, 谢平, 桑燕芳, 等. 基于 LWHM-LUCC 模型的阐论江流域径流演变驱动机制分析 [J]. 黑龙江大学工程学报, 2019, 10(4): 1 -9.
+[3] 王中相, 刘昌明, 黄友波. SWAT 模型的原理, 结构及应用研究 [J]. 地理科学进展, 2003, 22(1): 79 - 86.
+[4] 龙素梅, 郡跃辉, 夏荣, 等. 基于 SWAT 模型的衡阳盆地径流量模拟研究 [J]. 湖南林业科技, 2019, 46(5): 17 - 23.
+[5] 罗巧, 王克林, 王勤学. 基于 SWAT 模型的湘江流域土地利用变化情景的径流模拟研究 [J]. 中国生态农业学报, 2011, 19(6): $1431 \sim 1436$.
+[6] 夏智宏, 周月华, 许红梅. 基于 SWAT 模型的汉江流域水资源对气候变化的响应 [J]. 长江流域资源与环境, 2010, 19(2): 158 - 163.
+[7] 周伟东, 汪小钦. 基于 SWAT 模型的气候变化下水文响应分析 - 以碳建吞长汀县朱溪小流域为例 [J]. 亚热带水土保持, 2019, 31(2): $1 \sim 6$.
+[8] 王怀志, 高玉琴, 袁玉, 等. 基于 SWAT 模型的秦凿河流域气候变化水文响应研究 [J]. 水资源与水工程学报, 2017, 28(1): 81 - 87.
+[9] 薛宝林, 张趣文, 冈宇会, 等. 黄奎河流域气候与土地利用变化对径流的影响 [J]. 北京师范大学学报（自然科学版）, 2020, 56(3): $445 \sim 453$.
+[10] 姜华超, 刘瑞芬. 东洋河流域土地利用及气候变化对径流的影响 [J]. 人民长江, 2020, 51(7): 82 - 88.
+[11] SINGH L, SARAVANAN S. Simulation of monthly streamflow using the SWAT model of the Ib River watershed, India [J]. HydroResearch, 2020, 3: $95 \sim 105$.
+[12] DOS SANTOS J Y G, MONTENEGRO S M G L, DA SILVA R M, et al. Modeling the impacts of future LULC and climate change on runoff and sediment yield in a strategic basin in the Caatinga/Atlantic forest ecotone of Brazil [J]. CATENA, 2021, 203: 105308.
+[13] 延边朝鲜族自治州水利局. 延边朝鲜族自治州水利局水资源公报 [M]. 延吉: 延边朝鲜族自治州水利局, 1995 - 2015.
+[14] SANTHI C, ARNOLD J G, WILLIAMS J R, et al. Application of a watershed model to evaluate management effects on point and nonpoint source pollution [J]. Transactions of the ASABE, 2001, 44(6): 1559 - 1570.
+[15] AHMAD H M N, SINCLAIR A, JAMIESON R, et al. Modeling sediment and nitrogen export from a Rural Watershed in Eastern Canada using the soil and water assessment tool [J]. Journal of Environment Quality, 2011, 40(4): 1182 - 1194.
+[16] MORLASI D N, ARNOLD J G, LIEW M W V, et al. Model evaluation guidelines for systematic quantification of accuracy in watershed simulations [J]. Transactions of the ASABE, 2007, 50(3): 885 - 900.
+[17] 秦大河. 中国西部环境演变评估综合报告 [M]. 北京: 科学出版社, 2002.

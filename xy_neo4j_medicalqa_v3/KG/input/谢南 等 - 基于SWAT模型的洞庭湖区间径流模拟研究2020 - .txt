@@ -1,0 +1,171 @@
+# 基于 SWAT 模型的洞庭湖区间径流模拟研究 
+
+谢 南 ${ }^{1}$ 、刘 華 ${ }^{1}$ 宋 平 ${ }^{2}$ 、郑 颖 ${ }^{2}$ 徐 锐 ${ }^{2}$<br>( 1. 武汉大学水资源与水电工程科学国家重点实验室 . 武汉 430072; 2. 湖南省水利水电勘测设计研究院 ,长沙 410000)
+
+
+#### Abstract
+
+搞 要：在人类活动强烈的在平原湖区.由于 DEM 精度较低，报难反映围湖造田形成的大量堤坝、径流的汇流过程亦会受到人工排涝的影响。针对人类活动强烈的洞庭湖湖区、结合 GoogleEarth 遥感卫星数据、识别出堤坝区的边界、以此修改研究区域的 DEM 来实现子流域的划分。对于堤坝区的汇流计算、采用天然出流过程的过去 $n$ d 平均、以此反映人工排涝过程，从而能更好地利用 SWAT 模型对洞庭湖未控区间进行模拟。利用修改的 DEM 和过去 $n$ d 平均出流的模型对流量进行了模拟，结果表明，改进后模型率定期的效率系数从 0.88 提高到了 0.9 。验证期的效率系数从 0.85 提高到了 0.88 。提出的模型改进方法，可为于平原湖区的水文模拟提供参考。
+
+关键词: SWAT 模型; 遥感影像; 平滑出流过程; DEM 修改; 径流模拟 中图分类号: TV21 文献标识码: A
+
+
+## Modeling of Interval Runoff Based on the SWAT Model for the Dongting Lake Basin
+
+XIE Nan ${ }^{1}$ ，LIU Pan ${ }^{1}$ ，SONG Ping ${ }^{2}$ ，ZHENG Ying ${ }^{2}$ ，XU Rui ${ }^{2}$<br>( 1.State Key Laboratory of Water Resources and Hydropower Engineering Science, Wuhan University, Wuhan 430072 , China;<br>2. Hunan Hydro\&Power Design Institute, Changsha 430072 , China)
+
+
+#### Abstract
+
+In the plain lake area where human activities are frequent, many polders designed for reclaiming land from lakes cannot be reflected by DEM, and water conservancy project will produce an effect on concentration. In this paper, the boundary of the polders of the Dongting Lake area are identified by the remote sensing satellite data of Google Earth to modify DEM and guide sub-basin delineation. The concentration module of SWAT model is replaced by the n-days average of natural runoff process. SWAT model can therefore be better used to simulate the uncontrolled zone of Dongting Lake. By using the modified DEM and the past n-day average outflow model, the interval runoff is simulated, and the result shows that the efficiency coefficient increases from 0.88 to 0.9 in calibration period, and from 0.85 to 0.88 in validation period. The proposed model is helpful for the application and research on the distributed hydrological model in the plain lake area. Key words: SWAT Model; remote sensing image; smooth outflow; modified DEM; runoff simulation
+
+
+## 1 研究背景
+
+随着计算机技术和 GIS/ES 技术的不断发展、有较强物理机制的 SWAT 模型是近年来应用十分广泛的分布式水文模型。 SWAT 模型结构较完善、计算效率较高、能在资料缺乏的地区建模。在北美和欧洲 SWAT 模型被广泛地应用且取得了较好的效果 ${ }^{[12]}$ 。在中国，SWAT 模型也得到了广泛应用。如赖正
+
+[^0]清等 ${ }^{[3]}$ 对西北寒旱区黑河中上流域水文过程进行模拟、宋林旭 ${ }^{[4]}$ 等对三峡库区的香溪河进行了非点源的模拟、孟现勇等 ${ }^{[5]}$就模型的融雪模块进行了改进和应用。近年来，很多学者对 SWAT 模型进行改进，使其能够应用于平原河网地区。如罗运祥等 ${ }^{[6]}$ 针对平原河网地区使用人工划分子流域并增设虚拟水库模拟该地区径流；吴用等 ${ }^{[7]}$ 对 SWAT 模型在山区、平原区复合地貌的子流域划分办法进行了改进；孙世民等 ${ }^{[8]}$ 对将"分片区、分层次"方法应用于温瑞塘河流域，取得了不错的效果。但这些方法都是基于原有的 DEM 数据或者需要实地调查、对汇流机制的研究也相对较少。本研究针对人类活动强烈的洞庭湖湖区、结合 GoogleEarth 遥感卫星数据、识别出堤坝区的边界，以此修改研究区域的 DEM 来引导子流域的划分。对于 SWAT模型的汇流过程，采用经验的方法来模拟排涝过程。
+
+
+[^0]:    驱稿日期: 2019-01-40
+    作者简介: 谢 南（1993-）. 邱士研究生.主要从事水文模型和遥感的研究。Email: 747170003@epj.com。
+    通讯作者: 刘 華(1978-) . 房.教授.从事水文水资源开发及利用方面研究。E-mail: liupan@whu.edu.cn。
+
+## 2 修正 SWAT 模型的输入与输出数据
+
+在本研究中，由于洞庭湖未控区间流域内建有堤坝，形成各自的包围圈：河道上常常建闸，设泉，水流很大程度上受到人为控制。对该区域进行水文模拟存在以下问题：(1)地形复杂，基于原有 DEM 提取的河道和流域与实际不符，通过 ArcSWAT自行划分子流域难以反映流域内的真实状况；(2)水利工程影响汇流过程，特别是人工排涝。
+
+## 2.1 修正 SWAT 模型的 DEM 输入数据
+
+基于 DEM 提取流域特征是分布式水文模型的重中之重 ${ }^{[3]}$ 。平原地区大片平坦地区和洼地的存在使得 DEM 在空间上对地形信息表达存在误差，在洞庭湖区，由于围湖造田形成的大量堤坝区也无法完全被 DEM 所包含 ${ }^{[10-11]}$ 。因此，仅仅依靠 DEM 提取子流域边界不能完全反映流域内的真实面貌。对 SWAT 模型的 DEM 输入数据修正如下：(1)利用遥感影像，提取三口四水以下洞庭湖流域未控区间水系，再使用 SWAT 模型中的"Burn in"功能导入；(2)堤坝区虽然数量多，形状复杂，但其轮廓可较为清晰地展示在 Google 地图上。故先利用 BIGMAP 软件，给出堤坝区轮廓线要素；(3)以上述该要素为基础选择 ArcToolbox/Analysis tools/Proximity/buffer 和 ArcToolbox/Conversion tools/To Raster/Polygon to Raster，生成像素值为 999 的栅格数据，并留出一个出口设置像素值为 0 。最后选择 ArcToolbox/ Data Management Tools $\backslash$ Raster $\backslash$ Raster Dataset $\backslash$ Mosaic，把生成的栅格数据镶嵌到 DEM；(4)使用 ArcSWAT 的自动划分功能，执行子流域的划分。
+
+## 2.2 平滑堤坝区出流过程
+
+在平原湖区，由于堤坝区产生的径流会暂时储存在堤坝内的河道中，再通过电排站进行排涝，所以人类活动对汇流过程的影响较大。根据实地调查，认为堤坝区当日产流量会在 $n \mathrm{~d}$内相继汇入河网，故可将实际流量过程取值为过去 $n \mathrm{~d}$ 的平均值，即：
+
+$$
+Q_{i}=\frac{Q_{i}+Q_{i+1}+\cdots+Q_{i+n+1}}{n}
+$$
+
+式中： $Q$ 表示定义的堤坝区子流域出口的流量； $Q$ 表示原 SWAT模型计算得到的堤坝区子流域出口的流量； $i$ 表示日期； $n$ 表示过去的天数，由率定获得。
+
+## 3 修正后输入与输出数据后 SWAT 模型在洞庭湖区的应用
+
+## 3.1 洞庭湖概况
+
+洞庭湖位于中国湖南省北部（图 1），长江荆江河段以南，与青海湖、兴凯湖和鄱阳湖并称中国四大湖泊。其古代曾号称 "八百里洞庭"，是湖南省它是长江流域重要的调蓄湖泊，具强大蓄洪能力，最使长江无数次的洪患化险为夷，江汉平原和武汉三镇得以安全渡汛。地理坐标介于北纬 $27^{\circ} 39^{\prime}-29^{\circ} 51^{\prime}$ ，东经 $111^{\circ} 19^{\prime}-113^{\circ} 34^{\prime}$ 之间。 20 世纪 90 年代末，据水利部门测算，其总面积为 $2579.2 \mathrm{~km}^{2}$ 。由于泥沙淤塞、围垦造田，洞庭湖现已分割为东洞庭湖、南洞庭湖、自平湖和七里湖等几部分。由于洞庭湖三口四水控制站以下河道纵横，水系复杂，该区域
+
+未设控制测站。过去涉及洞庭湖的各项科学研究与规划在分析洞庭湖区间来流时，均未考虑该部分面积的径流量，对成果精度影响较大。开展三口四水控制站以下洞庭湖区域径流研究，对提高洞庭湖乃至长江水情分析成果的准确度，从而合理确定洞庭湖及长江治理规划方案具有十分重要的意义。
+
+
+图1 洞庭湖流域示意图
+Fig. 1 The sketch map of Dongting Lake
+
+## 3.2 资料来源及模型构建
+
+模型模拟的时间分为两个时间段，分别为 1991-2000 年以及 2001-2009年，其中 1991-2000年为率定期，2001-2009年为验证期，1991年和2001年为预热期。所用资料包括 17 个国家气象站点的实测逐日气象数据（包括降水、气温、风速、太阳辐射量和相对湿度）；8 个水文站的实测流量资料，用以反推洞庭湖未控区间的入湖流量资料；研究区内的 9 种土壤属性数据； 7种土地利用数据；分辨率为 90 m 的 DEM 数据等。其中气象数据来源于各省、市、自治区气候资料处理部门逐月上报的《地面气象记录月报表》的信息化资料，土壤属性与土地利用数据来源于中国寒区旱区科学数据中心，DEM 数据下载自地理空间数据云平台（ http：// www.gscloud.cn/）。卫星影像资料来自于 Google Earth。
+
+## 3.3 模型设置与对比方案
+
+本研究将基于遥感影像来修正 DEM 以实现子流域划分以及将堤坝区的特殊出流过程耦合进 SWAT 模型中，编译程序进行模拟。为了更好地展示修正输出与输出数据的优化结果，模拟对比验证分为两组：SWAT 模型仅基于原始 DEM 和未修改的堤坝出流过程进行模拟；SWAT 模型基于遥感影像修改的 DEM 和修改后的堤坝出流过程进行模拟。
+
+## 4 模拟分析
+
+## 4.1 子流域划分结果
+
+子流域的提取是构建 SWAT 模型的第一步，通常的步骤为载入一定分辨率的 DEM 数据并基于 DEM 提取河道，然后把研究区域按照一定的子流域阈值分成若干子流域。鉴于研究区域的特殊性和复杂性，采用基于遥感影像修改 DEM 的方法，引导 SWAT 模型提取研究区域的子流域，并与原 DEM 所提取的子流域方法进行对比。图2为基于遥感影像修改 DEM 后 SWAT 模型得到的子流域，图3为基于原 DEM 得到的子流域。
+
+
+
+图2 改进 DEM 后子流域划分结果
+Fig. 2 Watershed divided by modified DEM
+
+
+图3 原始 DEM 子流域划分结果
+Fig. 3 Watershed divided by original DEM
+可以看出，仅仅基于原始 DEM 提取的子流域并不能很好地反映堤坝产生的影响，几乎不能匹配。而使用改进 DEM 所提取的子流域则能较好地反映堤坝对子流域划分产生的影响，说明改进的方法能较好地解决流域提取失真的问题。
+
+## 4.2 模拟结果
+
+### 4.2.1 参数率定
+
+参数的率定方法为 SUFI-2 算法。参数的率定按如下顺序进行：确定敏感性参数（主要包括基流因子 ALPHA_BF、浅层地下水再蒸发系数 GW_REVAP、土壤蒸发补偿系数 ESCO、主河道有效水力传导度 CH_K2、湿润条件 II 下的 SCS 径流曲线数 $C N_{2}$ 、土壤田间持水量 SOL_AWC）；先调整地表径流再调整蒸发和地下径流。率定结果显示，式（1）中的 $n=3$ 时，效果最佳。
+
+### 4.2.2 日径流模拟结果
+
+选取确定性系数 $E_{\infty}$ 和相关系数 $R^{2}$ 日尺度径流过程的模拟指标，对未修正输入与输出数据的 SWAT 模型和修正后输入与输出数据后的 SWAT 模型进行模拟效果的对比。在模型率定期，未修正输入与输出数据的 SWAT 模型的确定性系数 $E_{\infty}$为 0.88 ，相关系数 $R^{2}$ 为 0.89 ；修正了输入与输出数据的 SWAT模型，确定性系数和相关系数分别提高到 0.9 和 0.9 。在模型验证期，未修正输入与输出数据的 SWAT 模型的确定性系数 $E_{\infty}$为 0.85 ，相关系数 $R^{2}$ 为 0.86 ；修正了输入与输出数据的 SWAT模型，确定性系数和相关系数分别提高到 0.88 和 0.88 。由图4
+
+和图5可以看出，修正了输入与输出数据的 SWAT 模型所模拟的洪峰更接近于实际，且提高了精度，显示出了人类活动对于径流过程的影响。由此说明，修正输入与输出数据后的 SWAT模型能够反映出人类活动对于径流过程的影响。
+
+
+图4 率定期（以1994年为例）
+Fig. 4 Calibration period（1994 as an example）
+
+
+图5 验证期（以2006年为例）
+Fig. 5 Validation period（2006 as an example）
+
+## 5 结 语
+
+根据洞庭湖未控区间流域现有资料，建立洞庭湖未控区间流域 SWAT 分布式模型。所得主要结论如下。
+（1）基于遥感影像修改 DEM 数据，使得 SWAT 所提取出来的流域的堤坝轮廓，真实河流流向等较难取得的数据能够更加准确地反映出来;
+（2）对堤坝区出流过程进行平滑，采用经验的方法解决了洞庭湖地区真实流量过程难以体现的问题，提高了模拟的精度和稳健性。建立了洞庭湖未控区间流域 SWAT 分布式水文模型，得出了洞庭湖未控区间流域的土壤、土地利用数据库。利用改正输入与输出数据的 SWAT 模型在人类活动强烈的洞庭湖地区进行了检验。结果表明，不管是率定期还是验证期，改进后比改进前模型在模拟精度上都有一定提高。
+
+## 参考文献:
+
+[1] CONAN , MARSIUY. A long-term hydrological modelling of the Upper Guadiana river basin (Spain) [J]. Physics \& Chemistry of the Earth, 2003, 28(4): 193-200.
+[2] BOSCH , ARNOLD, VOLK. Simulation of a Low-Gradient Coastal Plain Watershed Using the SWAT Landscape Model [J].Tr-ansactions of the Asake, 2010, 53(5):1445-1456.
+[3] 赖正清.李 镇.李呈萱.海.SWAT 模型在黑河中上游流域的改进与应用[J].自然资源学报, 2013, 28(8):1404-1413.
+[4] 宋林旭.刘德富. 肖尚斌.海.基于 SWAT 模型的三峡库区香溪河非点源氢磷负荷模拟[J].环境科学学报, 2013, 33(1):267-275.
+(下转第 52 页)
+
+[8] 袁 满，王文圣. 叶漪璘. 有序聚类分析法的改进及其在水文序列突变点识别中的应用[J]. 水文，2017（7）（5）：8-11.
+[9] 梁欣阳. 卢玉东. 孙东永. 等. 基于突变检验的黄河上游生态水文变异分析[J]. 中国农村水利水电，2016（10）：1-5（10.
+[10] 黄丽娜. 基于空间差异突变诊断模型分析淮河上游水文要素变化特征[J]. 水利规划与设计，2016（6）：50-53.
+[11] 张敬平. 萧 强.赵雪花. 潭泽水库水文序列突变分析方法比较 [J]. 应用基础与工程科学学报，2013（1）（5）：837-844.
+[12] 高云明. 胡浩云. 王国庆. 等. 潭河流域降雨径流演变规律及水资源优化配置研究[M]. 北京：中国水利水电出版社， 2017.
+[13] 拜存有，苏 笙，郭旭新. 流域水文过程变点分析研究综述[J].水资源与水工程学报，2010（2）（1）：83-86.
+[14] 芮孝芳. 水文学原理[M]. 北京：中国水利水电出版社，2004.
+[15] 丁 晶. 洪水时间序列干扰点的统计推估[J]. 武汉水利电力学院学报，1986（5）：36-40.
+(上接第 38 页)
+[22] 刘 涛，郑 楟，张卫华. 等. 四川盆地丘陵山区阁地水系分形分维研究[J]. 西南大学学报(自然科学版)，2012（34）（3）：7682 .
+[23] 曹小敏，罗明良，刘承桢. 基于 ASTER-GDEM 的盐河流域水系分维特征分析[J]. 遥感信息，2013（28）（1）：34-37.
+[24] 王国重，李中原，屈建钢. 等. 基于 DEM 的丹江口水库水源区水系分形特征研究[J]. 中国农村水利水电，2017（4）：121-124.
+[25] 孔凡哲，李莉莉. 利用 DEM 提取河网时集水面积阈值的确定 [J]. 水电能源科学, 2005(4):65-67.
+[26] 王 林, 陈兴伟. 基于 DEM 的流域水系分维计算与结果分析 [J]. 地球信息科学学报, 2007（9）（4）：133-134.
+[27] 李 彪，许贵林，卢 远. 基于分形分维和数学函数的南流江流域河网信息提取[J]. 测绘与空间地理信息，2016（39）（3）：114118.
+[28] 原晓平, 刘少峰,田贵中. 等. 基于 DEM 的格尔木河流域水系分
+[16] MANN HB. Non-parametric tests against trend [J]. Econometrica, 1945（13）：245-259.
+[17] WANG GQ，ZHANG JY，PAGANO TC，et al. Using hydrological simulation to detect human-disturbed epoch in runoff series [J], Water Science \& Technology, 2015（7）（5）：691-699.
+[18] LIANG X, WOOD EF, LETTENMAIER DP. Surface soil moisture parameterization of the VIC-2L model: Evaluation and modification [J]. Global and Planetary Change, 1996（3）：195-206.
+[19] LIANG X, XIE ZH. A new surface runoff parameterization with sub-grid-scale soil heterogeneity for land surface models [J]. Advances in Water Resources, 2001（24）：173-1 193.
+[20] ZHAO RJ. The Xinanjiang model applied in China [J]. Journal of Hydrology, 1992（135）：371-381.
+[21] TODINI E. The ARNO rainfall-runoff model [J]. Journal of Hydrology, 1996（175）：339-382.
+
+维分析[J]. 国土资源遥感, 2013（25）（1）：111-116.
+[29] 郭 忆,毕锦本, 闫业超. 等. 拉林河流域水系分维研究[J]. 测绘科学, 2015（49）（4）：63-66.
+[30] 㞕 甜，陈瑞昌. 基于 DEM 的河网水系分形特征研究: 以常德市桃源县为例[J]. 中国农学通报, 2013（29）（2）：166-171.
+[31] 汤国安, 杨 昕. ArcGIS 地理信息系统空间分析实验教程[M].北京：科学出版社，2012：429-445.
+[32] 李精忠，刘剑炜，杨泽龙. DEM 数据谷地分维值的估算[J]. 武汉大学学报(信息科学版), 2014（39（11）：1277-1 281.
+[33] 孙洪泉. 分形几何与分形插值[M]. 北京：科学出版社，2011：64 -65 .
+[34] 刘 远, 周买春, 陈芝菁. 等. 基于不同 DEM 数据源的数字河网提取对比分析：以韩江流域为例[J]. 地理科学, 2012（32）（9）： 1112 -1 118.
+[35] 杨锦玲. 基于分形的数字水系集水面积阈值确定研究[J]. 测绘科学, 2011（36）（4）：33-34.
+
+## (上接第 41 页)
+
+[5] 孟现勇. 吉晓楠. 刘志辉. 等.SWAT 模型融雪模块的改进与应用研究[J].自然资源学报 2014（29）（3）：528-539.
+[6] 罗运祥.苏保林.李 卢. 等.平原河网地区 SWAT 模型子流域概化方法[J].北京师范大学学报(自然科学版), 2011（47）（4）：415418.
+[7] 吴 用.李畅游.张成瑞. 等.基于 ArcGIS 和 SWAT 的山区.平原区复合地貌流域划分方法研究[J].干草区地理, 2016（39）（2）：413419.
+[8] 孙世明. 付丛生. 涨明华.SWAT 模型在平原河网区的子流域划分
+
+方法研究[J].中国农村水利水电. 2011（6）：17-20.
+[9] 郑 瑾，李光永，韩振中. 等. 改进的 SWAT 模型在平原灌区的应用[J]. 水利学报, 2011（42）（1）：88-97.
+[10] 徐精文, 张万昌, 符凉城. 适用于大尺度水文气候模式的 DEM法地填充和平坦区处理的新方法[J]. 水利学报, 2007（38）（12）： 1414 - 1420 .
+[11] 郑子彦, 张万昌, 邰庆国. 基于 DEM 与数字化河道提取流域河网的不同方案比较研究[J]. 资源科学, 2009（31（10）：17301739 .
+(上接第 46 页)
+[13] DUAN Q Y, GUPTA V K, SOBOOSHIAN S. Shuffled complex evolution approach for effective and efficient global minimization [J]. Journal of Optimization Theory and Applications, 1993（76）（3）：501 -521.
+[14] DUAN Q Y, SOBOOSHIAN S, GUPTA V K. Optimal use of the
+
+SCE-UA global optimization method for calibrating watershed models [J]. Journal of Hydrology, 1994（158）（3-4）：265-284.
+[15] 程晓红. 面雨量计算方法及其对水文模拟影响探讨 [D]. 南京:河海大学 2005.
+[16] 陈利群，刘昌明，郝芳华. 站网密度和地形对模拟产流量和产沙量的影响[J]. 水土保持学报, 2005（19）（1）：18-21.

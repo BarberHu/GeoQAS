@@ -1,0 +1,216 @@
+# 基于 SWAT 模型太子河流域径流模拟 
+
+朱正如, 苑 晨, 吕乐婷
+
+（辽宁师范大学 地理科学学院，辽宁 大连 116029）
+
+
+#### Abstract
+
+摘 要：在太子河流域建立了 SWAT（Soil and Water Assessment Tool）分布式水文模型，并采用 SUFI-2 算法进行参数敏感性分析以及参数率定、模型验证与不确定性分析，对太子河流域的 1956-2016年水文过程进行了模拟。研究结果显示：(1)模型运行时所用的一些水文参数，会影响模型的模拟结果，如基流 $\alpha$ 系数 ALPHA_BF、地下水延迟时间 GW_DELAY、土壤蒸发补偿系数 ESCO、浅层地下水再蒸发系数 GW_REVAP、最大冠层蓄水量 CANMX、生物混合效率系数 BIOMIX、SCS 径流曲线系数 CN2、饱和水力传导系数 SOL_K、土壤饱和容重 SOL_BD、土壤表层到底层的深度 SOL_Z 这几个参数最敏感；（2）太子河流域所有水文站的月径流模拟线与实测径流线较接近，率定期和验证期水文站的决定系数 $R^{2}$ 值均大于 0.5 ，Nash-Sutcliffe 系数（ $E_{900}$ ）均大于 0.5 ，太子河流域 SWAT 模型月径流模拟效果较好；（3）太子河流域实际蒸散发量的空间分布呈现由西向东递减的趋势，西部平均蒸散发量约为 550 mm ，东部平均实际蒸散发量约为 431 mm 。太子河流域产水量的空间分布呈现由西向东递增的趋势，东部平均产水量约为 547 mm ，西部平均产水量约为 149 mm 。关键词：太子河；SWAT 分布式水文模型；SUFI-2 算法；决定系数；Nash-Sutcliffe 系数中图分类号：P343.1 文献标识码：A
+
+
+#### Abstract
+
+自然界的水文循环过程是一个复杂的过程。在水文循环的过程中，由于外界多种因素相互作用和相互影响，直接研究水文循环的过程有一定难度，因此，水文模型成为研究水文循环过程的重要工具。水文模型可以分为系统理论模型、概念性模型和物理模型 ${ }^{[1]}$ 三大类。其中，物理模型一般都是分布式模型，又称分布式水文物理模型（Physically-based Distributed Model）。目前，国内外学者多用水文物理模型研究有关流域水环境问题 ${ }^{[2]}$ 、常见的分布式水文物理模型有水文土地利用模型 HYLUC ${ }^{[3-4]}$ （Hydrological Land Use Change）、农业集水区研究单元模型 $\mathrm{ACRU}^{[4]}$ （Agricultural Catchments Research Unit）、STREAM ${ }^{[5]}$ （Spatial Tools for River Basin Environment Analysis and Management）、 SWAT ${ }^{[3,4]}$ 模型、VIC ${ }^{[6]}$ （Variable Infiltration Capacity）模型等等。随着社会的进步与发展以及" 3 S" 技术（指遥感技术、地理信息系统和全球定位系统的统称）的出现，这些分布式水文物理模型得到了更多的数据支持。SWAT 模型在进行区域尺度的评价中，采用日为时间连续计算，综合考虑了土壤类型、土地利用类型等因素的影响，因此，在评价资源的过程中较别的模型更有优势。
+
+SWAT 模型的前身是河道演算 ROTO 模型和 SWRRB 模型 ${ }^{[16]}$ ，直到1994年，它才被美国
+
+[^0]
+[^0]:    收稿日期:2021-02-18
+    作者简介：朱正如（1969-），女，辽宁本溪人，辽宁师范大学副教授，博士.E-mail：zhengruzhu@lnnu.edu.cn
+
+Aronld 博士整理而成. 它的发展经历了 30 多年的历史,融合了河道验算模块的、基于 GIS 基础之上的半分布式水文模型 ${ }^{[11]}$. 该模型主要被用来预测当流域内土壤、土地利用方式和管理方式变化时, 土地管理对水、泥沙及化学物质影响的变化. 它是研究自然界中土壤、生态等与水文之间的关系的基础:依据遥感和地理信息数据, SWAT 模型还可以模拟不同的水文物理化学过程,如水量、水质及农药转移等。
+
+在国外, 有学者利用 SWAT 模型预测大空间尺度降雨问题, 如 Jayakrishnan 等 ${ }^{[12]}$ 将 SWAT 模型和雷达降雨数据整合, 解决了降雨数据缺测或数据难以获取的问题. 此外, 国外还有学者利用 SWAT模型管理农业问题, 如 Miseon 等 ${ }^{[13]}$ 利用 SWAT 模型对小尺度农业流域的几种管理方案进行比较和评估, 选择出最优的管理方案对流域进行管理. 在我国, 最开始研究和应用 SWAT 模型是 2000 年. 王中根等 ${ }^{[14]}$ 利用 SWAT 模型模拟研究了我国西北寒区的水文过程, 如对水质水量进行定量模拟、融雪和冻土对水循环的影响等. 如今, SWAT 模型有了新的发展方向, 如普昭霞等 ${ }^{[15]}$ 利用 SWAT 模型优化调整了小流域粮食产量稳定与施肥空间的关系, 梁犁丽等 ${ }^{[16]}$ 利用 SWAT 模型模拟预测鄂尔多斯遗鸭保护区湖泊湿地集水区的生态需水量, 王军德等 ${ }^{[17]}$ 利用 SWAT 模型研究西北干旱区邓连山系杂木河流域的最佳水源涵养效应生态模式.
+
+本文在太子河流域建立 SWAT 分布式水文模型, 用此模型模拟了太子河流域的水文循环过程, 研究得出的结论可以为合理分配流域水资源和解决太子河水污染问题提供基础信息和科学依据。
+
+# 1 研究区概况 
+
+太子河是辽宁省较大河流之一, 流贯辽阳、本溪境内. 太子河全长 464 km ，流域面积 $13883 \mathrm{~km}^{2}$ ，是辽宁全省面积的 $1 / 10$. 太子河上游位于长白山中部山区, 一般都在海拔 500 m 以上. 流域内森林茂密, 植被良好. 河床为单式 V 型河槽, 床面多为卵石粗砂组成, 无显著冲淤, 河床比较稳定. 中上游有大小支流近百条, 流域面积大于 $100 \mathrm{~km}^{2}$ 的有 9 条.
+
+太子河流域属于温带大陆性季风气候, 夏季高温多雨, 冬季寒冷干燥, 夏秋常受热带气旋影响. 全年日照充足, 年平均气温在 $5 \sim 10^{\circ} \mathrm{C}$, 流域多年平均降水量为 $500 \sim 800 \mathrm{~mm}$. 流域中的林地、耕地、水体和建设用地面积占流域总面积 $98 \%$ 以上(图 1).
+
+
+图1 太子河流域土地利用方式示意图
+Fig. 1 Schematic diagram of land use in Taizi River basin
+
+# 2 数据来源与研究方法 
+
+### 2.1 数据来源
+
+本文建立 SWAT 模型所需基本地理数据是从地理空间数据云官网下载的数字高程模型 DEM （Digital Elevation Model）数据（空间分辨率为 30 m ），以及用于土地利用解译的 Landsat8 遥感影像数据（空间分辨率 30 m ），解译利用的工具是 ENVI 5.1，解译出土地利用图 Kappa 系数为 $85 \%$ ，达到了中分辨率遥感影像精度使用要求 ${ }^{[10-10]}$ 。土壤数据（分辨率为 1 km ）是由中国科学院南京土壤研究所提供。流域内一共有 7 个水文站点：梨庇蚛，桥头，本溪，小市站，南甸，郝家店，二道河子，这些站点的实测径流数据是通过查阅资料室的水文年鉴整理出来的。气象数据包括 PCP（降水数据）、TEM（气温数据）、 HMD（相对湿度数据）、SLR（太阳辐射数据）、WND（风速数据），从中国气象科学数据共享服务网（ht$\mathrm{tp}_{1} / /$ cdc.cma.gov.cn/）下载所得。
+
+### 2.2 研究方法
+
+### 2.2.1 SWAT 分布式水文模型
+
+SWAT 分布式水文模型是一个物理基础的模型，它能够模拟流域内的生态水文要素的长期变化。模型模拟两个阶段：陆地阶段和汇流阶段。陆地阶段决定子流域中水、沙等的输入量 ${ }^{[20]}$ ；汇流阶段控制水、沙等输出量。SWAT 模型根据数字高程模型及实际水网将流域划分成若干个子流域，每个子流域中土地利用和土壤类型的唯一组合就被定义为水文响应单元（HRU）。SWAT 模型利用水量平衡原理，公式如下：
+
+$$
+\mathrm{SW}_{i}=\mathrm{SW}_{0}+\sum_{n=1}^{i}\left(R_{\mathrm{ste}}-Q_{n o t}-E_{\mathrm{n}}-w_{\mathrm{stop}}-Q_{\mathrm{p} n}\right)
+$$
+
+其中，SW，表示土壤最终含水量，SW，表示第 $i$ 天土壤初始含水量， $t$ 表示时间， $R_{\text {ste }}$ 表示第 $i$ 天的降水量， $Q_{\text {net }}$ 表示第 $i$ 天地表径流， $E_{\text {n }}$ 表示第 $i$ 天的蒸散发量， $w_{\text {stop }}$ 表示第 $i$ 天离开土壤剖面底部的渗透水流和旁通水流水量， $Q_{\mathrm{p} n}$ 表示第 $i$ 天的回归流的水量。
+
+### 2.2.2 SWAT-CUP 及 SUFI-2 算法
+
+模型的率定和验证需要借助 SWAT-CUP（Calibration and Uncertainty Programs）软件进行。 SWAT-CUP 中 SUFI-2 算法能够进行分析模型参数的敏感性等验证 ${ }^{[21]}$ 。SUFI-2 算法是一种反向验证模型适用性的方法，它通过程序对参数进行多次迭代，将参数范围不断精确，最终选定最适合模型的取值范围 ${ }^{[22]}$ 。模型的不确定性就是通过该取值范围模拟得出的结果综合评估。
+
+本文利用 SWAT-CUP 计算得到确定性系数 $R^{2}$ 和 Nash-Sutcliffe 效率系数 $E_{N S}$ ，并结合流域实测值对 SWAT 模型的模拟效果进行综合评价。确定性系数 $R^{2}$ 能够评价实测值与模拟值序列变化趋势的一致性， $R^{2}$ 为 1 时，表示实测值与模拟值的变化趋势完全一致， $R^{2}$ 偏离 1 越远，表示实测值与模拟值吻合程度越低。 $E_{N S}$ 与 1 越接近，表示模拟值与实测值相差越小，模拟效果越好；反之，则表示模拟值与实测值相差越大，模拟效果越差。Nash-Sutcliffe 效率系数 $E_{N S}$ 计算公式如下：
+
+$$
+E_{N S}=1-\frac{\sum_{n=1}^{i}\left(Q_{0}-Q_{n}\right)^{2}}{\sum_{n=1}^{i}\left(Q_{0}-Q_{o t g}\right)^{2}}
+$$
+
+其中， $Q_{0}$ 为实测值， $Q_{n}$ 为模拟值， $Q_{\text {org }}$ 为实测平均值， $n$ 为实测数据个数。
+
+# 3 太子河流域 SWAT 模型构建 
+
+## 3.1 子流域划分
+
+SWAT 模型需要用到 DEM 数字高程模型数据以及水系、河流数据和流域内的水文站点数据，以此生成河网。本文将太子河流域划分成了 90 个子流域。
+
+## 3.2 建立土壤数据库
+
+本文采用的是 $1: 100$ 万的土壤数据, 结合 SWAT 模型的土壤类型划分标准和 SPAW 软件计算的太子河流域土壤有关参数，对太子河流域的土壤进行了重分类并构建了流域的土壤数据库（表1），来替换 SWAT 模型原有的用户土壤数据库 ${ }^{[24]}$ 。
+
+表 1 太子河流域 SWAT 土壤数据库主要参数
+Table 1 Main soil parameters of Taizi River basin user soil database
+
+| SNAM | NLAYERS | HYDGRP | SOL_ID | SOL_AWC | SOL_K | SOL_CBN | USLE_K |
+| :--: | :--: | :--: | :--: | :--: | :--: | :--: | :--: |
+| Calcaric Cambisols | 2 | C | 1,28 | 15,4 | 28,16 | 0,65 | 0,17 |
+|  |  | C | 1,27 | 15,4 | 24,73 | 0,43 | 0,18 |
+| Calcaric Regosols | 2 | B | 1,30 | 13,7 | 30,24 | 0,75 | 0,17 |
+|  |  | B | 1,29 | 14 | 22,57 | 0,47 | 0,17 |
+| Haplic Phaeozems | 2 | B | 1,28 | 14,6 | 25,43 | 1,95 | 0,13 |
+|  |  | B | 1,29 | 14,2 | 25,78 | 0,67 | 0,17 |
+| Calcaric Phaeozems | 2 | A | 1,34 | 8 | 74,55 | 0,98 | 0,14 |
+|  |  | A | 1,34 | 7,60 | 70,89 | 0,69 | 0,13 |
+| Gleyic Phaeozems | 2 | D | 1,13 | 14,8 | 7,72 | 2,94 | 0,16 |
+|  |  | D | 1,24 | 15,1 | 13,29 | 0,38 | 0,17 |
+| Cumulic Anthrosols | 2 | C | 1,26 | 16,7 | 26,38 | 1,12 | 0,17 |
+|  |  | C | 1,27 | 15,7 | 27,64 | 0,82 | 0,17 |
+| Haplic Solonchaks | 2 | C | 1,16 | 15,7 | 2,35 | 0,54 | 0,15 |
+|  |  | C | 1,25 | 14,7 | 6,76 | 0,38 | 0,15 |
+| Haplic Luvisols | 2 | B | 1,29 | 14,2 | 27,67 | 0,74 | 0,17 |
+|  |  | B | 1,28 | 14,2 | 16,84 | 0,36 | 0,17 |
+| Gleyic Luvisols | 2 | B | 1,3 | 12,8 | 25,03 | 0,83 | 0,16 |
+|  |  | B | 11,28 | 14 | 10,46 | 0,28 | 0,16 |
+| Eutric Cambisols | 2 | B | 1,3 | 14 | 27,89 | 1 | 0,16 |
+|  |  | B | 1,29 | 13,8 | 22,66 | 0,37 | 0,17 |
+| Urban, mining, etc. | 2 | D | 1,53 | 28,3 | 11,08 | 0 | 0 |
+|  |  | D | 1,53 | 28,3 | 11,08 | 0 | 0 |
+| Water bodies | 2 | D | 1,53 | 28,3 | 11,08 | 0 | 0 |
+|  |  | D | 1,53 | 28,3 | 11,08 | 0 | 0 |
+
+注: SNAM 为模型中土壤名称;NLAYERS 表示土壤分层数;HYDGRP 表示土壤水文学分组;SOL_ID 表示土壤湿密度；SOL_AWC 表示土壤层有效持水量；SOL_K 表示饱和导水率；SOL_CBN 表示土壤层中有机碳含量；USLE_K表示 USLE 土壤侵蚀力因子
+
+## 3.3 建立气象数据库
+
+分别做好气象有数据的索引表，将建立好的索引表添加进模型的天气发生器中，建立太子河气象数据库后，索引表会链接各子流域，然后模型分配气象资料给各子流域。
+
+## 3.4 SWAT 模型运行、敏感性分析、校准与验证
+
+完成数据库文件的建立之后，在 SWAT 模拟设置中写入想要模拟的起止时间及预热年，即可开始
+
+运行.在 SWAT 模型中, 有很多参数会对径流与泥沙模拟结果有影响, 本文在分析了参数的敏感性及查阅相关文献的基础上, 选择了几个对模型影响较大的参数. 当 SWAT 模型运行成功后, 将模拟结果代入 SWAT-CUP 软件, 不断验算、调整 SWAT 模型中敏感性较高的参数, 使模型准确率更高, 模拟结果更符合实际的数据, 这就是模型的率定与验证. 经过率定和验证的 SWAT 模型可以用来更准确地模拟太子河流域的水文过程.
+
+参数率定通过 SUFI-2 算法实现, 其中, 1976-1977 年为模型预热期, 1978-1981 年为模型率定期, 1982-1984 年为模型验证期.由于 SWAT 模型在建立阶段输入了很多参数, 很多数据对径流有不同大小的影响. 本文通过敏感性分析, 选择了对模拟影响较大的 10 个参数进行率定. 表 2 为率定参数及它们的物理意义、调参方式和参数初始范围、最终选取值.
+
+表 2 参数敏感性分析结果、物理意义、初始范围和最终值
+Table 2 The results, physical significance, initial range and final value of parameter sensitivity analysis
+
+|  | 参数名称 | 物理意义 | 调参方式 | 初始范围 | 最终值 |
+| :--: | :--: | :--: | :--: | :--: | :--: |
+| 1 | ALPHA_BF | 基流 alpha 因子 | V | $0 \sim 1$ | 0.64 |
+| 2 | GW_DELAY | 地下水延迟时间/d | V | $0 \sim 500$ | 446.16 |
+| 3 | ESCO | 土壤蒸发补偿系数 | V | $0.01 \sim 1$ | 0.57 |
+| 4 | GW_BEVAP | 浅层地下水蒸发系数 | V | $0.02 \sim 2$ | 0.06 |
+| 5 | CANMX | 最大冠层截流量 $/ \mathrm{mm}$ | V | $0 \sim 100$ | 0.90 |
+| 6 | BIOMIX | 生物混合效率 | R | $5 \sim 60$ | 37.66 |
+| 7 | CN2 | 湿润条件 II 下的初始 SCS 径流曲线 | R | $-0.5 \sim 0.5$ | $-0.45$ |
+| 8 | SOL_K | 土壤饱和水力传导度 $\left(\mathrm{mm} \cdot \mathrm{h}^{-1}\right.$ ) | R | $-0.8 \sim 0.8$ | 0.34 |
+| 9 | SOL_BD | 土壤饱和容量/ $\left(\mathrm{mg} \cdot \mathrm{m}^{-3}\right.$ ) | R | $-0.5 \sim 0.5$ | 0.02 |
+| 10 | SOL_Z | 土壤表层到底层的深度 $/ \mathrm{mm}$ | R | $-0.5 \sim 0.5$ | $-0.1$ |
+
+结果表明, 小市、本溪、桥头、南甸、二道河子、梨屁峪和郝家店水文站月径流模拟的结果较好 (表 3和图 2). 率定期各站月径流模拟值与实测值的确定性系数 $R^{2}$ 几乎均在 0.5 以上, $E_{\text {50 }}$ 效率系数除小市站 (图 2a) 为 0.4 , 其余水文站均在 0.5 以上. 可利用太子河流域 SWAT 模型进一步探索流域水文过程中的空间不均匀性.
+
+表 3 太子河流域主要水文站月径流模拟结果
+Table 3 The results of monthly runoff simulation for main hydrometric stations in Taizi River basin
+
+|  | 水文站 | $R^{2}$ | $E_{50}$ |  | $R^{2}$ | $E_{50}$ |
+| :--: | :--: | :--: | :--: | :--: | :--: | :--: |
+|  | 小市站 | 0.50 | 0.40 |  | 0.52 | 0.61 |
+|  | 本溪 | 0.55 | 0.51 |  | 0.51 | 0.63 |
+|  | 桥头 | 0.59 | 0.50 |  | 0.50 | 0.59 |
+| 率定期 | 南甸 | 0.61 | 0.58 | 驻证期 |  |  |
+| 1978-1981年 | 二道河子 | 0.51 | 0.54 |  | 0.58 | 0.66 |
+|  | 梨屁峪 | 0.53 | 0.58 |  | 0.52 | 0.59 |
+|  | 郝家店 | 0.52 | 0.55 |  | 0.55 | 0.61 |
+|  | 郝家店 | 0.52 | 0.55 |  | 0.53 | 0.64 |
+
+
+
+图2 太子河流域主要水文站月径流率定期（1978-1981），验证期（1982-1984）模拟结果
+Fig. 2 Calibration (1978-1981) and validation period (1982-1984) simulation results of monthly hydrological stations in Taizi River basin
+
+# 3.5 探索流域水文过程的空间差异 
+
+经过验证，该 SWAT 模型适用于太子河流域，本文利用 SWAT 模型的输出数据对各子流域的实际蒸散发量和产水量进行了统计计算，其空间分布状况见图3（a）及图3（b）。
+
+流域实际蒸散发量的空间分布（图3a）呈现由西向东递减的趋势，其中，鞍山市和辽阳市南部土地利用类型基本为耕地，水分通过土壤的蒸发作用和植物叶片的蒸腾作用蒸发，故实际蒸散发量较高，约为 550 mm ，本溪市实际蒸散发量较低，约为 431 mm 。图3（b）表示太子河流域产水量的空间分布，流域产水量空间分布呈现由西向东递增的趋势，与实际蒸散发量空间分布相反。其中，本溪市土地利用类型基本为林地，故产水量较高，约为 547 mm ，辽阳市和鞍山市产水量较低，约为 167 mm 。
+
+
+
+图3 太子河流域实际蒸散发量 $(\mathrm{s})$ 和产水量 $(\mathrm{b})$ 的空间分布
+Fig. 3 The spatial distribution of average annual evapotranspiration and runoff simulation of Tsizi River basin
+
+# 4 结论与展望 
+
+本文以太子河流域为研究对象，在太子河流域建立了 SWAT 分布式水文模型，并采用 SWAT 模型和 SUFI-2 算法对该流域的径流过程进行了模拟，结论如下：
+（1）太子河流域内所有水文站的月径流模拟与实测径流线较接近，率定期和验证期水文站的决定系数 $R^{2}$ 值均大于 0.5 ，Nash-Sutcliffe 系数 $\left(E_{500}\right)$ 均大于 0.5 ，满足模型流域适应性的要求，因此，SWAT模型适用于太子河流域。
+（2）太子河流域平均实际蒸散发量为 472 mm ，空间分布呈现由西向东递减的趋势，西部平均蒸散发量约为 550 mm ，东部平均实际蒸散发量约为 431 mm ，平均产水量约为 274 mm ，空间分布呈现由西向东递增的趋势。与实际蒸散发量空间分布相反，东部平均产水量约为 547 mm ，西部平均产水量约为 149 mm 。
+（3）从太子河流域的土地利用图中可以得知，太子河流域存在很大面积的农业用地，可能会产生非点源污染的情况 ${ }^{[24]}$ ，SWAT 模型正好可以为农业非点源污染的研究和农业水资源管理提供研究的平台，从而解决太子河流域的非点源污染问题，但是在我国，由于对这方面的研究起步比发达国家晚，一些数据资料无法免费得到，这就大大限制了 SWAT 模型的发展，对农业非点源污染问题的研究有很大影响。因此，我国应该提高基础数据的共享水平，让 SWAT 模型更好地解决我国的水资源污染问题。
+
+## 参考文献:
+
+[1] 石敦智. 陈晓宏. 流域水文模型研究进展[J].水文,2006(1):18-23.
+[2] 江净超,朱阿兴,秦承志,等. 分布式水文模型软件系统研究综述[J].地理科学进展,2014,33(8),1090-1100.
+[3] JEWITT G P W.GARRATT J A, CALDER I R, et al. Water resources planning and modeling tools for the assessment of land use change in the Luvuvhu catchment, South Africa[J].Physics and Chemistry of the Earth,2004,29:1233-1241.
+[4] 吴洪涛. 波春发,郝芳华,等. 绿水的多角度评估及其在碧流河上游地区的应用[J].资源科学,2009,31(3):420-428.
+[5] 姆传富. 黑河流域蓝绿水时空变化研究[D].北京:北京林业大学,2013.
+[6] SEYAM I,SAVENIJE H, AERTS J, et al. Algorithms for water resources distribution in international river basins[J]. Physics and Chemistry of the Earth(B), 2000,25(3),309-314.
+[7] JEWITT G P W.SCHULZE R E. Verification of the ACRU model for the forest hydrology application[J]. Water SA, 1999,25(4): $483-489$.
+[8] 王尹萍,姜仁贵,解建仓,等.基于 SWAT 模型的泾河流域月径流分布式模拟[J].西安理工大学学报,2020,36(2):135-144,158.
+[9] XU L, ERIC F W, DENNIS P L. Surface soil moisture parameterization of the VR(-2L model). Evaluation and modification[J].
+
+Global and Planetary Change, 1996, 13(1):195-206.
+[10] AMIRI M, GHANBARPOUR M R, AHMADI M K Z, et al. Calibration and evaluation of SWRRB hydrological model for runoff simulation (case study: Kasilian watershed)[J]. Iranian Journal of Natural Resources, 2009, 4(2):787-808.
+[11] 熊飞勇. 基于 SWAT 模型的赣江蜀水流域气候. 土地利用变化情景下的径流响应研究[D]. 南昌:南昌大学, 2015.
+[12] JAYAKRISHNAN R, SRINIVASAN R,SANTHI C, et al.Advances in the application of the SWAT model for water resources management[J]. Hydrological Processes, 2005, 19(3):749-762.
+[13] 齐跃明. 宁立波. 刘丽红.水资源规划与管理[M]. 徐州: 中国矿业大学出版社, 2017:53-54.
+[14] 王中根. 刘昌明. 黄友波. SWAT 模型的原理. 结构及应用研究[J]. 地理科学进展, 2003, 22(1):79-86.
+[15] 曾昭霞. 刘孝利. 王克林.等. 农业小流域粮食产量稳定与水环境质量提高途径研究[J]. 环境科学, 2010,31(8):1784-1788.
+[16] 梁犁丽. 王芳. 鄂尔多斯遗鸽保护区植被.水资源模拟及其课控[J].生态学报, 2010,30(1):109-119.
+[17] 王军德.李元红. 李赞堂.等. 基于 SWAT 模型的邻连山区最佳水源涵养植被模式研究: 以石羊河上游杂木河流域为例[J]. 生态学报, 2010,30(21):5875-5885.
+[18]赵英时. 遥感应用分析原理与方法[J]. 北京:科学出版社, 2013:92-93.
+[19] JANSSEN L L F, WEL F. Accuracy assessment of satellite derived land cover data: A review[J].Photogrammetric Engineering \& Remote Sensing, 1994, 60(4):419-426.
+[20] 郑新奇. 付梅臣. 景观格局空间分析技术及应用[M]. 北京:科学出版社, 2010:150-153.
+[21] SCHUOL J, ABBASPOUR K C.Using monthly weather statistics to generate daily data in a SWAT model application to West Africa[J].Ecological Modelling, 2007, 201(3/4):301-311.
+[22] ABBASPOUR K C, GENUCHTEN M V, SCHULIN R, et al.A sequential uncertainty domain inverse procedure for estimating subsurface flow and transport parameters[J]. Water Resources Research, 1997,33(8):1879-1892.
+[23] 魏怀斌. 张占座. 杨金鹏. SWAT 模型土壤数据库建立方法[J]. 水利水电技术, 2007,38(6):15-18.
+[24] TRIPATHI M P.Hydrological modelling of a small watershed for effective management using the SWAT model[J]. Biosystems Engineering, 2003, 85(3):365-379.
+
+# Runoff simulation of Taizi River basin based on SWAT model 
+
+ZHU Zhengru, YUAN Chen, LV Leting<br>〈School of Geography, Liaoning Normal University, Dalian 116029, China)
+
+
+#### Abstract
+
+In this paper, SWAT (Soil and Water Assessment Tool) distributed hydrological model is established in Taizi River basin. The SUFI-2 algorithm is used to analyze the sensitivity of parameters and verify the model to simulate the hydrological process of Taizi River Basin from 1956 to 2016. The results show that: (1) Some hydrological parameters used in the operation of the model will affect the simulation results of the model, such as ALPHA_BF, GW_DELAY, ESCO, GW_REVAP, CANMX, BIOMIX, CN2, SOL_E, SOL_BD, SOL_Z is the most sensitive parameter. (2) The monthly runoff simulation lines of all hydrological stations in Taizi River basin are close to the measured runoff lines. The determination coefficient $R^{2}$ values of hydrological stations in the periodic and verification periods are greater than 0.5 , and the Nash-Sutcliffe coefficient $\left(E_{\mathrm{NS}}\right)$ are greater than 0.5 . The SWAT model of Taizi River basin has a good effect on monthly runoff simulation.(3) The spatial distribution of actual evapotranspiration in Taizi River basin shows a decreasing trend from west to east. The average evapotranspiration in the west is about 550 mm , and that in the east is about 431 mm . The spatial distribution of water yield in Taizi River basin shows an increasing trend from west to east, with the average water yield of 547 mm in the east and 149 mm in the west.
+
+Key words: Taizi River; SWAT distributed hydrological model; SUFI-2 algorithm; coefficient of determination; Nash-Sutcliffe coefficient

@@ -1,0 +1,195 @@
+# SWAT 模型在大尺度流域径流模拟影响因素分析 ——以巴拉那河上游流域为例 
+
+刘 琨 ${ }^{1}$ ，李梦杰 ${ }^{1}$ ，牟海磊 ${ }^{2}$ ，吕振豫 ${ }^{1}$ ，刘 華 ${ }^{3}$ ，殷兆凯 ${ }^{1}$ ，刘志武 ${ }^{1}$ ，梁犁丽 ${ }^{1}$ (1. 中国长江三峡集团有限公司科学技术研究院, 北京 101199; 2. 中国三峡国际股份有限公司, 北京 101100; 3. 中国长江三峡集团有限公司,湖北 武汉 430010)
+
+摘 要：为了探讨 SWAT 模型在大尺度流域水文分析模拟的效果，以巴西巴拉那河上游流域为研究区，利用构建的流域大尺度 SWAT 模型，定量分析美国国家环境预报中心再分析数据（CFSR）降水再分析数据质量，子流域划分数量及模型参数对径流模拟结果的影响。结果表明，CFSR 再分析数据对流域降水的空间分布估计偏差较大，导致径流模拟误差较大，模型参数经 1 次迭代后，确定系数 $\left(R^{2}\right)$ 值均小于 0.2 。随着子流域划分数量的增加，实测站点降水数据可以更准确地估计子流域面雨量，进而提高径流模拟拟合度。在子流域划分数量分别为 66,781 和 4111 的情况下，比较模型参数经过 1 次迭代后的径流模拟效果发现，子流域个数为 781 个时, $R^{2}$ 值相对于两种情况有明显提高。在涉及 SWAT 模型径流模拟的 20 个参数中,土壤蒸发补偿系数（ESCO）和 SCS 径流曲线数（CN2）是最敏感的两个参数。由分析可知，SWAT 模型可以在大尺度流域径流模拟中应用，研究结果可以为大尺度流域水文模型的构建与应用提供参考。
+关键词：大尺度流域；SWAT 模型；CSFR 再分析降水数据；子流域划分
+中国分类号：TV121.1 文献标识码：A 文章编号：1672—1144（2023）05—0191—08
+
+## Influencing Factors Analysis in Discharge Simulation of Large-scale Watershed Using SWAT Model
+
+## —_Taking the Upper Paraná River Basin in Brazil as an Example
+
+LIU Kun ${ }^{1}$ ，LI Mengjie ${ }^{1}$ ，MOU Hailei ${ }^{2}$ ，LV Zhenyu ${ }^{1}$ ，LIU Pan ${ }^{3}$ ，YIN Zhaokai ${ }^{1}$ ，LIU Zhiwu ${ }^{1}$ ，LIANG Lili ${ }^{1}$ (1. Institute of Science and Technology, China Three Gorges Corporation, Beijing 101199, China; 2. China Three Gorges International Limited, Beijing 101100, China; 3. China Three Gorges Corporation, Wuhan, Hubei 430010, China)
+
+
+#### Abstract
+
+In order to analyze the effect of SWAT model in hydrological analysis and simulation of large-scale watershed, a SWAT model of the upper Paraná river basin in Brazil was constructed. The effects of CFSR reanalysis rainfall data, sub-basin delineations and parameters of SWAT model were analyzed based on the simulation results. The results are as follows. The CFSR reanalysis data has a large deviation in the estimation of the spatial distribution of precipitation in the study area, which leads to a large error in the discharge simulation. After one iteration of the model parameter calibration, the $R^{2}$ values were less than 0.2 . With the increase in the number of sub-basin delineations, the measured precipitation data could more accurately estimate sub-basins'areal precipitation, thereby improving the accuracy of the discharge simulation. However, the number of sub-basins has a reasonable range. The discharge simulations of 66, 781 and 4111 sub-basins after one iteration of model parameters calibration were compared, and it is found that when the number of sub-basin delineations was 781 , the $R^{2}$ value was significantly improved. SWAT model can be used in runoff simulation of large-scale watershed, the research results can provide reference for the construction and application of large-scale watershed hydrological model.
+
+
+Keywords: large-scale watershed; SWAT model; CSFR precipitation reanalyzes data; sub-basin delineation
+
+[^0]
+[^0]:    徐瑞日期:2023-04-20
+    徐瑞日期:2023-06-13
+    基金项目：中国长江三峡集团有限公司自主科研项目（WWKY - 2021 - 0081、NBZZ202300411、NBZZ20210055、合同编号 202103429）
+    作者简介：刘 琨（1991—），男，博士，工程师，主要从事水文模拟研究工作。E-mail:1249091967@qq.com
+    通讯作者：梁犁丽（1982—），女，博士，高级工程师，主要从事水文预报与水库调度研究工作。E-mail:liangl69921@163.com
+
+极端天气对流域径流产生较大影响，水文模型是径流模拟预测的有效工具，其中 SWAT（Soil and Water Assessment Tool）模型可方便处理空间信息，已广泛应用于国内外流域的水文过程 ${ }^{[1-4]}$ 和水库控制流域的径流分析 ${ }^{[5-5]}$ 。然而，在实际研究中，通常遇到数据不足的问题，如偏远地区的实测点稀少，缺乏高时空分辨率的输入数据直接影响模型的模拟精度，阻碍了 SWAT 模型在大尺度流域的应用。利用遥感反演，雷达测雨以及计算模拟等技术得到气象数据，为水文模型构建提供了更多的数据支撑。如 Chawanda 等（2020）提出了一种区域化方法，使用水量水质平衡校准和全球数据集表示水库和灌溉，并将其应用于构建非洲南部 SWAT 模型 ${ }^{[8]}$ 。全球再分析资料在相关研究中应用广泛，如美国国家环境预报中心的 CFSR 再分析数据、欧洲中期数值预报中的 ERAS 再分析数据 ${ }^{[9-10]}$ 。Dile 等 ${ }^{[11]}$ 在研究非洲青尼罗河流域水文预报时，将 CFSR 再分析资料与传统气象数据输入 SWAT 模型中并进行模拟精度的评价，发现 CFSR 气象数据月尺度模拟精度较好。胡胜等 ${ }^{[12]}$ 评估了 CFSR 再分析数据在湍河流域的适用性，并提出了 CFSR 气象数据订正的方法。 Fernandez-Palomino 等 ${ }^{[13]}$ 提出了一种估计降水模式的新方法，将其应用于秘鲁和层瓜多尔流域模拟，径流模拟表现优于使用 ERAS 数据的结果。于宴民等 ${ }^{[14]}$ 的研究表明 CFSR 再分析降水数据受到地形地貌、站点数量和均匀程度，模型结构物理化参数过程等因素的影响，会造成降水估计偏大，进而导致洪峰模拟流量偏大，需评价 CFSR 再分析数据在不同区域的适用性。
+
+分布式水文模型子流域划分也会影响径流模拟精度。Wang 等 ${ }^{[15]}$ 提出了多种方法来评估流域细分级别对非点源优先管理区识别的影响，结果表明适当增加子流域的数量可以提高优先管理区识别的准确性。Lin 等 ${ }^{[16]}$ 探索流域划分对山坡和河道沉积物的影响，增加子流域减少了河道沉积的空间变化，河道泥沙演进的变化主要是由于河道尺寸对流域划分数量敏感。Chiang 等 ${ }^{[17]}$ 以美国伊利诺伊州卡斯卡斯基亚河流域为利，研究了子流域和水文响应单元划分对流量、总悬浮沉积物和总氮损失模拟的影响，结果表明，准确的子流域划分比更精细的水文响应单元划分对模拟结果的影响更大，子流域划分过程中对主河道捕捉的尤其重要。高怡婷等 ${ }^{[18]}$ 通过设置 11 种子流域划分方案定量分析了子流域划分引起的土壤离散化对东江源产流产沙过程的影响，子
+
+流域划分引起的土壤离散化主要通过土壤侵蚀因子 $K$ 值变化引起输沙量变化，导致洪水过程输沙量峰值显著减少。Gong 等 ${ }^{[19]}$ 将大宁河上游流域划分为不同数量的子流域，结果表明流域集水面积阈值为 $50 \mathrm{~km}^{2}$ 时模拟精度最高。流域划分数量与水文响应单元呈现倍数关系，子流域集水面积阈值越小，水文响应单元破碎化越严重，会导致模型效率下降。此外，子流域划分数量还需考虑其他输入数据的空间分辨率，目前还没有明确的子流域划分数量标准。
+
+调整 SWAT 模型敏感性参数对模拟精度提高具有较大帮助。Tang 等 ${ }^{[20]}$ 构建了中国西南部澜沧江流域的 SWAT 模型，并使用四种优化算法量化模型的参数敏感性和预测不确定性，表明河岸储存的基流系数（ALPHA_BNK）和河道有效导水率（CH_ K2）参数最敏感。Gao 等 ${ }^{[21]}$ 以美国西海岸的 Barrett流域为例，分析了干湿年份的参数敏感性，结果表明，干湿年水文条件的差异主要表现为六个最敏感参数值的变化，包括基流阿尔法系数（ALPHA_BF）、河道有效导水率（CH_K2）、SCS 径流曲线数（CN2）、土壤蒸发补偿系数（ESCO）、浅层含水层流量 （GWQMN）和土壤有效储水量（SOL_AWC）。Patil和 Ramsankaran ${ }^{[22]}$ 模拟了印度 Munneru 河流域的径流，率定了最敏感参数 SCS 径流曲线数（CN2）、地下水延迟系数（GW_DELAY）、浅层含水层流量 （GWQMN）和地表径流滞后时间（SURLAG），并通过基于 EnKF 的 SMOS 土壤水分反演同化方法，改进了大型流域 SWAT 模型的径流模拟和预测精度。
+
+本文以巴西巴拉那河上游流域为研究区，通过构建的大尺度流域 SWAT 模型，定量评价 CFSR 降水再分析数据在研究区的适用性，分析子流域划分数量对模拟结果的影响，并比较确定模型敏感性参数，以期为大尺度流域 SWAT 模型构建和应用提供借鉴。
+
+## 1 材料与方法
+
+### 1.1 研究区概况
+
+巴拉那河是南美洲仅次于亚马逊河的第二大河，发源于巴西高原东南缘的曼蒂凯拉山北坡，主源格兰德河，与巴拉那伊巴河汇合后，始称巴拉那河。本文研究区域位于巴拉那河上游河段，西经 $43^{\circ}$ $35^{\prime}-55^{\circ} 56^{\prime}$ ，南纬 $15^{\circ} 27^{\prime}-25^{\circ} 39^{\prime}$ ，总面积约 78.3万 $\mathrm{km}^{2}$ 。巴西境内巴拉那河上游流域主要支流包括格兰德河、铁特河以及巴拉那帕内马河，研究区在巴西的位置及河流水系见图 1 。
+
+
+
+图1 研究区地理位置及 $\operatorname{DEM}(90 \mathrm{~m} \times 90 \mathrm{~m})$
+研究区高程在 $210 \mathrm{~m} \sim 2715 \mathrm{~m}$ 之间。巴拉那河上游多丘陵、山地，海拔超过 1000 m ；自东北向西南地势逐渐平坦，巴拉那伊巴河下游地区海拔仅 400 m 左右；至福兹杜伊瓜苏/斯特罗埃斯纳总统港一带，海拔仅约 200 m 。研究区 DEM 见图 1 。研究区属亚热带湿润气候，降水量时空分布不均，四季皆有降水，春、夏季（ 12 月—5 月）多雨，冬季（ 7 月—11月）较干旱，流域年均降水量约为 1462 mm 。
+
+## 1.2 SWAT 模型
+
+流域建模采用 QGIS 接口的 SWAT 模型。 SWAT 是由美国农业部开发的半分布式水文模型，可以用于流域的物理过程相关分析，以日或月时间步长进行连续模拟。SWAT 已被广泛用于水量、水质评估以及气候和土地利用变化情景的影响研究 ${ }^{[23]}$ 。基于地形数据，模型将流域离散为子流域，各子流域由河网连接。为了评估流域内土地覆被和土壤的空间异质性，根据土地利用、土壤类型和坡度的组合，将每个子流域进一步离散为水文响应单元。
+
+对于每个水文响应单元，分别模拟水文过程，包括地表径流和蒸散量等，然后通过河网汇流到流域出口。模型原理、结构等不再赘述。
+
+## 1.3 数据及其处理
+
+SWAT 模型需要输入数据包括气象、水文和物理变量。气象数据包含最高、最低气温，平均风速、平均相对湿度，平均太阳辐射量等，由于未能收集到相关实测数据，使用 CFSR 再分析数据的每日气象数据，空间分辨率约为 $38 \mathrm{~km} \times 38 \mathrm{~km}$ 。实测降水数据来源于巴西国家水务局，选用 1995-2014年具有 20 年以上连续资料的 922 个站点（见图2（a））。由于数据系列中存在短时间的缺失数据，采用模型自带的天气发生器生成。径流观测数据来源于巴西国家水务局，选取 17 个具有 20 年以上连续日流量观测数据的站点作为流量校正站（见图1），径流与实测降雨数据具有相同的时间序列。
+
+研究区土地利用数据来源于欧空局（European Space Agency，ESA）的 GlobCover2009 数据，空间分辨率为 $300 \mathrm{~m} \times 300 \mathrm{~m}$ 。SWAT 模型中的土地利用类型由美国地质调查局（USGS）定义，因此将 ESA 的 GlobCover2009 数据按照 USGS 标准重新分类，参考 Rafee 等将土地利用类型重分类为 6 种 SWAT 中对应的类型 ${ }^{[24]}$ （见图2（b））。
+
+土壤类型数据来源于联合国粮农组织与维也纳国际应用系统研究所联合建立的标准化世界土壤数据库（HWSD），空间分辨率为 $1 \mathrm{~km} \times 1 \mathrm{~km}$ ，研究区内共 13 种土壤类型（见图2（c））。土壤参数是 SWAT 模型最基本的参数，直接影响模拟精度。土壤有效含水量（ mm）、土壤湿容重（ $\mathrm{g} / \mathrm{cm}^{3}$ ）、饱和水力传导系数（ $\mathrm{mm} / \mathrm{hr}$ ）和土层结构参数通过 SPAW 软件计算，并使用 SWATeditor 工具将计算好的土壤特性参数输入 SWAT 土壤数据库中。
+
+
+图2 研究区雨量站、土地利用和土壤类型分布 ${ }^{[25]}$
+
+# 1.4 模型构建 
+
+考虑子流域划分数量对模拟结果的影响，将子
+
+流域集水面积阈值分别设置为 $10000 \mathrm{~km}^{2} 、 500 \mathrm{~km}^{2}$和 $100 \mathrm{~km}^{2}$ 。根据研究区实际情况，人工添加 27 个
+
+子流域出口。根据土地利用、土壤类型和坡度在子流域占比阈值定义水文响应单元。土地利用、土壤和坡度对应的阈值分别设置为 $20 \%, 10 \%$ 和 $20 \%$ 。流域内水电站大多为径流式电站，且由于各水电站的相关调度信息缺乏，在建模过程中没有考虑水电站调度对径流的影响。
+
+## 1.5 模型敏感性分析方法
+
+采用 SWATCUP2019 软件中的 LHS - OAT（Latin hypercube sampling - one at a time）方法进行参数敏感性分析，该方法通过拉丁超立方体抽样生成的参数与目标函数值对比进行回归，对参数逐个进行分析。选取与流量相关的 20 个参数进行分析，包括 SCS 径流曲线数（CN2）、土壤有效储水量（SOL_ AWC）、饱和导水率（SOL_K）、土壤蒸发补偿系数 （ESCO）和地表径流曼宁系数（OV_N）、浅层含水层回流水的阈值深度（GWQMIN）、地下水延迟系数 （GW_DELAY）、浅层含水层再蒸发的水深阈值 （REVAPMN）、深层含水层渗透率（RCHRG_DP）、地下水再蒸发系数（GW_REVAP）、基流阿尔法系数 （ALPHA_BF）和河岸储存的基流系数（ALPHA_ BNK）、河道有效导水率（CH_K2）和主河道曼宁系数（CH_N2）、植物吸水补偿系数（EPCO）和冠层最大储水量（CANMX）。子流域参数包括：地表径流滞后时间（SURLAG）、平均坡长（SLSUBBSN）、侧流行
+
+
+图3 沉、旱季典型月份再分析数据和实测数据的多年平均月降水量分布
+
+由图3 可以看出，在汛期流域东北部降水量多，
+
+由东北向西南逐渐减少；在旱季流域北部降水量少，
+
+由北向南增加。与实测数据相比，汛期降水量再分析数据在流域东北部的估值偏大，西南部降水量估值偏小；旱季降水量再分析数据在流域北部的估值偏小。概括而言，流域中降水量较大区域的再分析数据估值偏大，降水量较小区域的再分析数据估值偏小。图4给出了再分析和实测数据多年平均年降水量分布。可以看出，再分析数据降水量分布空间
+
+变异性较大，进一步证明再分析数据在降水量较大区域的估计偏值大，降水量较小区域的估计值偏小。
+
+为探究降水驱动数据对径流模拟结果的影响，两种数据条件下模型参数率定过程只进行了 1 次迭代，并不是最终的参数率定结果。 17 个流量校正站在不同降水数据条件下的径流过程模拟确定性系数 $R^{2}$ 值见表1。
+
+
+图4 再分析数据和实测数据多年平均年降水量分布
+表1 不同条件下径流过程模拟确定性系数 $R^{2}$ 值
+
+| 编号 | 站点 | 不同降水数据类型时 $R^{2}$ |  |  | 不同子流域数量时 $R^{2}$ |  |
+| :--: | :--: | :--: | :--: | :--: | :--: | :--: |
+|  |  | 实测数据 | CSFR 数据 | 66 个 | 781 个 | 4111 个 |
+| 1 | JUPIÁ | 0.39 | 0.00 | 0.06 | 0.43 | 0.35 |
+| 2 | ILHA SOLTEIRA | 0.36 | 0.00 | 0.00 | 0.36 | 0.28 |
+| 3 | ÁGUA VERMELHA | 0.27 | 0.04 | 0.00 | 0.19 | 0.09 |
+| 4 | PORTO COLÓMIRIA | 0.38 | 0.00 | 0.42 | 0.53 | 0.49 |
+| 5 | TRÊS IRIMÁOS | 0.50 | 0.08 | 0.48 | 0.64 | 0.40 |
+| 6 | ROSANA | 0.18 | 0.16 | 0.05 | 0.55 | 0.53 |
+| 7 | NOVO PORTO TAQUARA | 0.07 | 0.12 | 0.52 | 0.68 | 0.81 |
+| 8 | CAPIVARA | 0.19 | 0.19 | 0.17 | 0.56 | 0.47 |
+| 9 | EMBORCAÇÃO | 0.00 | 0.07 | 0.18 | 0.08 | 0.14 |
+| 10 | CANOAS I | 0.48 | 0.06 | 0.15 | 0.56 | 0.43 |
+| 11 | PONTE JOAQUIM JUSTINO | 0.76 | 0.08 | 0.31 | 0.49 | 0.49 |
+| 12 | CAPIVARA JATAIZINHO | 0.38 | 0.04 | 0.02 | 0.41 | 0.47 |
+| 13 | CANOAS II | 0.46 | 0.00 | 0.03 | 0.54 | 0.41 |
+| 14 | SALTO GRANDE | 0.45 | 0.00 | 0.21 | 0.54 | 0.51 |
+| 15 | CHAVANTES | 0.35 | 0.10 | 0.19 | 0.43 | 0.48 |
+| 16 | FAZENDA BURITI | 0.49 | 0.01 | 0.27 | 0.44 | 0.41 |
+| 17 | JURUMIRIM | 0.48 | 0.01 | 0.18 | 0.40 | 0.43 |
+
+由表1可知，除站点 NOVO PORTO TAQUARA和 EMBORCAÇÃO 站点外，与使用再分析数据相比，实测降水数据条件下的径流模拟值的 $R^{2}$ 值明显提高。另外分析了在再分析降水数据条件下各站 1980 年—2015年的径流变化趋势；EMBORCAÇÃO、 CANOAS I ,PONTE JOAQUIM JUSTINO ,CANOAS II、
+
+SALTO GRANDE、CHAVANTES、FAZENDA BURITI和 JURUMIRIM 站点模拟径流出现先增大后减小的趋势，其余站点则表现出明显的上升趋势。而同系列实测径流并没有表现出明显的年际变化趋势。对流域出口站 SALTO DEL GUAIRA 径流进行了 Mann -Kendall 趋势检验， $P$ 值为 0.139 ，大于显著性水平
+
+$(\alpha=0.05)$ ，表明 1980 年—2015 年径流没有明显的变化趋势。以上表明 CFSR 降水再分析数据在该流域的适用性较差。因此，应采用实测降水数据作为 SWAT 模型的降水驱动数据分析子流域划分影响和敏感性参数。
+
+## 2.2 子流域划分影响
+
+三种子流域划分条件下的子流域数量分别为
+
+
+图5 不同子流域划分数量时的径流模拟结果
+由图5 可以看出，当子流域划分数量为 66 时，径流模拟值的年际变化与实测值差异较大，仅 NOVO PORTO TAQUARA 站的 $R^{2}$ 值大于 0.5 ，其余站点的 $R^{2}$ 值均小于 0.5 ；增加子流域划分数量时， $R^{2}$值显著提高；但当子流域划分数量为 4111 时，与划分数量为 781 时相比， 17 个站点中有 12 个站的 $R^{2}$值有所下降（见表1）。子流域划分数量为 781 个时，模拟值可以有效地描述流域汛期和枯季的径流变化，模拟效果最好。因此，在参数敏感性分析中，子流域集水面积设置为 $500 \mathrm{~km}^{2}$ ，划分为 781 个子流域，降水采用实测数据。
+
+## 2.3 模型敏感性参数分析
+
+利用 LHS-OAT 对涉及径流模拟的部分 SWAT
+
+66 个、781 个和 4111 个。三种子流域划分条件下共获得 123 个、 3160 个和 13535 个水文响应单元。在分析子流域划分数量对径流模拟结果的影响时，并没有进行参数率定，三种不同子流域划分数量下的参数均设置为模型的默认值。图5给出了 8 个典型径流校正站在不同子流域划分数量时的径流模拟结果。
+
+
+图5 不同子流域划分数量时的径流模拟结果
+模型参数进行敏感性分析。在分析的 20 个参数中，土壤蒸发补偿系数（ESCO）和 SCS 径流曲线数 （CN2）是影响模拟的最敏感参数， $t$ 值绝对值分别为 17.9 和 40.1 ， $P$ 值为 0 。除平均坡度（HRU_SLP）、浅层含水层再蒸发的水深阈值（REVAPMN）、主河道曼宁系数（ $\mathrm{CH} \_\mathrm{N} 2$ ）和地下水再蒸发系数（GW_ REVAP）四个参数外，其余参数也较为敏感， $t$ 值绝对值均大于 0.7 ， $P$ 值小于 $0.5^{\left[{ }^{[25]}\right.}$ 。
+
+对土壤蒸发补偿系数（ESCO）和 CN2 而言，增加 ESCO 值，模拟径流减少，增加 CN2 的值，模拟径流增加；调整两个最敏感的参数对提高径流模拟效果具有较大帮助，限于篇幅不再赘述调整敏感性参数过程中的径流模拟效果对比。
+
+## 3 结 论
+
+本文利用构建的大尺度流域——巴拉那河上游流域的 SWAT 模型，分析了降水数据、子流域划分数量和模型敏感性参数对流域径流模拟结果的影响。结果表明：
+（1）大尺度流域的降水空间分布差异性较大，子流域面雨量的计算精度决定径流的模拟精度。 CFSR 再分析数据对流域降水的空间分布估计偏差较大，导致径流模拟误差较大。
+（2）流域降水分布空间异质性需要通过子流域划分数量来有效表征，但子流域划分数量应有一定的合理区间。
+（3）对于研究区而言，平均坡度（HRU_SLP）、浅层含水层再蒸发的水深阈值（REVAPMN）、主河道曼宁系数（CH_N2）和地下水再蒸发系数（GW_ REVAP）参数对模拟影响小，其它参数的敏感性均较大。
+
+基于本文研究结果，后续将进一步研究实测站点密度较小流域基于融合降水驱动数据的径流模拟效果，以及研究区子流域数量划分最合适的阈值区间。
+
+## 参考文献:
+
+[1] Dile Y T, Tekleab S, Kaba E A, et al. Advances in water resources research in the Upper Blue Nile basin and the way forward: A review [J]. Journal of Hydrology, 2018,560:407-423.
+[2] Huang Y, Huang J, Ervinia A, et al. Land use and climate variability amplifies watershed nitrogen exports in coastal China[J]. Ocean \& Coastal Management, 2021, 207(15): 104428.
+[3] Takele G S, Gebre G S, Gebremariam A G, et al. Hydrological modeling in the Upper Blue Nile basin using soil and water analysis tool (SWAT) [J]. Modeling Earth Systems and Environment, 2021, 8:277-292.
+[4] Peng J, Liu T, Huang Y, et al. Satellite-based precipitation datasets evaluation using gauge observation and hydrological modeling in a typical arid land watershed of central Asia[J]. Remote Sensing, 2021, 13(2):221.
+[5] Trung L D, Duc N A, Nguyen L T, et al. Assessing cumulative impacts of the proposed Lower Mekong Basin hydropower cascade on the Mekong River floodplains and Delta-Overview of integrated modeling methods and results[J]. Journal of Hydrology, 2018,581:122511.
+[6] Zaman M, Anjum M N, Usman M, et al. Enumerating
+the effects of climate change on water resources using GCM scenarios at the Xin'anjiang watershed, China[J]. Water, 2018, 10(10):1296.
+[7] Wen X, Liu Z H, Lei X H, et al. Future changes in Yuan River ecohydrology: Individual and cumulative impacts of climates change and cascade hydropower development on runoff and aquatic habitat quality[J]. Science of the Total Environment, 2018,633:1403-1417.
+[8] Chawanda C J, Arnold J, Thiery W, et al. Mass balance calibration and reservoir representations for large-scale hydrological impact studies using SWAT [J]. Climatic Change, 2020, 163(3):1307-1327.
+[9] Elisuzaki W, Li Z. Assessing the performance of the CFSR by an ensemble of analyses [J]. Climate Dynamics: Observational, Theoretical and Computational Research on the Climate System, 2011,37(11/12):2541-2550.
+[10] Denchev D M, Kulakov M Y, Makshtas A P, et al. Verification of ERA-Interim and ERAS reanalyses data on surface air temperature in the Arctic [J]. Russian Meteorology and Hydrology, 2021,45(11):771-777.
+[11] Dile Y T, Srinivasan R. Evaluation of CFSR climate data for hydrologic prediction in data-scarce watersheds: an application in the Blue Nile River Basin [J]. Jawra Journal of the American Water Resources Association, 2015,50(5):1226-1241.
+[12] 胡 胜, 曹明明, 邱海军, 等. CFSR 气象数据在流域水文模拟中的适用性评价——以灞河流域为例[J].地理学报,2016,71(9):1571-1586.
+[13] Fernandez-Palomino C A, Hattermann F F, Krysanova V, et al. A novel high-resolution gridded precipitation dataset for Peruvian and Ecuadorian watersheds: development and hydrological evaluation [J]. Journal of Hydrometeorology, 2022, 23(3):309-336.
+[14] 于宴民，穆振侠. CFSR 数据在高寒山区径流模拟中的适用性[J]. 灌溉排水学报,2015,34(11):93-97.
+[15] Wang Guobo, Chen Lei, Huang Qin, et al. The influence of watershed subdivision level on model assessment and identification of non-point source priority management areas [J]. Ecological Engineering, 2016, 87:110119 .
+[16] Lin Bingqing, Zhang Dejian, Chen Xingwei, et al. Threshold of watershed partition in SWAT based on separating hillslope and channel sediment simulations[J]. Ecological Indicators, 2020, 121 (2):107111.
+[17] Chiang L C, Yuan Y P. The NHDPlus dataset, watershed subdivision and SWAT model performance [J]. Hydrological Sciences Journal, 2015, 60 (10): 16901708.
+
+[18] 高怡婷, 钟科元, 钟小敏, 等. SWAT 模型土壤空间离散化对径流和输沙模拟结果的影响[J]. 水土保持学报, 2021,35(6):101-108.
+[19] Gong Yongwei, Shen Zhenyao, Liu Ruimin, et al. Effect of watershed subdivision on SWAT modeling with consideration of parameter uncertainty [J]. Journal of Hydrologic Engineering, 2010, 15(12):1070-1074.
+[20] Tang Xiangpeng, Zhang Jianyun, Wang Guoqing, et al. Uncertainty analysis of SWAT modeling in the Lancang river basin using four different algorithms [J]. Water, 2021, 13(3):341.
+[21] Gao Xin, Chen Xingwei, Biggs T, et al. Separating wet and dry years to improve calibration of SWAT in barrett watershed, Southern California [J]. Water, 2018, 10 (3): 274 .
+
+[^0](1) 70-74.
+[10] 梁爱斌,王春生,徐 岳. 采用 MATLAB 语言开发连续梁桥顶推施工结构分析程序[J]. 交通与计算机, 2000, 18(5):57-61.
+[11] 王杜欣. 复合荷载作用下连续钢梁弯扭屈曲的临界弯矩研究[D]. 兰州: 兰州大学, 2019.
+[12] 方茄磊. 大跨钢箱梁顶推施工过程结构受力分析 [D]. 郑州: 郑州大学, 2020.
+[13] 张振兴, 宁响亮,刘 军, 等. 基于 ABAQUS 的全钢装配式防屈曲支撑有限元分析[J]. 工程杭震与加固改造, 2012,34(1):20-25.
+[14] 田仲初,岳海玲,蒋田勇, 等. 开口薄壁箱结构拱肋屈曲分析及提高屈曲特征值的方法研究[J]. 中外公路, 2010,30(5):127-130.
+[15] 翊凤莲,范顺成,罗文龙. 基于 ANSYS 的支撑架特征值屈曲分析[J]. 河北工业大学学报, 2010,39(3):610 .
+
+
+[^0]:    (上接第 178 页)
+    [3] 田启军,陈湘林. 顶推施工中导梁的应用与插固措施的优化[J]. 中外公路, 2003, 23(6):38-40.
+    [4] 林旭瑜,伍明强,赵江林. 顶推施工中工字形导梁优化设计[J]. 兰州工业学院学报, 2015, 22(6):62-67.
+    [5] 龚 伟, 邵天彦. 多跨连续梁桥顶推施工双导梁的优化分析[J]. 浙江大学学报(工学版), 2021, 55(7): 1289-1298.
+    [6] 王卫锋,林俊锋,马文田. 桥梁顶推施工导梁的优化分析[J]. 工程力学, 2007, 24(2):132-138.
+    [7] 王天鹏, 周先雁, 资国京, 等. 大跨柔性钢梁顶推施工导梁结构优化及局部受力分析[J]. 公路, 2016, 61 (7):121-124.
+    [8] 时晓畴, 梁 岩, 万德坤, 等. 桥梁顶推施工导梁屈曲分析及加固措施研究[J]. 郑州大学学报(工学版), 2021,42(5):74-78.
+    [9] 卞永明, 敬 重, 王丽萍, 等. 跨铁路宁波东站桥梁顶推施工的导梁设计[J]. 中国工程机械学报, 2013, 11

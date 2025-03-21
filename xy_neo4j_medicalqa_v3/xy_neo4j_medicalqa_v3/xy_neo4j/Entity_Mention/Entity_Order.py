@@ -118,51 +118,47 @@ class EntityLinker:
     
     def _preload_entities(self):
         """预加载实体基础信息并计算向量"""
-        print("开始预加载实体信息和计算实体向量...")
-        start_time = time.time()
-        
-        with self.driver.session() as session:
-            # 批量加载前500个实体的基本信息
-            result = session.run("""
+        try:
+            print("开始预加载实体信息和计算实体向量...")
+            
+            # 查询所有实体节点
+            with self.driver.session() as session:
+                # 修改查询语句，考虑source_article可能存在或不存在的情况
+                query = """
                 MATCH (n) 
-                WHERE n.name IS NOT NULL
+                WHERE n:地理问题 OR n:数据 OR n:方法 OR n:模型 OR n:模型应用 OR n:结果
                 RETURN n.name as name, n.desc as desc, 
-                    labels(n)[0] as category, 
-                    n.source_article as reference
-                LIMIT 500
-            """)
-            
-            entities = []
-            # 清空现有实体信息
-            self.persistent_state["entity_desc"] = {}
-            self.persistent_state["entity_names"] = []
-            
-            for record in result:
-                name = record["name"]
-                if name:
+                       CASE WHEN n:地理问题 THEN n.source_article ELSE NULL END as source_article,
+                       labels(n) as labels
+                """
+                result = session.run(query)
+                
+                # 初始化存储结构
+                if "entity_desc" not in self.persistent_state:
+                    self.persistent_state["entity_desc"] = {}
+                if "entity_source" not in self.persistent_state:
+                    self.persistent_state["entity_source"] = {}
+                
+                # 处理每个实体
+                for record in result:
+                    # 确保name是字符串类型
+                    name = record.get("name")
+                    if isinstance(name, list):
+                        name = name[0] if name else "未命名实体"  # 取第一个元素或提供默认值
+                    
+                    # 存储实体描述
                     self.persistent_state["entity_desc"][name] = record.get("desc", "")
-                    self.persistent_state["entity_names"].append(name)
-                    entities.append({
-                        "name": name,
-                        "desc": record.get("desc", ""),
-                        "category": record.get("category", "Unknown"),
-                        "reference": record.get("reference", "")
-                    })
-        
-        # 预计算实体向量（仅在有实体时进行）
-        if self.persistent_state["entity_names"]:
-            try:
-                self.persistent_state["entity_vectors"] = self.encoder.encode(
-                    self.persistent_state["entity_names"], 
-                    convert_to_tensor=True,
-                    show_progress_bar=False
-                )
-            except Exception as e:
-                print(f"预计算实体向量失败: {e}")
-                self.persistent_state["entity_vectors"] = None
-        
-        end_time = time.time()
-        print(f"预加载完成，共加载 {len(self.persistent_state['entity_names'])} 个实体，耗时: {end_time - start_time:.2f}秒")
+                    
+                    # 只为"地理问题"类型节点存储source_article
+                    labels = record.get("labels", [])
+                    if "地理问题" in labels and record.get("source_article"):
+                        self.persistent_state["entity_source"][name] = record.get("source_article")
+                    
+                print(f"预加载了 {len(self.persistent_state['entity_desc'])} 个实体")
+                
+        except Exception as e:
+            print(f"EntityLinker预初始化失败: {e}")
+            raise
 
     def query_with_cache(self, cypher_query: str, parameters: Dict) -> List[Dict]:
         """使用缓存执行Cypher查询 (已更新为使用query_state)"""
@@ -219,19 +215,49 @@ class EntityLinker:
                     "desc": self.persistent_state["entity_desc"].get(name, ""),
                 }
         
-        # 批量获取关系
+        # 批量获取节点标签和关系
         if entity_details:
             with self.driver.session() as session:
-                query = """
+                # 查询节点标签
+                labels_query = """
+                MATCH (n)
+                WHERE n.name IN $entity_names
+                RETURN n.name as name, labels(n) as labels
+                """
+                
+                print(f"[Entity Linking] 执行标签查询，查询实体数量: {len(entity_details.keys())}")
+                labels_result = session.run(labels_query, entity_names=list(entity_details.keys()))
+                
+                labels_count = 0
+                for record in labels_result:
+                    labels_count += 1
+                    name = record["name"]
+                    if name in entity_details:
+                        # 获取第一个标签作为类别
+                        labels = record["labels"]
+                        print(f"[Entity Linking] 实体 '{name}' 的标签: {labels}")
+                        if labels and len(labels) > 0:
+                            entity_details[name]["category"] = labels[0]
+                            print(f"[Entity Linking] 设置实体 '{name}' 的类别为: {labels[0]}")
+                        else:
+                            # 使用更合适的默认类别名称，而不是Unknown
+                            entity_details[name]["category"] = "未分类"
+                            print(f"[Entity Linking] 实体 '{name}' 没有标签，设置为: 未分类")
+                
+                print(f"[Entity Linking] 标签查询完成，处理了 {labels_count} 条记录")
+                
+                # 查询关系
+                relations_query = """
                 MATCH (n)-[r]-(m)
                 WHERE n.name IN $entity_names
                 RETURN n.name as source_name, 
                        type(r) as relation_type, 
                        m.name as target_name,
-                       startNode(r) = n as is_outgoing
+                       startNode(r) = n as is_outgoing,
+                       labels(m)[0] as target_category
                 """
                 
-                result = session.run(query, entity_names=list(entity_details.keys()))
+                result = session.run(relations_query, entity_names=list(entity_details.keys()))
                 
                 for record in result:
                     source = record["source_name"]
@@ -242,7 +268,8 @@ class EntityLinker:
                         entity_details[source]["relations"].append({
                             "type": record["relation_type"],
                             "entity": record["target_name"],
-                            "direction": "outgoing" if record["is_outgoing"] else "incoming"
+                            "direction": "outgoing" if record["is_outgoing"] else "incoming",
+                            "category": record.get("target_category", "Unknown")
                         })
         
         return entity_details
@@ -596,6 +623,11 @@ class EntityLinker:
                         key=lambda x: x["score"],
                         reverse=True
                     )[:top_k]
+                    
+                    # 添加调试输出
+                    print(f"[Entity Linking] 实体 '{mention}' 的链接结果:")
+                    for idx, entity in enumerate(results[mention]):
+                        print(f"  {idx+1}. {entity['name']} - 类别: {entity.get('category', 'None')}, 得分: {entity['score']:.2f}")
                 
                 except Exception as e:
                     print(f"[Entity Linking] 处理实体 '{mention}' 失败: {e}")
@@ -793,3 +825,39 @@ class EntityLinker:
 
         # 直接使用批量处理方法
         return self.rank_entities_batch(query="", mentions=mentions, top_k=5)
+
+    def check_node_labels(self, node_name):
+        """调试方法：直接查询Neo4j中节点的标签
+        
+        Args:
+            node_name: 节点名称
+            
+        Returns:
+            Dict: 包含节点信息和标签的字典
+        """
+        print(f"[DEBUG] 直接查询Neo4j中 '{node_name}' 的标签")
+        
+        try:
+            with self.driver.session() as session:
+                query = """
+                MATCH (n {name: $node_name})
+                RETURN n, labels(n) as labels
+                """
+                
+                result = session.run(query, node_name=node_name)
+                record = result.single()
+                
+                if record:
+                    node = dict(record["n"])
+                    labels = record["labels"]
+                    print(f"[DEBUG] 节点 '{node_name}' 的标签: {labels}")
+                    return {
+                        "node": node,
+                        "labels": labels
+                    }
+                else:
+                    print(f"[DEBUG] 未找到节点 '{node_name}'")
+                    return None
+        except Exception as e:
+            print(f"[DEBUG] 查询节点 '{node_name}' 的标签失败: {e}")
+            return None
