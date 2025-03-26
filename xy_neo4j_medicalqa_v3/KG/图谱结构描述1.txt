@@ -12,7 +12,7 @@
 (head_type:开发步骤,relation:下一步,tail_type:开发步骤)
 (head_type:集成模型,relation:模型评价,tail_type:评价方法)
 (head_type:集成模型,relation:模拟过程,tail_type:模型应用)
-(head_type:评价方法,relation:评价结果,tail_type:评价结果)
+(head_type:评价方法,relation:评估结果,tail_type:评价结果)
 (head_type:模型应用,relation:运算结果,tail_type:应用结果)
 (head_type:应用结果,relation:结果讨论,tail_type:总结讨论)
 

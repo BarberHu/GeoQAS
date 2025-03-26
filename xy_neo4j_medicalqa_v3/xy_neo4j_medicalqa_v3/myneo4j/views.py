@@ -154,11 +154,11 @@ def wenda(request):
     if key and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         # 返回立即响应，通知前端请求已接收
         return JsonResponse({'status': 'processing'})
-    
+        
     elif key:
         # 使用全局对话管理器处理问题
         response = dialogue_manager.get_response(key)
-        
+
         # 创建新的历史记录
         chat_history = ChatHistory(
             session_id=session_id,
@@ -166,32 +166,34 @@ def wenda(request):
             answer=response['answer'],
             has_flowchart='流域' in key or 'SWAT' in key or '模型' in key
         )
-        
+
         # 保存结构化数据
         if 'kg_nodes' in response:
             chat_history.save_kg_nodes(response['kg_nodes'])
-            
+
         if 'thinking_process' in response:
             chat_history.save_thinking_process(response['thinking_process'])
-            
+
         if 'time_analysis' in response:
             chat_history.time_analysis = json.dumps(response['time_analysis'], ensure_ascii=False)
-            
+
         if 'references' in response:
             chat_history.references = json.dumps(response['references'], ensure_ascii=False)
-        
+
         # 保存记录
         chat_history.save()
-        
+
         # 更新上下文
         context.update({
             'key': key,
             'answer': response['answer'],
             'kg_nodes': response.get('kg_nodes'),
-            'thinking_process': response.get('thinking_process'),
+            'thinking_process': response.get('thinking_process'),  # 确保 thinking_process 被传递到模板
             'time_analysis': response.get('time_analysis'),
             'references': response.get('references'),
         })
+
+    return render(request, 'wenda.html', context)
     
     return render(request, 'wenda.html', context)
 

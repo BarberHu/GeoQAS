@@ -1,10 +1,10 @@
-
 import os
 import json
 from typing import List, Dict, Any, Tuple
 import re
 from transformers import AutoTokenizer, AutoModelForCausalLM
 import torch
+import time
 
 class HydrologicalQuestionDecomposer:
     """
@@ -14,20 +14,39 @@ class HydrologicalQuestionDecomposer:
     def __init__(self, 
                  model_path: str = None, 
                  use_api: bool = True,
-                 api_key: str = "sk-benW8QASpqo6tXfDsE9Eu6vYxJDhTtHeeeKGSh11wBOqW8SA"):
+                 api_key: str = None,
+                 provider: str = None):
         """
         初始化问题分解器
         
         Args:
             model_path: 本地模型路径，如果为None则使用API
             use_api: 是否使用API
-            api_key: API密钥
+            api_key: API密钥，如果为None则从配置中获取
+            provider: LLM提供商名称，如果为None则使用默认提供商
         """
+        import sys
+        import os
+        sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
+        from config import API_KEYS, LLM_CONFIG
+        from llm_client_factory import LLMClientFactory
+        
         self.use_api = use_api
-        self.api_key = api_key
+        self.provider = provider or LLM_CONFIG["default_provider"]
+        self.api_key = api_key or API_KEYS.get(self.provider)
         self.model = None
         self.tokenizer = None
         self.original_question = ""
+        
+        # 创建LLM客户端
+        if self.use_api:
+            try:
+                self.llm_client = LLMClientFactory.create_client(self.provider)
+                print(f"[问题分解器] 成功创建LLM客户端，提供商: {self.provider}")
+            except Exception as e:
+                print(f"[问题分解器] 创建LLM客户端失败: {e}")
+                self.llm_client = None
+                self.use_api = False
         
         # 图谱结构定义 - 关系及对应实体类型
         self.graph_relations = {
@@ -74,9 +93,10 @@ class HydrologicalQuestionDecomposer:
                     torch_dtype=torch.float16,
                     device_map="auto"
                 )
+                print(f"[问题分解器] 成功加载本地模型: {model_path}")
             except Exception as e:
-                print(f"模型加载失败: {e}")
-                print("将使用规则方法进行问题分解")
+                print(f"[问题分解器] 模型加载失败: {e}")
+                print("[问题分解器] 将使用规则方法进行问题分解")
                 self.model = None
                 self.tokenizer = None
     
@@ -375,215 +395,108 @@ class HydrologicalQuestionDecomposer:
         # 保存到缓存
         self.question_cache[question] = decomposed_questions
         return decomposed_questions
-        """使用大模型分解问题（原始版本）"""
-        if self.use_api:
-            # 使用API调用大模型
-            try:
-                import requests
-                
-                # 构建prompt
-                prompt = f"""
-                你是一个水文领域的专家，擅长SWAT模型和径流模拟。请将以下复杂问题分解为3-5个具体的子问题，以便进行多轮问答。
-                每个子问题应该清晰明确，并且按照逻辑顺序排列，从基础问题到高级问题。
-                
-                问题: {question}
-                
-                请以JSON格式返回结果，格式为:
-                {{
-                  "decomposed_questions": [
-                    {{"id": 1, "question": "子问题1", "priority": "高/中/低", "type": "问题类型"}},
-                    {{"id": 2, "question": "子问题2", "priority": "高/中/低", "type": "问题类型"}},
-                    ...
-                  ]
-                }}
-                """
-                
-                # 设置API请求
-                headers = {
-                    "Content-Type": "application/json",
-                    "Authorization": f"Bearer {self.api_key}"
-                }
-                
-                data = {
-                    "model": "gpt-4o", # 使用更快的模型
-                    "messages": [{"role": "user", "content": prompt}],
-                    "temperature": 0.2
-                }
-                
-                # 发送请求
-                response = requests.post(
-                    "https://api.chatanywhere.tech/v1/chat/completions", # 使用实际的API端点
-                    headers=headers,
-                    json=data
-                )
-                
-                # 解析响应
-                result = response.json()
-                content = result["choices"][0]["message"]["content"]
-                
-                # 提取JSON部分
-                json_match = re.search(r'({.*})', content, re.DOTALL)
-                if json_match:
-                    json_content = json_match.group(1)
-                    json_data = json.loads(json_content)
-                    return json_data["decomposed_questions"]
-                
-                return self.decompose_by_rule(question)  # 如果API提取失败，回退到规则方法
-                
-            except Exception as e:
-                print(f"API调用失败: {e}")
-                return self.decompose_by_rule(question)  # 回退到规则方法
-                
-        elif hasattr(self, 'model') and self.model and hasattr(self, 'tokenizer') and self.tokenizer:
-            # 使用本地模型
-            try:
-                # 构建prompt
-                prompt = f"""
-                你是一个水文领域的专家，擅长SWAT模型和径流模拟。请将以下复杂问题分解为3-5个具体的子问题，以便进行多轮问答。
-                每个子问题应该清晰明确，并且按照逻辑顺序排列，从基础问题到高级问题。
-                
-                问题: {question}
-                
-                请以JSON格式返回结果，格式为:
-                {{
-                  "decomposed_questions": [
-                    {{"id": 1, "question": "子问题1", "priority": "高/中/低", "type": "问题类型"}},
-                    {{"id": 2, "question": "子问题2", "priority": "高/中/低", "type": "问题类型"}},
-                    ...
-                  ]
-                }}
-                """
-                
-                # 模型推理
-                inputs = self.tokenizer(prompt, return_tensors="pt").to(self.model.device)
-                outputs = self.model.generate(
-                    **inputs,
-                    max_new_tokens=512,
-                    temperature=0.2,
-                    top_p=0.95
-                )
-                
-                # 解码输出
-                content = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
-                
-                # 提取JSON部分
-                json_match = re.search(r'({.*})', content, re.DOTALL)
-                if json_match:
-                    json_content = json_match.group(1)
-                    json_data = json.loads(json_content)
-                    return json_data["decomposed_questions"]
-                
-                return self.decompose_by_rule(question)  # 如果模型提取失败，回退到规则方法
-                
-            except Exception as e:
-                print(f"本地模型推理失败: {e}")
-                return self.decompose_by_rule(question)  # 回退到规则方法
-        else:
-            # 没有可用的模型，使用规则方法
-            return self.decompose_by_rule(question)
     
     def decompose_by_llm_enhanced(self, question: str) -> List[Dict[str, Any]]:
         """增强的LLM问题分解，整合图谱结构"""
-# 发送请求前
-        print(f"[LLM问题分解] 开始调用API，请求问题: {question[:30]}...")
-        if self.use_api:
-            # 发送请求后
-            print(f"[LLM问题分解] API请求已发送，等待响应...")
-            # 使用API调用大模型
+        start_time = time.time()
+        print(f"[问题分解器] 开始分解问题: {question[:50]}...")
+        
+        if self.use_api and hasattr(self, 'llm_client') and self.llm_client:
             try:
-                import requests
-                
                 # 构建包含图谱结构的提示词
                 prompt = f"""
-                你是一个地理建模领域的专家。分析以下问题，提取其核心内容，然后生成3-5个独立的子问题。
-                
-                重要说明：
-                1. 每个子问题必须是全新的独立问题，不要简单地复述或修饰原始问题
-                2. 子问题应该直接以疑问句形式提出，不要包含"原问题中..."这类引用
-                3. 子问题应该是原问题的分解，共同覆盖原问题的所有关键点
-               
+                【专家身份】你是中国科学院地理科学与资源研究所的地理水文建模首席专家，擅长分解复杂问题并提供系统化建模方案。你的专长是将复杂的地理建模问题分解为可实施的研究步骤，确保研究过程全面、系统且符合学术规范。
 
-                这些子问题应该覆盖以下关系，但每个子问题应该独立且简洁：
-                - 所属场景：涉及哪些地理场景或区域
-                - 研究对象：需要研究哪些对象系统
-                - 使用数据：需要哪些时空数据及其处理方法
-                - 使用模型：可以使用什么模型及如何集成
-                - 问题结论：可能得出哪些结论
+                【任务目标】请对以下地理建模问题进行专业化分解，将其转化为结构清晰、逻辑连贯的子问题集合。
 
-                原始问题: {question}
+                【原始问题】{question}
 
-                例如，如果原始问题是"如何利用SWAT模型对太湖流域进行水质模拟？"，子问题应该类似：
-                1. 太湖流域的地理特征是什么？（所属场景）
-                2. 水质模拟需要研究哪些水文过程？（研究对象）
-                3. SWAT模型水质模拟需要哪些基础数据？（使用数据）
-                4. SWAT模型中的水质参数如何率定？（使用模型）
-                5. 水质模拟结果如何评价？（问题结论）
+                【分解要求】
+                1. 生成3-5个高质量子问题，每个子问题必须：
+                   - 构成完整独立的研究问题，而非原问题的简单复述
+                   - 直接以专业而清晰的疑问句形式提出
+                   - 与其他子问题共同构成对原问题的全面解答框架
 
-                请以JSON格式返回结果，并为每个子问题提供可能相关的实体列表：
+                2. 子问题应系统性地覆盖地理建模的核心维度：
+                   - 研究区域特征：研究区域的地理环境、水文气象和社会经济特征
+                   - 过程机理分析：需要模拟的关键地理过程和作用机制
+                   - 数据需求与处理：所需时空数据类型、来源和预处理方法
+                   - 模型选择与应用：适用模型的选择、参数化和集成方法
+                   - 结果评估与应用：模型结果的评价标准和实际应用价值
+
+                【示例说明】
+                如对"如何利用SWAT模型对太湖流域进行水质模拟"这一问题：
+                1. 太湖流域的水文地理特征及其主要污染源分布是什么？（研究区域特征）
+                2. SWAT模型如何模拟流域尺度的非点源污染物迁移转化过程？（过程机理分析）
+                3. 建立太湖流域SWAT水质模型需要哪些关键数据及其处理方法？（数据需求与处理）
+                4. SWAT模型中的水质参数如何进行率定与验证以提高模拟精度？（模型选择与应用）
+                5. 如何评价SWAT水质模拟结果并应用于太湖流域污染控制？（结果评估与应用）
+
+                【输出格式】请以JSON格式返回，为每个子问题提供完整的专业信息：
                 {{
                 "decomposed_questions": [
                     {{
                     "id": 1, 
-                    "question": "独立的子问题1", 
+                    "question": "子问题内容", 
                     "priority": "高/中/低", 
-                    "type": "问题类型",
-                    "graph_relation": "所属场景/研究对象/使用数据/使用模型/问题结论",
-                    "entity_type": "地理场景/对象系统/时空数据/集成模型/总结讨论",
-                    "suggested_entities": ["实体1", "实体2", ...]
+                    "type": "问题科学分类",
+                    "graph_relation": "研究区域特征/过程机理分析/数据需求与处理/模型选择与应用/结果评估与应用",
+                    "entity_type": "地理场景/过程系统/时空数据/模型方法/应用评估",
+                    "suggested_entities": ["相关专业实体1", "相关专业实体2", ...]
                     }},
                     ...
                 ]
                 }}
                 """
-                                
                 
-                # 设置API请求
-                headers = {
-                    "Content-Type": "application/json",
-                    "Authorization": f"Bearer {self.api_key}"
-                }
+                print(f"[问题分解器] 发送LLM请求...")
+                # 使用LLM客户端进行API调用
+                messages = [
+                    {"role": "system", "content": "你是中国科学院地理科学与资源研究所的地理水文建模首席专家，擅长分解复杂问题并提供系统化建模方案。你的专长是将复杂的地理建模问题分解为可实施的研究步骤，确保研究过程全面、系统且符合学术规范。"},
+                    {"role": "user", "content": prompt}
+                ]
                 
-                data = {
-                    "model": "gpt-4o", # 使用更高级的模型
-                    "messages": [{"role": "user", "content": prompt}],
-                    "temperature": 0.2
-                }
+                content = self.llm_client.chat_completion(messages)
                 
-                # 发送请求
-                response = requests.post(
-                    "https://api.chatanywhere.tech/v1/chat/completions",
-                    headers=headers,
-                    json=data
-                )
-                
-                # 解析响应
-                result = response.json()
-                content = result["choices"][0]["message"]["content"]
+                # 检查是否获得了有效响应
+                if isinstance(content, str) and "抱歉" in content and "错误" in content:
+                    print(f"[问题分解器] LLM调用返回错误: {content[:100]}...")
+                    raise Exception(f"LLM API调用失败: {content[:100]}...")
                 
                 # 提取JSON部分
                 json_match = re.search(r'({.*})', content, re.DOTALL)
                 if json_match:
                     json_content = json_match.group(1)
-                    json_data = json.loads(json_content)
-                    
-                    # 增强结果 - 为每个问题添加实体
-                    enhanced_questions = json_data["decomposed_questions"]
-                    entities_by_type = self._extract_entities_enhanced(question)
-                    
-                    for q in enhanced_questions:
-                        entity_type = q.get("entity_type")
-                        if entity_type and entity_type in entities_by_type:
-                            q["entity"] = entities_by_type[entity_type]
-                        else:
-                            q["entity"] = []
-                    
-                    return enhanced_questions
+                    try:
+                        json_data = json.loads(json_content)
+                        
+                        # 增强结果 - 为每个问题添加实体
+                        enhanced_questions = json_data["decomposed_questions"]
+                        entities_by_type = self._extract_entities_enhanced(question)
+                        
+                        for q in enhanced_questions:
+                            entity_type = q.get("entity_type")
+                            if entity_type and entity_type in entities_by_type:
+                                q["entity"] = entities_by_type[entity_type]
+                            else:
+                                q["entity"] = []
+                        
+                        end_time = time.time()
+                        print(f"[问题分解器] 分解完成，耗时: {end_time - start_time:.2f}秒，生成 {len(enhanced_questions)} 个子问题")
+                        return enhanced_questions
+                    except json.JSONDecodeError as e:
+                        print(f"[问题分解器] JSON解析失败: {e}")
+                        print(f"[问题分解器] 尝试提取的JSON内容: {json_content[:200]}...")
+                        raise Exception(f"JSON解析失败: {e}")
                 
+                print(f"[问题分解器] 未能提取有效的JSON响应，回退到图谱结构分解")
                 # 如果提取失败，使用图谱结构分解
                 return self.decompose_by_graph_structure(question)
                 
             except Exception as e:
-                print(f"增强LLM调用失败: {e}")
+                print(f"[问题分解器] 增强LLM调用失败: {e}")
+                end_time = time.time()
+                print(f"[问题分解器] 处理耗时: {end_time - start_time:.2f}秒，使用图谱结构备用方法")
                 return self.decompose_by_graph_structure(question)
                 
         elif hasattr(self, 'model') and self.model and hasattr(self, 'tokenizer') and self.tokenizer:
@@ -591,41 +504,44 @@ class HydrologicalQuestionDecomposer:
             try:
                 # 构建包含图谱结构的提示词
                 prompt = f"""
-                你是一个地理建模领域的专家。分析以下问题，提取其核心内容，然后生成3-5个独立的子问题。
-                
-                重要说明：
-                1. 每个子问题必须是全新的独立问题，不要简单地复述或修饰原始问题
-                2. 子问题应该直接以疑问句形式提出，不要包含"原问题中..."这类引用
-                3. 子问题应该是原问题的分解，共同覆盖原问题的所有关键点
-               
+                【专家身份】你是中国科学院地理科学与资源研究所的地理水文建模首席专家，擅长分解复杂问题并提供系统化建模方案。你的专长是将复杂的地理建模问题分解为可实施的研究步骤，确保研究过程全面、系统且符合学术规范。
 
-                这些子问题应该覆盖以下关系，但每个子问题应该独立且简洁：
-                - 所属场景：涉及哪些地理场景或区域
-                - 研究对象：需要研究哪些对象系统
-                - 使用数据：需要哪些时空数据及其处理方法
-                - 使用模型：可以使用什么模型及如何集成
-                - 问题结论：可能得出哪些结论
+                【任务目标】请对以下地理建模问题进行专业化分解，将其转化为结构清晰、逻辑连贯的子问题集合。
 
-                原始问题: {question}
+                【原始问题】{question}
 
-                例如，如果原始问题是"如何利用SWAT模型对太湖流域进行水质模拟？"，子问题应该类似：
-                1. 太湖流域的地理特征是什么？（所属场景）
-                2. 水质模拟需要研究哪些水文过程？（研究对象）
-                3. SWAT模型水质模拟需要哪些基础数据？（使用数据）
-                4. SWAT模型中的水质参数如何率定？（使用模型）
-                5. 水质模拟结果如何评价？（问题结论）
+                【分解要求】
+                1. 生成3-5个高质量子问题，每个子问题必须：
+                   - 构成完整独立的研究问题，而非原问题的简单复述
+                   - 直接以专业而清晰的疑问句形式提出
+                   - 与其他子问题共同构成对原问题的全面解答框架
 
-                请以JSON格式返回结果，并为每个子问题提供可能相关的实体列表：
+                2. 子问题应系统性地覆盖地理建模的核心维度：
+                   - 研究区域特征：研究区域的地理环境、水文气象和社会经济特征
+                   - 过程机理分析：需要模拟的关键地理过程和作用机制
+                   - 数据需求与处理：所需时空数据类型、来源和预处理方法
+                   - 模型选择与应用：适用模型的选择、参数化和集成方法
+                   - 结果评估与应用：模型结果的评价标准和实际应用价值
+
+                【示例说明】
+                如对"如何利用SWAT模型对太湖流域进行水质模拟"这一问题：
+                1. 太湖流域的水文地理特征及其主要污染源分布是什么？（研究区域特征）
+                2. SWAT模型如何模拟流域尺度的非点源污染物迁移转化过程？（过程机理分析）
+                3. 建立太湖流域SWAT水质模型需要哪些关键数据及其处理方法？（数据需求与处理）
+                4. SWAT模型中的水质参数如何进行率定与验证以提高模拟精度？（模型选择与应用）
+                5. 如何评价SWAT水质模拟结果并应用于太湖流域污染控制？（结果评估与应用）
+
+                【输出格式】请以JSON格式返回，为每个子问题提供完整的专业信息：
                 {{
                 "decomposed_questions": [
                     {{
                     "id": 1, 
-                    "question": "独立的子问题1", 
+                    "question": "子问题内容", 
                     "priority": "高/中/低", 
-                    "type": "问题类型",
-                    "graph_relation": "所属场景/研究对象/使用数据/使用模型/问题结论",
-                    "entity_type": "地理场景/对象系统/时空数据/集成模型/总结讨论",
-                    "suggested_entities": ["实体1", "实体2", ...]
+                    "type": "问题科学分类",
+                    "graph_relation": "研究区域特征/过程机理分析/数据需求与处理/模型选择与应用/结果评估与应用",
+                    "entity_type": "地理场景/过程系统/时空数据/模型方法/应用评估",
+                    "suggested_entities": ["相关专业实体1", "相关专业实体2", ...]
                     }},
                     ...
                 ]
@@ -661,16 +577,23 @@ class HydrologicalQuestionDecomposer:
                         else:
                             q["entity"] = []
                     
+                    end_time = time.time()
+                    print(f"[问题分解器] 本地模型分解完成，耗时: {end_time - start_time:.2f}秒")
                     return enhanced_questions
                 
                 # 如果提取失败，使用图谱结构分解
                 return self.decompose_by_graph_structure(question)
                 
             except Exception as e:
-                print(f"本地增强模型推理失败: {e}")
+                print(f"[问题分解器] 本地增强模型推理失败: {e}")
+                end_time = time.time()
+                print(f"[问题分解器] 处理耗时: {end_time - start_time:.2f}秒，使用备用方法")
                 return self.decompose_by_graph_structure(question)
         else:
             # 没有可用的模型，使用图谱结构分解方法
+            print("[问题分解器] 没有可用的API或本地模型，使用图谱结构分解方法")
+            end_time = time.time()
+            print(f"[问题分解器] 决策耗时: {end_time - start_time:.2f}秒")
             return self.decompose_by_graph_structure(question)
     
     def decompose_question(self, question: str, use_llm: bool = True, use_graph_structure: bool = True) -> List[Dict[str, Any]]:
@@ -700,7 +623,7 @@ class HydrologicalQuestionDecomposer:
                 result = self.decompose_by_graph_structure(question)
         else:
             if use_llm and (self.use_api or (hasattr(self, 'model') and self.model and hasattr(self, 'tokenizer') and self.tokenizer)):
-                result = self.decompose_by_llm(question)
+                result = self.decompose_by_llm_enhanced(question)
             else:
                 result = self.decompose_by_rule(question)
             

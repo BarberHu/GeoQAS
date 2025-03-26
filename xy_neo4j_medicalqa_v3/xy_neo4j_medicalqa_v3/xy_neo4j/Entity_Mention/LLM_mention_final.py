@@ -42,7 +42,7 @@ class DirectMentionRecognizer:
                     {"role": "user", "content": f"文本：{text}"}
                 ],
                 temperature=0.1,
-                max_tokens=2048
+                max_tokens=4096
             )
             
             result = response.choices[0].message.content
@@ -128,7 +128,7 @@ class DirectMentionRecognizer:
                     {"role": "user", "content": batch_prompt}
                 ],
                 temperature=0.1,
-                max_tokens=2000
+                max_tokens=4096
             )
             
             result = response.choices[0].message.content

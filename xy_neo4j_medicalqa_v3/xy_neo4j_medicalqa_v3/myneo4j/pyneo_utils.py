@@ -17,7 +17,6 @@ color = {
     "模型应用": "#ffbb78",    # 浅橙色
     "应用结果": "#aec7e8",    # 浅蓝色
     "总结讨论": "#c49c94",    # 浅棕色
-    "地理概念": "#c5b0d5",    # 浅紫色
     "other": "#c7c7c7"       # 中灰色
 }
 
@@ -65,7 +64,7 @@ def get_all_relation(start, relation, end):
     valid_relations = [
         "所属场景", "研究对象", "使用数据", "使用模型", "问题结论",
         "相关机理", "获取来源", "数据处理", "集成依赖", "开发流程",
-        "下一步", "模型评价", "模拟过程", "评价结果", "运算结果",
+        "下一步", "模型评价", "模拟过程", "评估结果", "运算结果",
         "结果讨论"
     ]
 
@@ -108,7 +107,7 @@ def get_all_relation(start, relation, end):
         return {"datas": [], "links": [], "legend_data": [], "categories": []}
 
     for nodes_relations in nodes_data_all:
-        print("----")
+        #print("----")
         # 正确提取节点的标签作为类别
         try:
             # 将标签字符串转换为更清晰的格式
@@ -119,7 +118,7 @@ def get_all_relation(start, relation, end):
             start_lable = list(nodes_relations['n'].labels)[0] if nodes_relations['n'].labels else "未知类型"
             end_lable = list(nodes_relations['b'].labels)[0] if nodes_relations['b'].labels else "未知类型"
             
-            print(f"节点标签解析: 起始节点={start_lable}, 目标节点={end_lable}")
+           # print(f"节点标签解析: 起始节点={start_lable}, 目标节点={end_lable}")
         except Exception as e:
             print(f"解析标签出错: {e}")
             start_lable = "未知类型"
@@ -129,10 +128,7 @@ def get_all_relation(start, relation, end):
             # 确保我们获取的是字典，而不是Node对象
             start = dict(nodes_relations['n'])
             end = dict(nodes_relations['b'])
-            
-            # 调试输出
-            print(f"起始节点属性类型: {type(start)}")
-            print(f"目标节点属性类型: {type(end)}")
+
             
             relation = "relation"
             if "name" not in start or "name" not in end:
@@ -146,11 +142,11 @@ def get_all_relation(start, relation, end):
             # 如果name是列表，将其转换为字符串
             if isinstance(start_name, list):
                 start_name = str(start_name[0]) if start_name else "未命名"
-                print(f"警告: 节点名称是列表类型: {start_name}")
+               # print(f"警告: 节点名称是列表类型: {start_name}")
             
             if isinstance(end_name, list):
                 end_name = str(end_name[0]) if end_name else "未命名"
-                print(f"警告: 节点名称是列表类型: {end_name}")
+              #  print(f"警告: 节点名称是列表类型: {end_name}")
                 
             # 确保节点名称是字符串
             start_name = str(start_name)

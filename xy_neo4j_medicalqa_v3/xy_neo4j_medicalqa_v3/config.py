@@ -35,21 +35,21 @@ LLM_CONFIG = {
         "deepseek": {
             "base_url": "https://api.deepseek.com",
             "default_model": "deepseek-chat",
-            "max_tokens": 2048,
+            "max_tokens": 4096,
             "temperature": 0.7,
             "client_type": "openai"  # 使用OpenAI客户端
         },
         "zhipu": {
             "base_url": "https://open.bigmodel.cn/api/paas/v4",
             "default_model": "glm-4",
-            "max_tokens": 2048,
+            "max_tokens": 4096,
             "temperature": 0.7,
             "client_type": "openai"  # 使用OpenAI客户端
         },
         "siliconflow": {
             "base_url": "https://api.siliconflow.cn/v1",
             "default_model": "Pro/deepseek-ai/DeepSeek-V3",
-            "max_tokens": 2048,
+            "max_tokens": 4096,
             "temperature": 0.7,
             "top_p": 0.7,
             "top_k": 50,
@@ -61,7 +61,7 @@ LLM_CONFIG = {
     # 兼容旧代码的配置 - 指向默认提供商的配置
     "base_url": "https://api.deepseek.com",
     "default_model": "deepseek-chat",
-    "max_tokens": 2048,
+    "max_tokens": 4096,
     "temperature": 0.7
 }
 

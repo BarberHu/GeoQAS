@@ -27,7 +27,7 @@ RELATION_MAP = {
     "下一步": "NEXT_STEP",
     "模型评价": "EVALUATED_BY",
     "模拟过程": "SIMULATION_PROCESS",
-    "评价结果": "EVALUATION_RESULT",
+    "评估结果": "EVALUATION_RESULT",
     "运算结果": "HAS_RESULT",
     "结果讨论": "DISCUSSED_IN"
 }
@@ -39,7 +39,7 @@ NESTED_RELATIONS = {
     "时空数据": ["获取来源", "数据处理"],
     "集成模型": ["集成依赖", "开发流程", "模型评价", "模拟过程"],
     "开发步骤": ["下一步"],
-    "评价方法": ["评价结果"],
+    "评价方法": ["评估结果"],
     "模型应用": ["运算结果"],
     "应用结果": ["结果讨论"]
 }
@@ -133,6 +133,13 @@ class Neo4jImporter:
                     next_step_node = self._get_or_create_reference_node(tx, "开发步骤", next_step_name)
                     if next_step_node:
                         self._create_relationship(tx, current_node, next_step_node, rel)
+            
+            # 特殊处理，兼容JSON中使用"评价结果"作为关系键的情况
+            elif node_type == "评价方法" and "评价结果" in node_data and "评估结果" not in node_data:
+                # 将"评价结果"键下的内容处理为"评估结果"关系
+                if isinstance(node_data["评价结果"], list):
+                    for child_data in node_data["评价结果"]:
+                        self._process_node(tx, child_data, current_node, "评估结果")
                         
         return current_node
 
@@ -265,45 +272,59 @@ class Neo4jImporter:
                 entity_types = ["地理问题", "地理场景", "对象系统", "集成模型", "基础模型"]
                 for entity_type in entity_types:
                     logger.info(f"处理 {entity_type} 实体的名称相似度融合...")
-                    session.run(f"""
-                        MATCH (a:`{entity_type}`), (b:`{entity_type}`)
-                        WHERE a <> b AND id(a) < id(b)
-                        AND apoc.text.levenshteinSimilarity(a.name, b.name) > 0.75
-                        WITH a, b ORDER BY apoc.text.levenshteinSimilarity(a.name, b.name) DESC
-                        LIMIT 10
-                        CALL apoc.refactor.mergeNodes([a,b], {{properties:"combine",mergeRels:true}})
-                        YIELD node RETURN node
-                    """)
+                    try:
+                        # 添加异常处理和类型检查
+                        session.run(f"""
+                            MATCH (a:`{entity_type}`), (b:`{entity_type}`)
+                            WHERE a <> b AND id(a) < id(b)
+                            AND apoc.text.levenshteinSimilarity(a.name, b.name) > 0.75
+                            WITH a, b ORDER BY apoc.text.levenshteinSimilarity(a.name, b.name) DESC
+                            LIMIT 10
+                            CALL apoc.refactor.mergeNodes([a,b], {{properties:"combine",mergeRels:true}})
+                            YIELD node RETURN node
+                        """)
+                    except Exception as e:
+                        logger.error(f"处理 {entity_type} 实体融合时出错: {str(e)}")
                 
                 # 2. 基于共享邻居的实体合并
                 logger.info("执行基于共享邻居的实体融合...")
                 for entity_type in entity_types:
                     for rel_type in RELATION_MAP.values():
-                        session.run(f"""
-                            MATCH (a:`{entity_type}`)-[r1:`{rel_type}`]->(common)<-[r2:`{rel_type}`]-(b:`{entity_type}`)
-                            WHERE a <> b AND id(a) < id(b)
-                            WITH a, b, count(common) as commonNeighbors
-                            WHERE commonNeighbors >= 2
-                            WITH a, b LIMIT 5
-                            CALL apoc.refactor.mergeNodes([a,b], {{properties:"combine",mergeRels:true}})
-                            YIELD node RETURN node
-                        """)
+                        try:
+                            # 修复类型转换问题
+                            session.run(f"""
+                                MATCH (a:`{entity_type}`)-[r1:`{rel_type}`]->(common)<-[r2:`{rel_type}`]-(b:`{entity_type}`)
+                                WHERE a <> b AND id(a) < id(b)
+                                WITH a, b, count(common) as commonNeighbors
+                                WHERE commonNeighbors >= 2
+                                WITH a, b LIMIT 5
+                                CALL apoc.refactor.mergeNodes([a,b], {{properties:"combine",mergeRels:true}})
+                                YIELD node RETURN node
+                            """)
+                        except Exception as e:
+                            logger.error(f"处理 {entity_type} 和关系 {rel_type} 的共享邻居融合时出错: {str(e)}")
                 
                 # 3. 处理引用链接（下一步关系）
                 logger.info("处理引用链接关系...")
-                session.run("""
-                    MATCH (a:开发步骤)-[r:NEXT_STEP]->(b:开发步骤)
-                    OPTIONAL MATCH (c:开发步骤)
-                    WHERE c.name = b.name AND c <> b
-                    WITH a, b, c WHERE c IS NOT NULL
-                    MERGE (a)-[:NEXT_STEP]->(c)
-                    DELETE r
-                """)
+                try:
+                    session.run("""
+                        MATCH (a:开发步骤)-[r:NEXT_STEP]->(b:开发步骤)
+                        OPTIONAL MATCH (c:开发步骤)
+                        WHERE c.name = b.name AND c <> b
+                        WITH a, b, c WHERE c IS NOT NULL
+                        MERGE (a)-[:NEXT_STEP]->(c)
+                        DELETE r
+                    """)
+                except Exception as e:
+                    logger.error(f"处理引用链接关系时出错: {str(e)}")
                 
                 logger.info("增强知识融合完成！")
                 
             except Exception as e:
                 logger.error(f"增强知识融合操作失败: {str(e)}")
+                logger.error(f"错误类型: {type(e).__name__}")
+                import traceback
+                logger.error(f"错误详情: {traceback.format_exc()}")
 
 
 def main():

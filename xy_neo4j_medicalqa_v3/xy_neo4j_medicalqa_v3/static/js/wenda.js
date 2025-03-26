@@ -6,13 +6,13 @@
 // 使用立即执行函数表达式(IIFE)封装代码，创建命名空间
 (function() {
     'use strict';
-    
+
     // 创建全局命名空间
     window.WendaApp = window.WendaApp || {};
-    
+
     // 存储图表实例
     WendaApp.charts = {};
-    
+
     // 配置选项
     WendaApp.config = {
         debug: true,
@@ -21,12 +21,12 @@
         tooltipConfine: true,       // 默认限制tooltip在容器内
         usePassiveEvents: false     // 默认不使用被动事件监听器
     };
-    
+
     // 是否已初始化标志
     WendaApp.initialized = false;
-    
+
     // ---------- 1. 核心事件处理模块 ----------
-    
+
     // 状态变量
     const state = {
         isOverChart: false,
@@ -37,25 +37,25 @@
         preventMouseEvents: false, // 默认允许所有鼠标事件
         isCheckingScroll: false    // 添加标志来防止滚动检查循环
     };
-    
+
     // 检查元素是否在图表内
     function isElementInChart(element) {
         return element && (
             element.classList && (
-                element.classList.contains('echarts') || 
+                element.classList.contains('echarts') ||
                 element.classList.contains('echarts-tooltip')
             ) ||
-            element.tagName === 'CANVAS' || 
-            element.closest('.echarts') || 
-            element.closest('[id*="chart"]') || 
-            element.closest('[id*="graph"]') || 
-            element.closest('[id*="kg-"]') || 
+            element.tagName === 'CANVAS' ||
+            element.closest('.echarts') ||
+            element.closest('[id*="chart"]') ||
+            element.closest('[id*="graph"]') ||
+            element.closest('[id*="kg-"]') ||
             element.closest('[id*="flow"]') ||
             element.closest('[class*="tooltip"]') ||
             element.closest('[id*="tooltip"]')
         );
     }
-    
+
     // 鼠标进入图表区域
     function handleChartMouseEnter(event) {
         // 不再阻止事件和设置交互模式
@@ -63,7 +63,7 @@
         state.isOverChart = true;
         console.log('[Frontend] 鼠标进入图表区域');
     }
-    
+
     // 鼠标离开图表区域
     function handleChartMouseLeave(event) {
         // 不再阻止事件和设置交互模式
@@ -71,78 +71,78 @@
         state.isOverChart = false;
         console.log('[Frontend] 鼠标离开图表区域');
     }
-    
+
     // 处理图表区域的滚轮事件
     function handleChartWheelEvent(event) {
         // 完全不干预滚轮事件，允许默认行为
         // 仅记录当前目标，不影响用户交互
         if (isElementInChart(event.target)) {
-            state.activeChartId = event.target.id || 
-                               event.target.closest('[id]')?.id || 
+            state.activeChartId = event.target.id ||
+                               event.target.closest('[id]')?.id ||
                                null;
         }
     }
-    
+
     // 设置图表容器的保护
     function setupChartContainer(container) {
         if (!container || container.hasAttribute('data-protected')) return;
-        
+
         // 仅设置必要的样式属性
         container.style.position = 'relative';
-        
+
         // 移除可能影响鼠标滚轮事件的样式属性
         container.style.overflowY = 'visible';
         container.style.overflowX = 'visible';
         container.style.touchAction = '';
-        
+
         // 移除可能影响滚轮事件的类
         container.classList.remove('chart-interaction');
-        
+
         container.setAttribute('data-protected', 'true');
     }
-    
+
     // 为所有图表设置保护措施
     function setupAllChartContainers() {
         try {
             console.log('[Frontend] 开始设置所有图表容器');
-            
+
             // 选择所有图表容器
             const containers = document.querySelectorAll(
                 '.chart-container, [id^="history-kg-"], [id^="history-flow-"], ' +
-                '#knowledge-graph, #process-flowchart, [id*="chart"], ' + 
+                '#knowledge-graph, #processFlowchart, [id*="chart"], ' +
                 '[id*="kg-"], [id*="flow"], [id*="graph"], .echarts, .echarts-container'
             );
-            
+
             // 为每个容器设置事件处理
             containers.forEach(container => {
             setupChartContainer(container);
         });
-        
+
             // 启用鼠标事件处理
             state.preventMouseEvents = false;
-            
+
             console.log(`[Frontend] 设置了 ${containers.length} 个图表容器，并启用了鼠标事件处理`);
-            
+
             // 设置全局事件监听
             enableGlobalEventCapture();
-            
+
             // 启动滚动位置保护
             startScrollPositionGuard();
-            
+
             // 修补ECharts事件
             patchEChartsEvents();
-            
+
             return true;
         } catch (error) {
             console.error('[Frontend] 设置图表容器失败:', error);
             return false;
         }
     }
-    
+
     // 修改全局事件捕获，不再锁定滚动
     function enableGlobalEventCapture() {
         console.log('[Frontend] 启用全局事件捕获');
-        
+
         // 不再锁定滚动
         window.addEventListener('scroll', function(event) {
             // 只记录滚动位置，不再强制恢复
@@ -150,13 +150,13 @@
                 state.lastScrollTop = window.scrollY;
             }
         }, {passive: true});
-        
+
         // 特殊处理hashchange事件
         window.addEventListener('hashchange', function(event) {
             // 记录hashchange前的滚动位置
             const beforeScrollY = window.scrollY || document.documentElement.scrollTop || 0;
             console.log('[Frontend] 检测到hash变化, 当前位置:', beforeScrollY);
-            
+
             // 延迟检查，看是否发生了跳转
             setTimeout(() => {
                 const afterScrollY = window.scrollY || document.documentElement.scrollTop || 0;
@@ -164,7 +164,7 @@
                 if (afterScrollY === 0 && beforeScrollY > 10) {
                     window.scrollTo(0, beforeScrollY);
                     console.log('[Frontend] 防止hash导致跳转, 恢复位置:', beforeScrollY);
-                    
+
                     // 清除hash
                     if (window.location.hash) {
                         history.pushState(null, null, window.location.pathname + window.location.search);
@@ -172,7 +172,7 @@
                 }
             }, 10);
         }, {capture: true});
-        
+
         // 修改点击事件处理
         document.addEventListener('click', function(event) {
             // 查找是否点击了图表元素
@@ -182,13 +182,13 @@
                 if (currentPos > 10) {
                     state.lastScrollTop = currentPos;
                 }
-                
+
                 // 检查是否点击了链接
                 let linkElement = event.target;
                 while (linkElement && linkElement.tagName !== 'A') {
                     linkElement = linkElement.parentElement;
                 }
-                
+
                 if (linkElement) {
                     // 阻止链接默认行为
                     event.preventDefault();
@@ -197,7 +197,7 @@
                 }
             }
         }, {capture: true});
-        
+
         // 为所有a标签添加平滑滚动
         document.body.addEventListener('click', function(event) {
             // 查找最近的a标签
@@ -205,11 +205,11 @@
             while (target && target.tagName !== 'A') {
                 target = target.parentElement;
             }
-            
+
             // 如果是锚点链接，平滑滚动代替默认跳转
             if (target && target.getAttribute('href') && target.getAttribute('href').startsWith('#')) {
                 event.preventDefault();
-                
+
                 const targetId = target.getAttribute('href').substring(1);
                 const targetElement = document.getElementById(targetId);
                 if (targetElement) {
@@ -220,7 +220,7 @@
                 }
             }
         });
-        
+
         // 监听wheel事件，但不阻止默认行为
         document.addEventListener('wheel', function(event) {
             // 只有在图表元素上时才特殊处理
@@ -231,78 +231,78 @@
                 }
             }
         }, {passive: true});
-        
+
         // 开始连续检查滚动位置，防止页面意外跳转
         startScrollPositionGuard();
-        
+
         // 修补ECharts事件系统
         patchEChartsEvents();
-        
+
         // 设置图表事件处理器
         setupChartEventHandlers();
     }
-    
+
     // 添加连续监测滚动位置的保护机制
     function startScrollPositionGuard() {
         if (state.isCheckingScroll) return; // 防止重复启动
-        
+
         state.isCheckingScroll = true;
         console.log('[Frontend] 启动滚动位置保护');
-        
+
         // 记录最后有效的滚动位置
         let lastValidScrollY = window.scrollY || document.documentElement.scrollTop || 0;
         if (lastValidScrollY > 10) {
             window.lastScrollY = lastValidScrollY;
         }
-        
+
         // 每100ms检查一次滚动位置
         const checkInterval = setInterval(() => {
             const currentScrollY = window.scrollY || document.documentElement.scrollTop || 0;
-            
+
             // 更新有效的滚动位置
             if (currentScrollY > 10) {
                 lastValidScrollY = currentScrollY;
                 window.lastScrollY = currentScrollY;
             }
-            
+
             // 检查是否意外跳转到顶部
             if (currentScrollY === 0 && lastValidScrollY > 10) {
                 // 只有在有图表元素的页面上恢复
                 const hasChartElements = document.querySelectorAll('[id*="chart"],[id*="graph"],[id*="kg-"],[id*="flow"],.echarts').length > 0;
-                
+
                 if (hasChartElements) {
                     console.log('[保护] 检测到意外跳转，恢复到:', lastValidScrollY);
                     window.scrollTo(0, lastValidScrollY);
                 }
             }
         }, 100);
-        
+
         // 清理函数
         window.addEventListener('beforeunload', () => {
             clearInterval(checkInterval);
             state.isCheckingScroll = false;
         });
     }
-    
+
     // 修补ECharts事件系统
     function patchEChartsEvents() {
         if (typeof echarts !== 'undefined') {
             try {
                 var originalInit = echarts.init;
-                
+
                 echarts.init = function() {
                     var chart = originalInit.apply(this, arguments);
-                    
+
                     if (chart) {
                         // 获取chart的DOM元素并重置容器
                         const container = chart.getDom();
                         if (container) {
                             const clone = container.cloneNode(true);
                             container.parentNode.replaceChild(clone, container);
-                            
+
                             chart.dispose();
                             chart = originalInit.call(this, clone, null, arguments[2]);
-                            
+
                             // 确保tooltip配置正确
                         var option = chart.getOption();
                             if (option && option.tooltip) {
@@ -312,17 +312,17 @@
                                 chart.setOption(option, false);
                             }
                         }
-                        
+
                         // 修改chart的鼠标处理器
-                        var oldMouseWheelHandler = chart._zr && chart._zr._handlers && 
-                                                 chart._zr._handlers.mousewheel && 
+                        var oldMouseWheelHandler = chart._zr && chart._zr._handlers &&
+                                                 chart._zr._handlers.mousewheel &&
                                                  chart._zr._handlers.mousewheel[0];
                         if (oldMouseWheelHandler) {
                             chart._zr.off('mousewheel', oldMouseWheelHandler);
                             chart._zr.on('mousewheel', function(e) {
                                 // 记录滚动位置但不阻止默认行为
                                 state.lastScrollTop = window.scrollY || document.documentElement.scrollTop;
-                                
+
                                 // 调用原始处理器但不使用preventDefault
                                 if (typeof oldMouseWheelHandler === 'function') {
                                     try {
@@ -334,7 +334,7 @@
                             });
                         }
                     }
-                    
+
                     return chart;
                 };
             } catch (err) {
@@ -342,22 +342,22 @@
             }
         }
     }
-    
+
     // 防止节点导航导致页面跳转
     function preventNodeNavigation() {
         console.log('[修复] 应用节点导航防护');
-        
+
         // 禁用鼠标移入移出事件
         state.preventMouseEvents = true;
-        
+
         // 更新页面的所有已存在图表
         updateAllExistingCharts();
-        
+
         // 删除可能导致页面跳转的mouseenter事件处理器
         const chartContainers = document.querySelectorAll(
             '[id*="chart"],[id*="graph"],[id*="kg-"],[id*="flow"],.echarts'
         );
-        
+
         chartContainers.forEach(container => {
             // 移除所有鼠标事件
             const eventsToClear = ['mouseenter', 'mouseleave', 'mouseover', 'mouseout'];
@@ -371,25 +371,25 @@
                 }
             });
         });
-        
+
         // 重置body类
         document.body.classList.remove('chart-interaction');
-        
+
         // 跟踪原始滚动位置
         window.lastScrollY = window.scrollY || document.documentElement.scrollTop || 0;
-        
+
         // 处理图表节点的点击事件，用点击代替悬停
         document.addEventListener('click', function(e) {
             // 检查是否点击了图表节点
-            if (e.target.closest('[class*="node"]') || 
-                e.target.tagName === 'circle' || 
+            if (e.target.closest('[class*="node"]') ||
+                e.target.tagName === 'circle' ||
                 e.target.classList.contains('ec-element') ||
                 isElementInChart(e.target)) {
-                
+
                 // 记录当前滚动位置
                 const scrollPos = window.scrollY || document.documentElement.scrollTop;
                 window.lastScrollY = scrollPos > 0 ? scrollPos : window.lastScrollY;
-                
+
                 // 防止可能发生的跳转
                 setTimeout(() => {
                     const currentPos = window.scrollY || document.documentElement.scrollTop;
@@ -401,7 +401,7 @@
                 }, 50);
             }
         }, true);
-        
+
         // 正确移除鼠标悬停事件监听
         const oldListeners = getEventListeners(document);
         if (oldListeners && oldListeners.mouseover) {
@@ -414,30 +414,30 @@
                 console.log('[修复] 无法移除现有的mouseover监听器:', e);
             }
         }
-        
+
         // 防止页面发生意外跳转
         startScrollPositionGuard();
-        
+
         // 增强hashchange事件处理
         window.addEventListener('hashchange', function(e) {
             // 阻止所有hash变化导致的跳转
             e.preventDefault();
             e.stopPropagation();
-            
+
             // 移除hash，防止页面跳转
             if (window.location.hash) {
                 history.pushState(null, null, window.location.pathname + window.location.search);
             }
-            
+
             // 恢复到之前的滚动位置
             if (window.lastScrollY > 0) {
                 window.scrollTo(0, window.lastScrollY);
                 console.log('[修复] 防止hash变化导致页面跳转');
             }
-            
+
             return false;
         }, {capture: true, passive: false});
-        
+
         // 记录滚动位置变化
         window.addEventListener('scroll', function() {
             const scrollPos = window.scrollY || document.documentElement.scrollTop;
@@ -445,22 +445,22 @@
                 window.lastScrollY = scrollPos;
             }
         }, { passive: true });
-        
+
         // 设置图表事件处理器，使用点击而非鼠标移入移出
         setupChartEventHandlers();
     }
-    
+
     // 获取DOM元素的事件监听器（模拟函数，无法在普通JS中实现）
     function getEventListeners(element) {
         // 此函数在普通JS中无法实现，只是一个占位符
         // 在实际浏览器中，可以使用开发者工具检查事件监听器
         return null;
     }
-    
+
     // 更新所有现有图表的配置
     function updateAllExistingCharts() {
         if (typeof echarts === 'undefined' || !WendaApp.charts) return;
-        
+
         // 遍历所有图表实例
         for (const chartId in WendaApp.charts) {
             const chart = WendaApp.charts[chartId];
@@ -468,7 +468,7 @@
                 try {
                     // 获取当前配置
                     const option = chart.getOption();
-                    
+
                     // 修改tooltip配置
                     if (option.tooltip) {
                         option.tooltip.trigger = 'none'; // 修改为手动触发
@@ -476,18 +476,18 @@
                         option.tooltip.confine = true;
                         option.tooltip.alwaysShowContent = false;
                     }
-                    
+
                     // 修改所有系列配置
                     if (option.series) {
                         option.series.forEach(series => {
                             // 设置静默模式，禁用悬停交互
                             series.silent = true;
-                            
+
                             if (series.type === 'graph') {
                                 // 禁用高亮相邻节点
                                 series.emphasis = series.emphasis || {};
                                 series.emphasis.focus = 'none';
-                                
+
                                 // 移除节点链接
                                 if (series.data) {
                                     series.data.forEach(item => {
@@ -501,30 +501,30 @@
                             }
                         });
                     }
-                    
+
                     // 应用更新的配置
                     chart.setOption(option, true);
-                    
+
                     // 移除所有鼠标事件监听器
                     chart.off('mouseover');
                     chart.off('mouseout');
                     chart.off('mouseenter');
                     chart.off('mouseleave');
-                    
+
                     // 使用点击事件代替悬停
                     chart.off('click');
                     chart.on('click', function(params) {
                         // 记录点击位置
                         const scrollPos = window.scrollY || document.documentElement.scrollTop;
                         window.lastScrollY = scrollPos > 0 ? scrollPos : window.lastScrollY;
-                        
+
                         // 手动显示tooltip
                         chart.dispatchAction({
                             type: 'showTip',
                             seriesIndex: params.seriesIndex,
                             dataIndex: params.dataIndex
                         });
-                        
+
                         // 检测是否有跳转
                         setTimeout(() => {
                             const currentPos = window.scrollY || document.documentElement.scrollTop;
@@ -533,13 +533,13 @@
                                 console.log('[修复] 恢复从', currentPos, '到', window.lastScrollY);
                             }
                         }, 50);
-                        
+
                         // 阻止事件传播
                         params.event.preventDefault();
                         params.event.stopPropagation();
                         return false;
                     });
-                    
+
                     console.log('[修复] 更新图表配置成功:', chartId);
                 } catch (err) {
                     console.warn('[修复] 更新图表配置失败:', chartId, err);
@@ -547,36 +547,36 @@
             }
         }
     }
-    
+
     // 应用图表事件处理器
     function setupChartEventHandlers(chart) {
         if (!chart || typeof chart.getZr !== 'function') {
             console.warn('[Frontend] 尝试设置无效图表的事件处理器');
             return false;
         }
-        
+
         try {
             const zr = chart.getZr();
             if (!zr) {
                 console.warn('[Frontend] 无法获取图表渲染器');
                 return false;
             }
-            
+
             // 移除现有事件处理器以避免重复
             zr.off('mousemove');
             zr.off('mousedown');
             zr.off('mouseup');
             zr.off('click');
             zr.off('mousewheel');
-            
+
             // 获取事件选项
-            const eventOptions = WendaApp.config.usePassiveEvents 
-                ? { passive: true } 
+            const eventOptions = WendaApp.config.usePassiveEvents
+                ? { passive: true }
                 : { passive: false };
-            
+
             // 添加全局鼠标事件监听
             chart._host = chart._host || chart.getDom();
-            
+
             if (chart._host) {
                 // 根据配置设置事件属性
                 chart._host.addEventListener('mouseenter', handleChartMouseEnter, eventOptions);
@@ -585,7 +585,7 @@
                 chart._host.addEventListener('touchstart', handleChartMouseEnter, eventOptions);
                 chart._host.addEventListener('touchend', handleChartMouseLeave, eventOptions);
             }
-            
+
             // 设置tooltip的配置
             let option = chart.getOption();
             if (option && option.tooltip) {
@@ -594,7 +594,7 @@
                 option.tooltip.hideDelay = 50; // 减少隐藏延迟
                 chart.setOption(option, false);
             }
-            
+
             console.log('[Frontend] 成功设置图表事件处理器');
             return true;
         } catch (error) {
@@ -602,9 +602,9 @@
             return false;
         }
     }
-    
+
     // ---------- 2. 图表功能模块 ----------
-    
+
     // 初始化知识图谱
     function initKnowledgeGraph(containerId = 'knowledgeGraphPreview') {
         console.log(`[Frontend] 初始化知识图谱 #${containerId}`);
@@ -613,7 +613,7 @@
             console.error(`[Frontend] 未找到知识图谱容器 #${containerId}`);
             return null;
         }
-        
+
         try {
             // 尝试获取KG数据
             const kgDataContainer = document.getElementById('kg-nodes-json');
@@ -621,7 +621,7 @@
                 console.warn(`[Frontend] 未找到知识图谱数据元素 #kg-nodes-json`);
                 return null;
             }
-            
+
             // 解析KG数据
             let kgData;
             try {
@@ -630,7 +630,38 @@
                 console.error(`[Frontend] 解析知识图谱数据失败:`, parseErr);
                 return null;
             }
-            
+
+            // 在解析KG数据后添加
+            console.log('[Frontend] 解析知识图谱数据成功，categories:', kgData.categories);
+            console.log('[Frontend] 节点数量:', kgData.nodes.length, '关系数量:', kgData.links.length);
+
+            // 默认类别（仅作为后备）
+            const defaultCategories = [
+                {name: '地理问题'},
+                {name: '地理场景'},
+                {name: '对象系统'},
+                {name: '系统机理'},
+                {name: '时空数据'},
+                {name: '数据来源'},
+                {name: '处理方法'},
+                {name: '集成模型'},
+                {name: '基础模型'},
+                {name: '开发步骤'},
+                {name: '评价方法'},
+                {name: '评价结果'},
+                {name: '模型应用'},
+                {name: '应用结果'},
+                {name: '总结讨论'},
+                {name: '地理概念'}
+            ];
+
+            // 使用后端提供的类别或默认类别
+            const useCategories = kgData.categories && kgData.categories.length > 0 ?
+                kgData.categories : defaultCategories;
+
+            // 提取类别名称用于图例
+            const categoryNames = useCategories.map(cat => cat.name);
+
             // 创建或获取图表实例
             let chart = WendaApp.charts[containerId];
             if (!chart) {
@@ -642,7 +673,7 @@
             } else {
                 chart.clear();
             }
-            
+
             // 配置图表选项
     const option = {
                 title: {
@@ -677,7 +708,7 @@
                         fontSize: 10,    // 增加字体大小
                         lineHeight: 14   // 增加行高
                     },
-                    data: ['地理问题', '地理场景', '对象系统', '系统机理', '时空数据', '数据来源', '处理方法', '集成模型', '基础模型', '开发步骤', '评价方法', '评价结果', '模型应用', '应用结果', '总结讨论', '地理概念']
+                    data: categoryNames
         },
                 animationDurationUpdate: 1500,
                 animationEasingUpdate: 'quinticInOut',
@@ -690,24 +721,7 @@
                         edgeSymbolSize: [4, 8],
                         data: kgData.nodes,
                         links: kgData.links,
-                        categories: [
-                            {name: '地理问题'},
-                            {name: '地理场景'},
-                            {name: '对象系统'},
-                            {name: '系统机理'},
-                            {name: '时空数据'},
-                            {name: '数据来源'},
-                            {name: '处理方法'},
-                            {name: '集成模型'},
-                            {name: '基础模型'},
-                            {name: '开发步骤'},
-                            {name: '评价方法'},
-                            {name: '评价结果'},
-                            {name: '模型应用'},
-                            {name: '应用结果'},
-                            {name: '总结讨论'},
-                            {name: '地理概念'}
-                        ],
+                        categories: useCategories,
             roam: true,
             label: {
                             normal: {
@@ -785,74 +799,135 @@
                     }
                 ]
             };
-            
+
             // 设置图表选项
             chart.setOption(option);
-            
+
             // 应用新的事件处理
             WendaApp.utils.setupChartEventHandlers(chart);
-            
+
             // 启用鼠标事件处理
             state.preventMouseEvents = false;
-            
+
             return chart;
         } catch (err) {
             console.error(`[Frontend] 初始化知识图谱失败:`, err);
             return null;
         }
     }
-    
+
     // 初始化流程图
     function initProcessFlowchart(containerId = 'processFlowchart') {
         try {
             console.log(`[Frontend] 开始初始化流程图: #${containerId}`);
-            
+
             // 检查容器是否存在
-        const container = document.getElementById(containerId);
-    if (!container) {
+            const container = document.getElementById(containerId);
+            if (!container) {
                 console.error(`[Frontend] 流程图容器 #${containerId} 不存在`);
                 return;
             }
-            
+
             // 检查echarts是否可用
             if (typeof echarts === 'undefined') {
                 console.error('[Frontend] ECharts库未加载，无法初始化流程图');
                 return;
             }
-            
+
             // 初始化图表并存储引用
             if (!WendaApp.charts) {
                 WendaApp.charts = {};
             }
-            
+
             // 如果已经存在图表实例，先销毁
             if (WendaApp.charts[containerId] && !WendaApp.charts[containerId].isDisposed()) {
                 console.log(`[Frontend] 销毁现有流程图实例: #${containerId}`);
                 WendaApp.charts[containerId].dispose();
             }
-            
+
             // 增加容器可见性检查
             if (container.offsetParent === null) {
                 console.warn(`[Frontend] 流程图容器 #${containerId} 不可见，可能影响渲染`);
             }
-            
+
             // 确保容器尺寸合适
             if (container.offsetWidth < 50 || container.offsetHeight < 50) {
                 console.warn(`[Frontend] 流程图容器尺寸过小: ${container.offsetWidth}x${container.offsetHeight}`);
                 container.style.height = '400px'; // 设置最小高度
             }
-            
+
             // 创建新的图表实例
             console.log(`[Frontend] 创建新的流程图实例: #${containerId}`);
             WendaApp.charts[containerId] = echarts.init(container);
-            
+
+            // 从 thinking_process 获取步骤数据
+            let thinkingProcessData;
+            try {
+                // 假设 thinking_process 数据以 JSON 字符串形式存储在 #thinking-process-data 元素中
+                const thinkingProcessElement = document.getElementById('thinking-process-data');
+                if (thinkingProcessElement) {
+                    thinkingProcessData = JSON.parse(thinkingProcessElement.textContent || '[]');
+                } else {
+                    console.warn("[Frontend] 未找到 thinking_process 数据元素 #thinking-process-data, 使用默认数据");
+                    thinkingProcessData = [ // 默认数据，如果后端没有传递
+                        { title: "问题输入" },
+                        { title: "问题分解" },
+                        { title: "知识图谱检索" },
+                        { title: "最终解答" }
+                    ];
+                }
+            } catch (error) {
+                console.error("[Frontend] 解析 thinking_process 数据失败:", error);
+                thinkingProcessData = [ // 错误处理，使用默认数据
+                    { title: "问题输入" },
+                    { title: "问题分解" },
+                    { title: "知识图谱检索" },
+                    { title: "最终解答" }
+                ];
+            }
+
+            const nodes = [];
+            const links = [];
+
+            let lastNodeName = null; // 用于连接节点的变量
+
+            // 遍历 thinking_process 生成节点
+            thinkingProcessData.forEach((step, index) => {
+                const nodeName = step.title; // 使用步骤标题作为节点名称
+                const nodeType = step.title; // 使用步骤标题作为节点类型，用于颜色编码
+
+                // 定义节点颜色映射
+                const colorMap = {
+                    "问题分解": '#fac858',
+                    "知识图谱检索": '#73c0de',
+                    "最终解答": '#91cc75',
+                    "问题输入": '#91cc75', // 与最终解答颜色一致，或者可以定义新的颜色
+                    // ... 可以添加更多步骤类型和颜色
+                    "默认": '#5470c6' // 默认颜色
+                };
+                const nodeColor = colorMap[nodeType] || colorMap["默认"];
+
+                nodes.push({
+                    name: nodeName,
+                    value: nodeName, // 节点值也设置为步骤标题，可以根据需要修改
+                    symbolSize: 60,
+                    itemStyle: { color: nodeColor }
+                });
+
+                if (lastNodeName) {
+                    links.push({ source: lastNodeName, target: nodeName, lineStyle: { width: 3 } });
+                }
+                lastNodeName = nodeName; // 更新 lastNodeName 为当前节点名称
+            });
+
+
             // 流程图配置
-        const option = {
+            const option = {
                 title: {
-                    text: '地理建模分析流程',
-                    subtext: '累进式问题分解与处理流程',
+                    text: '问题解析流程',
+                    subtext: '基于问题分解的处理流程',
                     left: 'center'
-            },
+                },
                 tooltip: {
                     trigger: 'item',
                     formatter: function(params) {
@@ -861,152 +936,33 @@
                         }
                         return '';
                     }
-            },
+                },
                 animationDurationUpdate: 500,
-            animationEasingUpdate: 'quinticInOut',
+                animationEasingUpdate: 'quinticInOut',
                 series: [{
-                type: 'graph',
-                layout: 'none',
-                        symbolSize: 50,
-                roam: true,
-                label: {
+                    type: 'graph',
+                    layout: 'dagre', // 使用 dagre 布局
+                    orient: 'TB',   // 垂直布局 (Top to Bottom)
+                    symbolSize: 70,
+                    roam: true,
+                    label: {
                         show: true,
                         position: 'inside',
                         fontSize: 12,
-                        color: '#333',
+                        color: '#fff', // 标签文字颜色改为白色，更清晰
                         fontWeight: 'bold'
-                },
-                edgeSymbol: ['circle', 'arrow'],
-                edgeSymbolSize: [4, 10],
-                edgeLabel: {
+                    },
+                    edgeSymbol: ['circle', 'arrow'],
+                    edgeSymbolSize: [4, 10],
+                    edgeLabel: {
                         show: false
                     },
-                    data: [
-                        {
-                            name: '问题输入',
-                            value: '用户输入地理相关问题',
-                            x: 300,
-                            y: 50,
-                            fixed: true,
-                            itemStyle: { color: '#91cc75' }
-                        },
-                        {
-                            name: '问题分解',
-                            value: '将复杂问题分解为子问题',
-                            x: 300,
-                            y: 150,
-                            fixed: true,
-                            itemStyle: { color: '#fac858' }
-                        },
-                        // 问题1相关节点
-                        {
-                            name: '地理位置识别',
-                            value: '识别地理实体和位置信息',
-                            x: 100,
-                            y: 250,
-                            itemStyle: { color: '#ee6666' }
-                        },
-                        {
-                            name: '实体识别1',
-                            value: '提取地理位置关键词',
-                            x: 100,
-                            y: 350,
-                            itemStyle: { color: '#73c0de' }
-                        },
-                        {
-                            name: '图谱查询1',
-                            value: '查询地理位置基本信息',
-                            x: 100,
-                            y: 450,
-                            itemStyle: { color: '#3ba272' }
-                        },
-                        // 问题2相关节点
-                        {
-                            name: '地理特征分析',
-                            value: '分析地理特征和属性',
-                            x: 300,
-                            y: 250,
-                            itemStyle: { color: '#ee6666' }
-                        },
-                        {
-                            name: '实体识别2',
-                            value: '识别地理特征属性',
-                            x: 300,
-                            y: 350,
-                            itemStyle: { color: '#73c0de' }
-                        },
-                        {
-                            name: '图谱查询2',
-                            value: '查询地理特征详细信息',
-                            x: 300,
-                            y: 450,
-                            itemStyle: { color: '#3ba272' }
-                        },
-                        // 问题3相关节点
-                        {
-                            name: '地理关系推理',
-                            value: '分析地理实体间关系',
-                            x: 500,
-                            y: 250,
-                            itemStyle: { color: '#ee6666' }
-                        },
-                        {
-                            name: '实体识别3',
-                            value: '识别地理关系实体',
-                            x: 500,
-                            y: 350,
-                            itemStyle: { color: '#73c0de' }
-                        },
-                        {
-                            name: '图谱查询3',
-                            value: '查询地理关系信息',
-                            x: 500,
-                            y: 450,
-                            itemStyle: { color: '#3ba272' }
-                        },
-                        // 结果生成节点
-                        {
-                            name: '结果生成',
-                            value: '整合所有分析结果',
-                            x: 300,
-                            y: 550,
-                            fixed: true,
-                            symbolSize: 60,
-                            itemStyle: { color: '#fc8452' }
-                        }
-                    ],
-                    links: [
-                        // 主流程连接
-                        { source: '问题输入', target: '问题分解', lineStyle: { width: 3 } },
-                        
-                        // 问题分解到第一个问题组
-                        { source: '问题分解', target: '地理位置识别' },
-                        { source: '地理位置识别', target: '实体识别1' },
-                        { source: '实体识别1', target: '图谱查询1' },
-                        
-                        // 第一个问题组到第二个问题组
-                        { source: '地理位置识别', target: '地理特征分析' },
-                        { source: '实体识别1', target: '地理特征分析' },
-                        { source: '图谱查询1', target: '地理特征分析' },
-                        { source: '地理特征分析', target: '实体识别2' },
-                        { source: '实体识别2', target: '图谱查询2' },
-                        
-                        // 第二个问题组到第三个问题组
-                        { source: '地理特征分析', target: '地理关系推理' },
-                        { source: '实体识别2', target: '地理关系推理' },
-                        { source: '图谱查询2', target: '地理关系推理' },
-                        { source: '地理关系推理', target: '实体识别3' },
-                        { source: '实体识别3', target: '图谱查询3' },
-                        
-                        // 所有问题组到结果生成
-                        { source: '图谱查询1', target: '结果生成' },
-                        { source: '图谱查询2', target: '结果生成' },
-                        { source: '图谱查询3', target: '结果生成' }
-                        ],
-                        lineStyle: {
+                    data: nodes,
+                    links: links,
+                    lineStyle: {
                         color: '#666',
-                        width: 1,
-                        curveness: 0.1
+                        width: 2,
+                        curveness: 0.3 // 增加一些弯曲度
                     },
                     emphasis: {
                         focus: 'adjacency',
@@ -1020,25 +976,25 @@
                     }
                 }]
             };
-            
+
             // 设置图表配置
             WendaApp.charts[containerId].setOption(option);
-            
+
             // 添加事件处理
             WendaApp.utils.setupChartEventHandlers(WendaApp.charts[containerId]);
-            
+
             // 设置resize监听
             window.addEventListener('resize', function() {
                 if (WendaApp.charts[containerId] && !WendaApp.charts[containerId].isDisposed()) {
                     WendaApp.charts[containerId].resize();
                 }
             });
-            
+
             console.log(`[Frontend] 流程图初始化成功: #${containerId}`);
-            
+
             // 取消鼠标事件阻止，确保交互正常
             state.preventMouseEvents = false;
-            
+
             return WendaApp.charts[containerId];
         } catch (error) {
             console.error(`[Frontend] 初始化流程图失败:`, error);
@@ -1057,7 +1013,7 @@
             }
         }
     }
-    
+
     // 初始化历史知识图谱
     function initHistoryKg(containerId, kgData) {
         console.log(`[Frontend] 初始化历史知识图谱 #${containerId}`);
@@ -1066,14 +1022,14 @@
             console.error(`[Frontend] 未找到历史知识图谱容器 #${containerId}`);
             return null;
         }
-        
+
         try {
             // 验证KG数据
             if (!kgData || !kgData.nodes || !kgData.links) {
                 console.error(`[Frontend] 历史知识图谱数据格式无效`);
                 return null;
             }
-            
+
             // 创建或获取图表实例
             let chart = WendaApp.charts[containerId];
             if (!chart) {
@@ -1085,7 +1041,7 @@
             } else {
                 chart.clear();
             }
-            
+
             // 配置图表选项
             const option = {
                 tooltip: {
@@ -1133,22 +1089,22 @@
                     }
                 }]
             };
-            
+
             // 设置图表选项
             chart.setOption(option);
-            
+
             // 设置图表事件处理器
             setupChartEventHandlers(chart);
-            
+
             console.log(`[Frontend] 历史知识图谱 #${containerId} 初始化完成`);
-            
+
             return chart;
         } catch (error) {
             console.error(`[Frontend] 初始化历史知识图谱失败:`, error);
             return null;
         }
     }
-    
+
     // 初始化历史流程图
     function initHistoryFlowchart(containerId, flowData) {
         console.log(`[Frontend] 初始化历史流程图 #${containerId}`);
@@ -1157,14 +1113,14 @@
             console.error(`[Frontend] 未找到历史流程图容器 #${containerId}`);
             return null;
         }
-        
+
         try {
             // 验证流程图数据
             if (!flowData || !flowData.nodes || !flowData.links) {
                 console.error(`[Frontend] 历史流程图数据格式无效`);
                 return null;
             }
-            
+
             // 创建或获取图表实例
             let chart = WendaApp.charts[containerId];
             if (!chart) {
@@ -1176,7 +1132,7 @@
             } else {
                 chart.clear();
             }
-            
+
             // 配置图表选项
             const option = {
                 tooltip: {
@@ -1211,48 +1167,48 @@
                     }
                 }]
             };
-            
+
             // 设置图表选项
             chart.setOption(option);
-            
+
             // 设置图表事件处理器
             setupChartEventHandlers(chart);
-            
+
             console.log(`[Frontend] 历史流程图 #${containerId} 初始化完成`);
-            
+
             return chart;
         } catch (error) {
             console.error(`[Frontend] 初始化历史流程图失败:`, error);
             return null;
         }
     }
-    
+
     // ---------- 3. UI交互模块 ----------
-    
+
     // 初始化API选择按钮
     function setupApiButtons() {
         console.log('[Frontend] 设置API按钮');
         const apiButtons = document.querySelectorAll('.api-btn');
-        
+
         apiButtons.forEach(button => {
             button.addEventListener('click', function() {
                 const provider = this.getAttribute('data-provider');
                 if (provider) {
                     console.log('[Frontend] 切换API提供商为:', provider);
-                    
+
                     // 移除所有按钮的活动状态
                     document.querySelectorAll('.api-btn').forEach(btn => {
                         btn.classList.remove('btn-primary');
                         btn.classList.add('btn-outline-primary');
                     });
-                    
+
                     // 设置当前按钮的活动状态
                     this.classList.remove('btn-outline-primary');
                     this.classList.add('btn-primary');
-                    
+
                     // 保存API选择到localStorage
                     localStorage.setItem('current_provider', provider);
-                    
+
                     // 调用后端接口切换API提供商
                     fetch('/api/switch', {
                         method: 'POST',
@@ -1282,7 +1238,7 @@
                 }
             });
         });
-        
+
         // 获取CSRF令牌的辅助函数
         function getCsrfToken() {
             const tokenElement = document.querySelector('[name=csrfmiddlewaretoken]');
@@ -1296,7 +1252,7 @@
             return cookieValue || '';
         }
     }
-    
+
     // 处理表单提交
     function setupFormSubmission() {
         console.log('[Frontend] 设置表单提交');
@@ -1309,17 +1265,17 @@
                     alert('请输入您的问题');
                     return false;
                 }
-                
+
                 // 显示加载指示器
                 document.body.classList.add('loading');
-                
+
                 // 预估处理时间
                 const estimatedTime = estimateProcessingTime(input.value);
                 console.log(`[Frontend] 预估处理时间: ${estimatedTime/1000}秒`);
             });
         }
     }
-    
+
     // 导出历史记录
     function exportHistory() {
         try {
@@ -1328,7 +1284,7 @@
                 alert('没有可导出的历史记录');
                 return;
             }
-            
+
             const blob = new Blob([historyData], {type: 'application/json'});
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
@@ -1343,7 +1299,7 @@
             alert('导出历史记录失败');
         }
     }
-    
+
     // 清空历史记录
 function clearHistory() {
         if (confirm('确定要清空所有历史记录吗？此操作不可恢复。')) {
@@ -1351,14 +1307,14 @@ function clearHistory() {
             window.location.reload();
         }
     }
-    
+
     // ---------- 4. 工具函数模块 ----------
-    
+
     // 预估处理时间
     function estimateProcessingTime(question) {
         // 基础时间：10秒
         let baseTime = 10000;
-        
+
         // 根据问题长度调整时间
         const length = question.length;
         if (length > 100) {
@@ -1367,34 +1323,34 @@ function clearHistory() {
         if (length > 200) {
             baseTime += 10000;
         }
-        
+
         // 根据问题复杂度调整时间（简单启发式）
         const complexityIndicators = [
             "为什么", "如何", "分析", "比较", "评估", "解释",
             "什么是", "怎样", "原因", "影响", "关系", "区别"
         ];
-        
+
         let complexityScore = 0;
         complexityIndicators.forEach(indicator => {
             if (question.includes(indicator)) {
                 complexityScore++;
             }
         });
-        
+
         baseTime += complexityScore * 3000;
-        
+
         return baseTime;
     }
-    
+
     // ---------- 5. 初始化和公共API ----------
-    
+
     // 初始化应用
     window.addEventListener('DOMContentLoaded', function() {
         console.log('[Frontend] DOM内容加载完成，初始化WendaApp');
-        
+
         // 首先修补ECharts事件系统
         patchEChartsEvents();
-        
+
         // 初始化全局API
         WendaApp.utils = {
             setupChartEventHandlers: setupChartEventHandlers,
@@ -1404,34 +1360,34 @@ function clearHistory() {
             patchEChartsEvents: patchEChartsEvents,
             preventNodeNavigation: preventNodeNavigation
         };
-        
+
         // 初始化图表容器
         setTimeout(function() {
         setupAllChartContainers();
             console.log('[Frontend] 图表容器初始化完成');
-            
+
             // 确保允许鼠标事件处理
             state.preventMouseEvents = false;
             console.log('[Frontend] 已完全启用所有鼠标事件处理');
-            
+
             // 设置已初始化标志
             WendaApp.initialized = true;
-            
+
             // 自动初始化已加载的图表
             if (document.getElementById('knowledgeGraphPreview')) {
                 console.log('[Frontend] 自动初始化知识图谱');
                 WendaApp.initKnowledgeGraph();
             }
-            
+
             if (document.getElementById('processFlowchart')) {
                 console.log('[Frontend] 自动初始化流程图');
                 WendaApp.initProcessFlowchart();
             }
         }, 1000);
-        
+
         // 设置API按钮
         WendaApp.setupApiButtons();
-        
+
         // 设置表单提交处理
         WendaApp.setupFormSubmission();
     });

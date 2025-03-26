@@ -146,7 +146,9 @@ class EntityLinker:
                 # 修改查询语句，考虑source_article可能存在或不存在的情况
                 query = """
                 MATCH (n) 
-                WHERE n:地理问题 OR n:数据 OR n:方法 OR n:模型 OR n:模型应用 OR n:结果
+                WHERE n:地理问题 OR n:地理场景 OR n:对象系统 OR n:系统机理 OR n:时空数据 
+                  OR n:数据来源 OR n:处理方法 OR n:集成模型 OR n:基础模型 OR n:开发步骤 
+                  OR n:评价方法 OR n:评价结果 OR n:模型应用 OR n:应用结果 OR n:总结讨论
                 RETURN n.name as name, n.desc as desc, 
                     CASE WHEN n:地理问题 THEN n.source_article ELSE NULL END as source_article,
                     labels(n) as labels
@@ -321,14 +323,14 @@ class EntityLinker:
                     if name in entity_details:
                         # 获取第一个标签作为类别
                         labels = record["labels"]
-                        print(f"[Entity Linking] 实体 '{name}' 的标签: {labels}")
+                        # print(f"[Entity Linking] 实体 '{name}' 的标签: {labels}")  # 已注释掉
                         if labels and len(labels) > 0:
                             entity_details[name]["category"] = labels[0]
-                            print(f"[Entity Linking] 设置实体 '{name}' 的类别为: {labels[0]}")
+                            # print(f"[Entity Linking] 设置实体 '{name}' 的类别为: {labels[0]}")  # 已注释掉
                         else:
                             # 使用更合适的默认类别名称，而不是Unknown
                             entity_details[name]["category"] = "未分类"
-                            print(f"[Entity Linking] 实体 '{name}' 没有标签，设置为: 未分类")
+                            # print(f"[Entity Linking] 实体 '{name}' 没有标签，设置为: 未分类")  # 已注释掉
                 
                 print(f"[Entity Linking] 标签查询完成，处理了 {labels_count} 条记录")
                 
@@ -536,7 +538,7 @@ class EntityLinker:
             # 获取候选实体
             candidates = self._get_candidates(mention, top_k=top_k*2)
             if not candidates:
-                print(f"[Entity Linking] 未找到 '{mention}' 的候选实体")
+                # print(f"[Entity Linking] 未找到 '{mention}' 的候选实体")  # 注释掉，减少输出
                 return []
             
             # 构建 Cypher 查询 - 修改查询以确保获取source_article
@@ -605,7 +607,7 @@ class EntityLinker:
             Dict[str, List[Dict]]: 以mention为键，排序后实体列表为值的字典
         """
         start_time = time.time()
-        print(f"[Entity Linking] 开始批量处理 {len(mentions)} 个实体...")
+        # print(f"[Entity Linking] 开始批量处理 {len(mentions)} 个实体...")  # 注释掉，减少输出
         
         results = {}
         
@@ -641,17 +643,17 @@ class EntityLinker:
             Dict[str, List[Dict]]: 以mention为键，排序后实体列表为值的字典
         """
         start_time = time.time()
-        print(f"[Entity Linking] 开始GPU批量处理 {len(mentions)} 个实体...")
+        # print(f"[Entity Linking] 开始GPU批量处理 {len(mentions)} 个实体...")  # 注释掉，减少输出
         
         try:
             # 检查GPU可用性
             device = "cuda" if torch.cuda.is_available() else "cpu"
-            print(f"[Entity Linking] 使用设备: {device}")
+            # print(f"[Entity Linking] 使用设备: {device}")  # 注释掉，减少输出
             
             # 批量获取候选实体
             try:
                 all_candidates = self._get_candidates_batch_optimized(mentions, top_k=top_k*2)
-                print(f"[Entity Linking] 成功获取候选实体，平均每个mention {sum(len(c) for c in all_candidates.values())/len(mentions):.1f} 个候选")
+                # print(f"[Entity Linking] 成功获取候选实体，平均每个mention {sum(len(c) for c in all_candidates.values())/len(mentions):.1f} 个候选")  # 注释掉，减少输出
             except Exception as e:
                 print(f"[Entity Linking] 批量获取候选实体失败: {e}")
                 print("[Entity Linking] 降级为单个处理...")
@@ -671,7 +673,7 @@ class EntityLinker:
                     all_entity_names.update(candidates)
                 
                 entity_details = self.batch_fetch_entities(list(all_entity_names))
-                print(f"[Entity Linking] 成功获取 {len(entity_details)} 个实体详情")
+                # print(f"[Entity Linking] 成功获取 {len(entity_details)} 个实体详情")  # 注释掉，减少输出
             except Exception as e:
                 print(f"[Entity Linking] 批量获取实体详情失败: {e}")
                 entity_details = {}
@@ -682,7 +684,7 @@ class EntityLinker:
                 try:
                     candidates = all_candidates.get(mention, [])
                     if not candidates:
-                        print(f"[Entity Linking] 未找到 '{mention}' 的候选实体")
+                        # print(f"[Entity Linking] 未找到 '{mention}' 的候选实体")  # 注释掉，减少输出
                         results[mention] = []
                         continue
                     
@@ -749,7 +751,7 @@ class EntityLinker:
         Returns:
             Dict[str, Any]: 实体信息字典
         """
-        print(f"[Entity Linking] 获取实体 '{entity_name}' 的详细信息")
+        # print(f"[Entity Linking] 获取实体 '{entity_name}' 的详细信息")  # 注释掉，减少输出
         
         # 初始化默认返回值
         entity_info = {
@@ -765,7 +767,7 @@ class EntityLinker:
             # 首先检查缓存
             if entity_name in self.persistent_state["entity_desc"]:
                 entity_info["desc"] = self.persistent_state["entity_desc"][entity_name]
-                print(f"[Entity Linking] 从缓存获取到实体 '{entity_name}' 的描述")
+                # print(f"[Entity Linking] 从缓存获取到实体 '{entity_name}' 的描述")  # 注释掉，减少输出
             
             # 查询Neo4j获取完整信息
             with self.driver.session() as session:
@@ -796,7 +798,7 @@ class EntityLinker:
                         if labels:
                             entity_info["category"] = labels[0]
                         
-                        print(f"[Entity Linking] 成功获取实体 '{entity_name}' 的基本信息")
+                        # print(f"[Entity Linking] 成功获取实体 '{entity_name}' 的基本信息")  # 注释掉，减少输出
                         
                         # 查询关系信息
                         relations_query = """
@@ -821,7 +823,7 @@ class EntityLinker:
                             }
                             entity_info["relations"].append(relation)
                         
-                        print(f"[Entity Linking] 成功获取实体 '{entity_name}' 的 {len(entity_info['relations'])} 个关系")
+                        # print(f"[Entity Linking] 成功获取实体 '{entity_name}' 的 {len(entity_info['relations'])} 个关系")  # 注释掉，减少输出
                         
                     else:
                         print(f"[Entity Linking] 未找到实体 '{entity_name}'")
@@ -907,7 +909,7 @@ class EntityLinker:
 
     def link_entities(self, mentions: List[str]) -> Dict[str, List[Dict]]:
         """链接实体到知识库"""
-        print(f"\n[Entity Linking] 开始实体链接: {mentions}")
+        # print(f"\n[Entity Linking] 开始实体链接: {mentions}")  # 注释掉，减少输出
 
         # 直接使用批量处理方法
         return self.rank_entities_batch(query="", mentions=mentions, top_k=5)
