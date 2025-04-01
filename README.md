@@ -1,4 +1,4 @@
- # 地理建模智能问答系统
+# 地理建模智能问答系统
 
 ![系统标志](https://via.placeholder.com/150)
 
@@ -12,7 +12,6 @@
 - [开发指南](#开发指南)
 - [维护与更新](#维护与更新)
 - [故障排除](#故障排除)
-- [贡献指南](#贡献指南)
 - [许可证信息](#许可证信息)
 
 ## 📖 项目简介
@@ -105,7 +104,7 @@
 1. **克隆代码库**：
    ```bash
    git clone <仓库地址>
-   cd xy_neo4j_medicalqa_v3
+   cd Geo_QAS/QAS
    ```
 
 2. **创建虚拟环境**：
@@ -126,6 +125,8 @@
    NEO4J_URI=bolt://localhost:7687
    NEO4J_USER=neo4j
    NEO4J_PASSWORD=your_password
+   DJANGO_SECRET_KEY=your-secret-key
+   DJANGO_DEBUG=True
    DEEPSEEK_API_KEY=your_deepseek_api_key
    ZHIPU_API_KEY=your_zhipu_api_key
    SILICONFLOW_API_KEY=your_siliconflow_api_key
@@ -186,17 +187,19 @@
 ### 项目结构
 
 ```
-xy_neo4j_medicalqa_v3/
-├── xy_neo4j/                  # Django主应用
-├── myneo4j/                   # Neo4j数据库交互模块
-├── templates/                 # HTML模板
-├── static/                    # 静态文件(CSS/JS/图片)
-├── KG/                        # 知识图谱相关文件
-├── llm_client_factory.py      # LLM客户端工厂
-├── config.py                  # 系统配置
-├── config_loader.py           # 配置加载器
-├── manage.py                  # Django管理脚本
-└── README.md                  # 项目说明文档
+Geo_QAS/
+└── QAS/                       # 主项目目录
+    ├── xy_neo4j/              # Django主应用
+    ├── myneo4j/               # Neo4j数据库交互模块
+    ├── templates/             # HTML模板
+    ├── static/                # 静态文件(CSS/JS/图片)
+    ├── accounts/              # 用户账户管理
+    ├── llm_client_factory.py  # LLM客户端工厂
+    ├── config.py              # 系统配置
+    ├── config_loader.py       # 配置加载器
+    ├── manage.py              # Django管理脚本
+    └── README.md              # 项目说明文档
+└── KG/                        # 知识图谱处理脚本
 ```
 
 ### 核心模块说明
@@ -235,7 +238,7 @@ xy_neo4j_medicalqa_v3/
    }
    ```
 
-2. 在`API_KEYS`中添加新提供商的API密钥。
+2. 在`.env`文件中添加新提供商的API密钥。
 
 3. 如果新提供商需要特殊处理，可能需要在`RequestsClient`或`OpenAIClient`类中添加特定逻辑，或创建新的客户端类。
 
@@ -309,8 +312,8 @@ sudo systemctl enable neo4j
 
 **克隆代码仓库**：
 ```bash
-git clone <仓库地址> /opt/xy_neo4j_medicalqa_v3
-cd /opt/xy_neo4j_medicalqa_v3
+git clone <仓库地址> /opt/Geo_QAS
+cd /opt/Geo_QAS/QAS
 ```
 
 **设置虚拟环境并安装依赖**：
@@ -327,6 +330,9 @@ cat > .env << EOF
 NEO4J_URI=bolt://localhost:7687
 NEO4J_USER=neo4j
 NEO4J_PASSWORD=your_password
+DJANGO_SECRET_KEY=your-secret-key
+DJANGO_DEBUG=False
+ALLOWED_HOSTS=your-domain.com,www.your-domain.com
 DEEPSEEK_API_KEY=your_deepseek_api_key
 ZHIPU_API_KEY=your_zhipu_api_key
 SILICONFLOW_API_KEY=your_siliconflow_api_key
@@ -347,26 +353,26 @@ pip install gunicorn
 
 **创建Supervisor配置**：
 ```bash
-sudo nano /etc/supervisor/conf.d/xy_neo4j_medicalqa.conf
+sudo nano /etc/supervisor/conf.d/geo_qas.conf
 ```
 
 添加以下内容：
 ```
-[program:xy_neo4j_medicalqa]
-command=/opt/xy_neo4j_medicalqa_v3/venv/bin/gunicorn --workers 3 --bind unix:/opt/xy_neo4j_medicalqa_v3/xy_neo4j_medicalqa.sock xy_neo4j_medicalqa_v3.wsgi:application
-directory=/opt/xy_neo4j_medicalqa_v3
+[program:geo_qas]
+command=/opt/Geo_QAS/QAS/venv/bin/gunicorn --workers 3 --bind unix:/opt/Geo_QAS/QAS/geo_qas.sock xy_neo4j.wsgi:application
+directory=/opt/Geo_QAS/QAS
 user=www-data
 group=www-data
 autostart=true
 autorestart=true
-stderr_logfile=/var/log/xy_neo4j_medicalqa/error.log
-stdout_logfile=/var/log/xy_neo4j_medicalqa/access.log
+stderr_logfile=/var/log/geo_qas/error.log
+stdout_logfile=/var/log/geo_qas/access.log
 ```
 
 **创建日志目录**：
 ```bash
-sudo mkdir -p /var/log/xy_neo4j_medicalqa
-sudo chown -R www-data:www-data /var/log/xy_neo4j_medicalqa
+sudo mkdir -p /var/log/geo_qas
+sudo chown -R www-data:www-data /var/log/geo_qas
 ```
 
 **启动服务**：
@@ -380,30 +386,30 @@ sudo supervisorctl status
 
 **创建Nginx配置**：
 ```bash
-sudo nano /etc/nginx/sites-available/xy_neo4j_medicalqa
+sudo nano /etc/nginx/sites-available/geo_qas
 ```
 
 添加以下内容：
 ```
 server {
     listen 80;
-    server_name your_domain.com;
+    server_name your_domain.com www.your_domain.com;
 
     location = /favicon.ico { access_log off; log_not_found off; }
     location /static/ {
-        root /opt/xy_neo4j_medicalqa_v3;
+        root /opt/Geo_QAS/QAS;
     }
 
     location / {
         include proxy_params;
-        proxy_pass http://unix:/opt/xy_neo4j_medicalqa_v3/xy_neo4j_medicalqa.sock;
+        proxy_pass http://unix:/opt/Geo_QAS/QAS/geo_qas.sock;
     }
 }
 ```
 
 **启用站点并重启Nginx**：
 ```bash
-sudo ln -s /etc/nginx/sites-available/xy_neo4j_medicalqa /etc/nginx/sites-enabled
+sudo ln -s /etc/nginx/sites-available/geo_qas /etc/nginx/sites-enabled
 sudo nginx -t
 sudo systemctl restart nginx
 ```
@@ -413,7 +419,7 @@ sudo systemctl restart nginx
 使用Let's Encrypt设置SSL：
 ```bash
 sudo apt install certbot python3-certbot-nginx -y
-sudo certbot --nginx -d your_domain.com
+sudo certbot --nginx -d your_domain.com -d www.your_domain.com
 ```
 
 ### 日常维护
@@ -421,20 +427,20 @@ sudo certbot --nginx -d your_domain.com
 #### 定期更新代码
 
 ```bash
-cd /opt/xy_neo4j_medicalqa_v3
+cd /opt/Geo_QAS/QAS
 git pull
 source venv/bin/activate
 pip install -r requests.txt
 python manage.py migrate
-sudo supervisorctl restart xy_neo4j_medicalqa
+sudo supervisorctl restart geo_qas
 ```
 
 #### 日志监控
 
 查看应用日志：
 ```bash
-sudo tail -f /var/log/xy_neo4j_medicalqa/error.log
-sudo tail -f /var/log/xy_neo4j_medicalqa/access.log
+sudo tail -f /var/log/geo_qas/error.log
+sudo tail -f /var/log/geo_qas/access.log
 ```
 
 查看Nginx日志：
@@ -454,7 +460,7 @@ sudo systemctl start neo4j
 
 备份Django SQLite数据库：
 ```bash
-cp /opt/xy_neo4j_medicalqa_v3/db.sqlite3 ~/db_backup_$(date +%Y%m%d).sqlite3
+cp /opt/Geo_QAS/QAS/db.sqlite3 ~/db_backup_$(date +%Y%m%d).sqlite3
 ```
 
 ## ❓ 故障排除
@@ -485,35 +491,10 @@ cp /opt/xy_neo4j_medicalqa_v3/db.sqlite3 ~/db_backup_$(date +%Y%m%d).sqlite3
 
 | 错误代码 | 描述 | 解决方法 |
 |---------|------|---------|
-| E001 | API密钥无效 | 检查并更新配置文件中的API密钥 |
+| E001 | API密钥无效 | 检查并更新.env文件中的API密钥 |
 | E002 | Neo4j连接失败 | 确保Neo4j服务运行并检查连接参数 |
 | E003 | LLM调用超时 | 检查网络连接，可能需要增加超时时间 |
 | E004 | 实体识别失败 | 检查相关模型是否正确加载 |
-
-## 🤝 贡献指南
-
-我们欢迎并感谢任何形式的贡献！以下是贡献的一般步骤：
-
-1. **Fork项目**：在GitHub上fork项目到您自己的账户
-2. **创建分支**：`git checkout -b feature/your-feature-name`
-3. **提交更改**：`git commit -m 'Add some feature'`
-4. **推送到分支**：`git push origin feature/your-feature-name`
-5. **提交Pull Request**：通过GitHub界面提交PR
-
-### 贡献类型
-
-- **代码贡献**：新功能、bug修复、性能优化等
-- **文档贡献**：改进文档、添加示例、修正错误
-- **测试贡献**：添加或改进测试
-- **问题报告**：提交bug报告或功能请求
-
-### 开发路线图
-
-- 集成更多LLM提供商
-- 增强实体识别和链接能力
-- 添加更多可视化功能
-- 改进用户界面体验
-- 支持更多语言
 
 ## 📄 许可证信息
 

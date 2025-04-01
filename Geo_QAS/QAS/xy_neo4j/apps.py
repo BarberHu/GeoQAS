@@ -7,7 +7,7 @@ _entity_linker_initialized = threading.Event()
 
 class XyNeo4jConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'xy_neo4j_medicalqa_v3.xy_neo4j'
+    name = 'xy_neo4j'
     
     def ready(self):
         """应用启动时执行的代码"""

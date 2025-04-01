@@ -67,7 +67,7 @@
 1. **克隆代码库**：
    ```bash
    git clone <仓库地址>
-   cd xy_neo4j_medicalqa_v3
+   cd Geo_QAS/QAS
    ```
 
 2. **创建虚拟环境**：
@@ -201,8 +201,8 @@ sudo systemctl enable neo4j
 
 **克隆代码仓库**：
 ```bash
-git clone <仓库地址> /opt/xy_neo4j_medicalqa_v3
-cd /opt/xy_neo4j_medicalqa_v3
+git clone <仓库地址> /opt/Geo_QAS
+cd /opt/Geo_QAS/QAS
 ```
 
 **设置虚拟环境并安装依赖**：
@@ -239,26 +239,26 @@ pip install gunicorn
 
 **创建Supervisor配置**：
 ```bash
-sudo nano /etc/supervisor/conf.d/xy_neo4j_medicalqa.conf
+sudo nano /etc/supervisor/conf.d/xy_neo4j_qa.conf
 ```
 
 添加以下内容：
 ```
-[program:xy_neo4j_medicalqa]
-command=/opt/xy_neo4j_medicalqa_v3/venv/bin/gunicorn --workers 3 --bind unix:/opt/xy_neo4j_medicalqa_v3/xy_neo4j_medicalqa.sock xy_neo4j_medicalqa_v3.wsgi:application
-directory=/opt/xy_neo4j_medicalqa_v3
+[program:xy_neo4j_qa]
+command=/opt/Geo_QAS/QAS/venv/bin/gunicorn --workers 3 --bind unix:/opt/Geo_QAS/QAS/xy_neo4j_qa.sock xy_neo4j.wsgi:application
+directory=/opt/Geo_QAS/QAS
 user=www-data
 group=www-data
 autostart=true
 autorestart=true
-stderr_logfile=/var/log/xy_neo4j_medicalqa/error.log
-stdout_logfile=/var/log/xy_neo4j_medicalqa/access.log
+stderr_logfile=/var/log/xy_neo4j_qa/error.log
+stdout_logfile=/var/log/xy_neo4j_qa/access.log
 ```
 
 **创建日志目录**：
 ```bash
-sudo mkdir -p /var/log/xy_neo4j_medicalqa
-sudo chown -R www-data:www-data /var/log/xy_neo4j_medicalqa
+sudo mkdir -p /var/log/xy_neo4j_qa
+sudo chown -R www-data:www-data /var/log/xy_neo4j_qa
 ```
 
 **启动服务**：
@@ -272,7 +272,7 @@ sudo supervisorctl status
 
 **创建Nginx配置**：
 ```bash
-sudo nano /etc/nginx/sites-available/xy_neo4j_medicalqa
+sudo nano /etc/nginx/sites-available/xy_neo4j_qa
 ```
 
 添加以下内容：
@@ -283,19 +283,19 @@ server {
 
     location = /favicon.ico { access_log off; log_not_found off; }
     location /static/ {
-        root /opt/xy_neo4j_medicalqa_v3;
+        root /opt/Geo_QAS/QAS;
     }
 
     location / {
         include proxy_params;
-        proxy_pass http://unix:/opt/xy_neo4j_medicalqa_v3/xy_neo4j_medicalqa.sock;
+        proxy_pass http://unix:/opt/Geo_QAS/QAS/xy_neo4j_qa.sock;
     }
 }
 ```
 
 **启用站点并重启Nginx**：
 ```bash
-sudo ln -s /etc/nginx/sites-available/xy_neo4j_medicalqa /etc/nginx/sites-enabled
+sudo ln -s /etc/nginx/sites-available/xy_neo4j_qa /etc/nginx/sites-enabled
 sudo nginx -t
 sudo systemctl restart nginx
 ```
@@ -313,20 +313,20 @@ sudo certbot --nginx -d your_domain.com
 #### 定期更新代码
 
 ```bash
-cd /opt/xy_neo4j_medicalqa_v3
+cd /opt/Geo_QAS/QAS
 git pull
 source venv/bin/activate
 pip install -r requests.txt
 python manage.py migrate
-sudo supervisorctl restart xy_neo4j_medicalqa
+sudo supervisorctl restart xy_neo4j_qa
 ```
 
 #### 日志监控
 
 查看应用日志：
 ```bash
-sudo tail -f /var/log/xy_neo4j_medicalqa/error.log
-sudo tail -f /var/log/xy_neo4j_medicalqa/access.log
+sudo tail -f /var/log/xy_neo4j_qa/error.log
+sudo tail -f /var/log/xy_neo4j_qa/access.log
 ```
 
 查看Nginx日志：
@@ -346,7 +346,7 @@ sudo systemctl start neo4j
 
 备份Django SQLite数据库：
 ```bash
-cp /opt/xy_neo4j_medicalqa_v3/db.sqlite3 ~/db_backup_$(date +%Y%m%d).sqlite3
+cp /opt/Geo_QAS/QAS/db.sqlite3 ~/db_backup_$(date +%Y%m%d).sqlite3
 ```
 
 ## 故障排除
